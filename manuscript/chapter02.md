@@ -167,7 +167,7 @@ You might expect `res` to be similarly chainable but, unfortunately it is not. t
 
 ## ... and finally
 
-We shorten our code even more as shown [here](https://github.com/Satyam/book-react-redux/blob/chapter-02-03/server/index.js):
+We can shorten our code even more [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-03/server/index.js):
 
 ```js
 const http = require('http');
