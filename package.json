@@ -1,0 +1,34 @@
+{
+  "name": "book-react-redux",
+  "version": "0.1.0",
+  "description": "Sample code for the book Step by step with React and Redux",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "myWebServer": {
+    "port": 8080
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satyam/book-react-redux.git"
+  },
+  "keywords": [
+    "react",
+    "redux",
+    "guide",
+    "book"
+  ],
+  "author": "Daniel Barreiro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Satyam/book-react-redux/issues"
+  },
+  "homepage": "https://github.com/Satyam/book-react-redux#readme",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.1",
+    "express": "^4.13.4"
+  }
+}
