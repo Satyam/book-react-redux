@@ -123,11 +123,11 @@ We have used the `--save-dev` option instead of simply `--save`.  This means tha
 
 ```json
 "devDependencies": {
-  "eslint": "^1.10.3"
+  "eslint": "^2.7.0"
 }
 ```
 
-Let us go and add another script to `package.json` [(:octocat:)]()(https://github.com/Satyam/book-react-redux/blob/chapter-03-02/package.json#L8):
+Let us go and add another script to `package.json` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/package.json#L8):
 
 ```json
 "scripts": {
@@ -149,32 +149,41 @@ To tell ESLint what we want it to do we need to add a *rules* file.  We can writ
 
 `npm install eslint-config-standard --save-dev`
 
-Though this rule set is named `standard` there is no actual standard backing it.  It is a reasonable compilation of many often-used rules but it is not endorsed by any standards body or group.  However, it wouldn't be bad if it were.
+Though this ESLint rule set is named `standard` there is no actual standard backing it.  It is a reasonable compilation of many often-used rules but it is not endorsed by any standards body or group.  However, it wouldn't be bad if it were.
 
-This downloads and installs the rules, but it does not tell ESLint that it should follow them.  There are various ways to do that.  In this book we will  add a configuration file [`.eslintrc.json`](https://github.com/Satyam/book-react-redux/blob/master/.eslintrc.json) containing:
+This downloads and installs the rules, but it does not tell ESLint that it should follow them.  There are various ways to do that.  In this book we will  add a configuration file `.eslintrc.json` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/.eslintrc.json) containing:
 
 ```json
 {
-  "extends": "eslint-config-standard",
+  "extends": "standard",
+  "env": {
+    "node": true
+  },
   "rules": {
     "semi": [1, "always"]
   }
 }
 ```
 
-This tells ESLint that our rules will be an extension of those in `eslint-config-standard` and that we will customize those same rules by requiring that [semicolons are always present](http://eslint.org/docs/rules/semi.html) at the end of statements.  There are very many [rules](http://eslint.org/docs/rules/) that really allow us to customize our code in any way we want.  Very many companies have their internal standards available in the NPM registry, just search for [eslint-config](https://www.npmjs.com/search?q=eslint-config) and, at the time or writing this, almost five hundred are listed.
+This tells ESLint that
 
-Though I am using the `.json` extension on my ESLint configuration files, ESLint  can do without the extension, figuring out the internal format from reading the contents. It can actually accept files in YAML format instead of JSON and it is quite relaxed about what it accepts as JSON.
+* our rules will be an extension of those in `eslint-config-standard` (the `eslint-config` prefix can be omited)
+* that our code is meant to be executed by NodeJS, which helps it make some assumptions about features we will use
+* that we will customize those same rules by requiring that [semicolons are always present](http://eslint.org/docs/rules/semi.html) at the end of statements.  
+
+There are very many [rules](http://eslint.org/docs/rules/) that really allow us to customize our code in any way we want.  Many companies have their internal standards available in the NPM registry, just search for [eslint-config](https://www.npmjs.com/search?q=eslint-config) and, at the time or writing this, almost five hundred of such rules are listed.
+
+Though we are using the `.json` extension on the  ESLint configuration files, ESLint  can do without the extension, figuring out the internal format from reading the contents. It can actually accept files in YAML format instead of JSON and it is quite relaxed about what it accepts as JSON.
 
 Now we can repeat the `npm run lint` command and it should show no errors.  Change the `server/index.js` file making some errors and lint it again to see the effect.  
 
 Both Brackets and Atom have plugins to have ESLint integrated into the editor window.
 
-JavaScript can manage without semicolons at the end of its statements, it is what is called ASI, *Automatic Semicolon Insertion*.  It has become fashionable to write code without semicolons and let JavaScript figure out when a statement ends.  It was originally designed to make it more forgiving to sloppy first time coders and it works quite well, but it implies some degree of guessing from the JavaScript interpreter but I am not a sloppy coder who needs a guiding hand. Anyway, I can't imagine what could I possibly do in a life already full of much reveling and frolicking with the half a minute or so a day I could shave off my coding time by skipping the semicolons.
+JavaScript can manage without semicolons at the end of its statements, it is what is called ASI, *Automatic Semicolon Insertion*.  It has become fashionable to write code without semicolons and let JavaScript figure out when a statement ends.  It was originally designed to make it more forgiving to sloppy first time coders and it works quite well, but it implies some degree of guessing from the JavaScript interpreter and I don't like ambiguities. Anyway, I can't imagine what could I possibly do in a life already full of much reveling and frolicking with the half a minute or so a day I could shave off my coding time by skipping the semicolons.
 
 ## Global installs: ESLint
 
-Usually, ESLint is installed *globally* to make it accessible directly as a command in your terminal/command prompt window.  We haven't done it this way to avoid polluting your global space.  *Global* in NPM parlance means it is installed in a way that can be shared in between all applications within your computer.  It also saves some disk space since only one copy of it is needed for all apps instead of one for each.
+Usually, ESLint is installed *globally* to make it accessible directly as a command in your terminal/command prompt window.  We haven't done it this way to avoid polluting our global space.  *Global* in NPM parlance means it is installed in a way that can be shared in between all applications within our computer.  It also saves some disk space since only one copy of it is needed for all apps instead of one for each.
 
 To install applications *globally* we use the `-g` option on `npm install` and we don't use the `--save` or `--save-dev` options because we don't actually want it listed on our `package.json` file.  Thus, we would do:
 
@@ -183,12 +192,12 @@ npm install -g eslint
 npm install -g eslint-config-standard
 ```
 
-These two commands will install both ESLint and the `standard` set of rules in a share folder (`/usr/lib/node_modules` for Linux users).  You can then have a `.eslintrc.json` file in your home folder (`~/.eslintrc.json`) with your preferences.  You can then use the `eslint .` command right from the terminal in any project.
+These two commands will install both ESLint and the `standard` set of rules in a shared folder (`/usr/lib/node_modules` for Linux users).  We can still have a `.eslintrc.json` file in our home folder (`~/.eslintrc.json`) with our preferences so that we can use the `eslint .` command right from the terminal in any project and check anything anywhere with our home set of rules.
 
-You can still set pre-project rules by creating a local `eslintrc` file extending your own defaults plus adding your own, as we already did [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.eslintrc.json#L2). ESLint configuration files can go on forever extending one another with the later rules overriding the previous settings.
+We can still set per-project rules by creating a local `eslintrc` file extending our own defaults plus adding our own, as we already did [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.eslintrc.json#L2). ESLint configuration files can go on forever extending one another with the later rules overriding the previous settings.
 
 ## Ignored files
 
-If you look at your GitHub repository [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/chapter-03-02) once you commited and pushed all these changes, you might notice that there is no `node_modules` folder, which is a good thing since, at this point, it has about 17MB of data and it makes no sense to put a copy of all that in GitHub.  After all, the `npm install` command can easily reconstruct it from the dependencies listed in `package.json`.
+Looking at our GitHub repository [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/chapter-03-02) once we committed and pushed all these changes, we can see that there is no `node_modules` folder, which is a good thing since, at this point, it has about 17MB of data and it makes no sense to put a copy of all that in GitHub.  After all, the `npm install` command can easily reconstruct it from the dependencies listed in `package.json`.
 
 That trick is thanks to the `.gitignore` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.gitignore) file which is a list of file patterns of files and/or folders that Git should ignore, with comments preceded by sharp `#` signs.  `node_modules` is listed down at the end of the list.  This file was produced by GitHub when we originally created our repository and asked for a `.gitignore` file for `Node` which adds NodeJS-specific entries such as `node_modules`.   
