@@ -27,7 +27,7 @@ server.on('listening', (error) => {
 server.listen(PORT);
 ```
 
-> All the code for the book is available at [https://github.com/Satyam/book-react-redux](https://github.com/Satyam/book-react-redux) which includes [instructions](https://github.com/Satyam/book-react-redux#book-react-redux) on how to see or download the code for any of the chapters.
+> All the code for the book is available at [https://github.com/Satyam/book-react-redux](https://github.com/Satyam/book-react-redux) which includes [instructions](https://github.com/Satyam/book-react-redux#sample-code-for-each-chapter) on how to see or download the code for any of the chapters.
 
 NodeJS programs are made of *modules*, little bits of code that provide useful functionality.  NodeJS already offers a good number of such [modules](https://nodejs.org/docs/latest/api/index.html).  One of them is `http` and to load it [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L1), we use `require('http')`.  We save a reference to that module in the `http` constant.  It is usual, though not required, to name the references to the modules after the name of the module itself.
 
@@ -98,7 +98,7 @@ NodeJS allows us to break up a big project into little pieces called *modules*, 
 
 Modules are gathered into *packages*. NodeJS comes with NPM, its own package manager.  A public repository of packages [npmjs.com](https://www.npmjs.com/) collects thousands of packages.  We will use one of those in the next chapter to improve on our web server.  [Express](https://www.npmjs.com/package/express) is actually one of the most popular packages for NodeJS.  
 
-Let us have a look at the entry for [Express](https://www.npmjs.com/package/express) in the NPM registry.  On the right hand there is a column with plenty of information. They are on a 4.xx version, which means it is a mature product that has gone through many major revisions. It has an MIT license meaning we can freely use it. There is a link to the GitHub repository [(:octocat:)](github.com/strongloop/express) where we can find the source code and all the history of its development.  We can see that in the last month it had millions of downloads, which speaks of its popularity.
+Let us have a look at the entry for [Express](https://www.npmjs.com/package/express) in the NPM registry.  On the right hand there is a column with plenty of information. They are on a 4.xx version, which means it is a mature product that has gone through many major revisions. It has an MIT license meaning we can freely use it. There is a link to the GitHub repository [(:octocat:)](https://github.com/expressjs/express) where we can find the source code and all the history of its development.  We can see that in the last month it had millions of downloads, which speaks of its popularity.
 
 If we scroll further down, we can see a list of Dependencies and Dependents.  Here lies the beauty of packages and of the whole NPM ecosystem.  Each developer does something that depends on the code done by someone else and will see his/her own package used by others and depended upon by many other packages.
 

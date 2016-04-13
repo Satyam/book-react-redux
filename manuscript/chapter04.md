@@ -22,7 +22,7 @@ http.createServer(app)
   });
 ```
 
-It really doesn't look that much different, we can actually see the difference [(:octocat:!!)](https://github.com/Satyam/book-react-redux/commit/27908556d7f3c3e5e7b52a8c604931ed6b977350#diff-0861d6d6b50d7d695344bf2d86d6e5e6) in GitHub.
+It really doesn't look that much different, we can actually see the difference [(:octocat:)](https://github.com/Satyam/book-react-redux/commit/aecc6b2b8c800f3be18ab90ac1b03da4c1d63075#diff-0861d6d6b50d7d695344bf2d86d6e5e6) in GitHub.
 
 First [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js#L2-L3) we load the Express package into the constant `express` and then create an instance of the Express server by running the default function in the package, which we store in `app`.
 
@@ -30,7 +30,7 @@ That `app` will handle the requests for us.  When we call `createServer`, instea
 
 That allows us to use the [Express router](http://expressjs.com/en/guide/routing.html).  There are four basic methods in the `app` object that corresponds to HTTP request methods: `app.get`, `app.post`, `app.put` and `app.delete`. These methods register a callback function to listen to a particular type of request. Each gets as its arguments the path they should respond to and the function to call back when the path is matched.
 
-Here [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-4-1/server/index.js#L7), we have used `app.get` which is the standard request you get when navigating to a URL.  The first argument is a wildcard `'*'` which means we want any request, the second is the very same arrow function we used earlier.  It still receives the very same `req` and `res` objects as before, but greatly augmented with very many extra properties and methods.   Using those new methods, we could now write our callback function like this [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-02/server/index.js#L11-L16):
+Here [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js#L7), we have used `app.get` which is the standard request you get when navigating to a URL.  The first argument is a wildcard `'*'` which means we want any request, the second is the very same arrow function we used earlier.  It still receives the very same `req` and `res` objects as before, but greatly augmented with very many extra properties and methods.   Using those new methods, we could now write our callback function like this [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-02/server/index.js#L11-L16):
 
 ```js
 app.get('*', (req, res) => {
