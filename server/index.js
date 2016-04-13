@@ -4,7 +4,11 @@ const app = express();
 
 const PORT = process.env.npm_package_myServerApp_port || 8080;
 
-app.get('/hello', (req, res) => res.send('Hi, long time no see!'));
+app.get('/hello/:name?', (req, res) => res.send(`Hi ${req.params.name}, long time no see!`));
+
+app.get('/elect/:fname/:lname?/for/:position', (req, res) => res.send(req.params));
+
+app.get('/search', (req, res) => res.send(`You are searching for "${req.query.q}"`));
 
 app.get('/bye', (req, res) => res.send('See you later'));
 
