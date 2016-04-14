@@ -1,5 +1,5 @@
-/*global data:false */
-'use strict';
+var nextId = 100;
+
 module.exports = (router) => {
   // Routes for projects
   router.get('/', (req, res) => {
@@ -34,8 +34,7 @@ module.exports = (router) => {
   });
 
   router.post('/projects', (req, res) => {
-    let pid = Object.keys(data).length;
-    while (pid in data) pid++;
+    const pid = nextId++;
     const prj = Object.assign({name: '', descr: ''}, req.body || {});
     data[pid] = prj;
     res.json({pid: pid});
@@ -44,8 +43,7 @@ module.exports = (router) => {
   router.post('/:pid', (req, res) => {
     const prj = data[req.params.pid];
     if (prj) {
-      let tid = Object.keys(prj).length;
-      while (tid in prj) tid++;
+      const tid = nextId++;
       prj[tid] = Object.assign({descr: '', completed: false}, req.body || {});
       res.json({tid: tid});
     } else {

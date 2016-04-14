@@ -75,6 +75,16 @@ As it name implies, [`global`](https://nodejs.org/docs/latest/api/globals.html) 
 
 We can make our own properties globally accessible just by setting them as properties of `global`, we just have to make sure we are not colliding with an existing property.  Since we are going to use the data we've just read everywhere, it makes sense to make it globally accessible.
 
+ESLint will complain about using the global variable `data`.  ESLint knows about the standard, well-known global names for [whichever environment](http://eslint.org/docs/user-guide/configuring#specifying-environments) we are working on, that is why we specified that our environment would be `node` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/.eslintrc.json#L3-L5).  If there is anything beyond those globals, it will flag it as an *undeclared* variable, which usually signals a typo.  To prevent that, we add our own list of globals (for the time being just `data`) to `eslintrc.json` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/.eslintrc.json#L9-L11):
+
+```json
+"globals": {
+  "data": false
+}
+```
+
+The `false` value means we don't want this global variable written, only read.  This might sound strange, how do we set it if it is read-only?  When we set it we did `global.data = .... whatever`. ESLint doesn't mind us changing the `data` property of the `global` object, it would have complained if we did `data = ... ` even though both amount to the same thing.
+
 Our earlier server code has been trimmed of all those `app.get( ... ` routes we had put there to try out different features, which we don't need any more.  There is another change that might pass unnoticed, the earlier code is now contained within the callback function [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L11-L30).  This is because only if and when we succeed reading the `data.json` file it makes any sense to start the web server.  It would make no sense to start it if there is no data to serve.
 
 The Express server has a default router which we have been using so far.  All those `app.get` we wrote earlier are registered with the default router which will dispatch each of the callbacks according to the full path in the URL received.  When we have many routes sharing the very same prefix, in this case `/data/v1`, it is inefficient (and boring) to repeat it over and over again.  For these cases we can create an additional router [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L19-L23) that will respond to that prefix and will deal with the rest of the path from that point on.
@@ -135,7 +145,7 @@ We can try it out by starting our server via `npm start` and then, in a browser 
 
 It might not look good but it is not meant to be seen by humans, it is meant for our client-side code to read.  
 
-For our second route [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L13-L120) `'/:pid'` we need to access the `pid` which we do by using `req.params.pid`:
+For our second route [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L13-L20) `'/:pid'` we need to access the `pid` which we do by using `req.params.pid`:
 
 ```js
 router.get('/:pid', (req, res) => {
@@ -168,11 +178,11 @@ router.get('/:pid/:tid', (req, res) => {
 });
 ```
 
-For a POST operation, that is adding a new record, we have to receive data, not send it.  We cannot receive large amounts of data via the URL as we have been doing with the few parameters we have been using so far.  To be able to receive data we need to access it from the body.
+For a POST operation, i.e.: adding a new record, we have to receive data, not send it.  We cannot receive large amounts of data via the URL as we have been doing with the few parameters we have been using so far.  To be able to receive data we need to access it from the body.
 
 We have access to `req.body` because we already loaded the `body-parser` middleware.  Since we are only going to use JSON on the REST data exchanges, we will parse JSON [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L17) only on the `/data` path.  We don't include the version part of the path since it is fair to assume that other versions would use the same data format.  Most middleware such as `body-parser` is quite versatile and tolerant.  If in a later version  we decide to use another data format, instead of failing, `body-parse` will let it go through, expecting that some later parser might deal with it.  Also, if we want to parse JSON on another path, we can add as many instances of `body-parser` elsewhere as needed.
 
-To create a new project [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L36-L42) we first try to create a new project id `pid`.  It might seem strange that we go through so much trouble to get a `pid` when we might as well push the new record into an Array of projects and figure out its position.  As it happens, we don't want to use an Array even though our indexes are numeric, because items within an array can move and what now has index 10 may become 9 after record 5 was deleted.  Though within JavaScript empty Array slots take no memory, there is no way to skip over empty slots in JSON.  We want our `pid`s and `tid`s to be permanent and not be just temporary indexes.  That is why we take so much trouble doing all this.  In an SQL database, we would use an auto-increment integer field, in a noSQL database, we would take whatever unique record identifier that the database generated for us.
+To create a new project [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L36-L41) we first try to create a new project id `pid`.  We get it from the variable `nextId` which we set at the very top of the file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L1)to a number larger than any ID in the data file.  We increment that value as soon as we read from it.  It might seem strange that we go through so much trouble to get a `pid` when we might as well push the new record into an Array of projects and figure out its position.  As it happens, we don't want to use an Array even though our indexes are numeric, because items within an array can move and what now has index 10 may become 9 after record 5 is deleted.  Though within JavaScript empty Array slots take no memory, there is no way to skip over empty slots in JSON.  We want our `pid`s and `tid`s to be permanent and not be just temporary indexes.  That is why we take the trouble of producing unique, permanent IDs.  In an SQL database, we would use an auto-increment integer field, in a noSQL database, we would take whatever unique record identifier that the database generated for us.
 
 ```js
 router.post('/projects', (req, res) => {
