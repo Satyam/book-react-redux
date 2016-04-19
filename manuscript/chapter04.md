@@ -108,7 +108,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 ```
 
-and then use [(:octocat:!!)]():
+and then use [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L12-L13):
 
 ```js
 app.use(bodyParser.urlencoded({extended: false}));
@@ -120,6 +120,8 @@ Unlike the `express.static` middleware, we put these two before our dynamic rout
 So far we have only dealt with HTTP GET requests and the information that comes encoded in the URL itself.  [`body-parser`](https://github.com/expressjs/body-parser#body-parser) allows us to access the information sent in the body of the request. When there is information sent in the body and it can be decoded, `body-parser` will populate the `req.body` object.
 
 The body can be sent encoded in various ways and the `body-parser` middleware provides several decoders.  The original middleware tried to figure out how the body was encoded and produce some sort of result, which wasted processing time.  Now, we have to explicitly state which parser to use.  All parsers can be added and each will give it a try in turn. If a filter fails, it doesn't reject a request, it simply lets it pass through so other filter, if there is any other one after, can try.
+
+## Reading data from a form
 
 Our home page now has a form [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/public/index.html#L10-L12) with a single input field in it:
 
@@ -146,3 +148,11 @@ app.use('/data', bodyParser.json());
 We have also added the [`cookie-parser`](https://github.com/expressjs/cookie-parser) middleware which reads the cookies we might have sent in earlier responses via [`res.cookie`](http://expressjs.com/en/api.html#res.cookie) and makes them available in the `req.cookies` object.
 
 We now have [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L25-L36) the `http://localhost:8080/cookie` path to read and increment the `chocolateChip` cookie count and `http://localhost:8080/naughtyChild` to clear it.
+
+## Summary
+
+We have seen how to create an Express server and tell it how to respond to various URLs and how to read extra query parameters.
+
+We have also learned about *middleware* how to load it and use it in our web server.  We've seen how to load and use the body and cookie parser middleware besides the built int *static* middleware.  
+
+We have used the body parser middleware to be able to decode information received from an HTML form and manipulated information in *cookies* via the cookie parser.

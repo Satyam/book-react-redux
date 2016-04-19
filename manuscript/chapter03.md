@@ -123,7 +123,7 @@ We have used the `--save-dev` option instead of simply `--save`.  This means tha
 
 ```json
 "devDependencies": {
-  "eslint": "^2.7.0"
+  "eslint": "^2.8.0"
 }
 ```
 
@@ -201,3 +201,13 @@ We can still set per-project rules by creating a local `eslintrc` file extending
 Looking at our GitHub repository [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/chapter-03-02) once we committed and pushed all these changes, we can see that there is no `node_modules` folder, which is a good thing since, at this point, it has about 17MB of data and it makes no sense to put a copy of all that in GitHub.  After all, the `npm install` command can easily reconstruct it from the dependencies listed in `package.json`.
 
 That trick is thanks to the `.gitignore` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.gitignore#L27) file which is a list of file patterns of files and/or folders that Git should ignore, with comments preceded by sharp `#` signs.  `node_modules` is listed down at the end of the list.  This file was produced by GitHub when we originally created our repository and asked for a `.gitignore` file for `Node` which adds NodeJS-specific entries such as `node_modules`.   
+
+## Summary
+
+We have seen how NPM, the Node Package Manager allows us to leverage thousands of NodeJS packages, in this case, to improve on our previous very basic web server.  We installed Express to add advanced features to our server.
+
+NPM uses the `package.json` file to store its configuration and it also allows us to use it to store our own application configuration and the commands to start, test and run any script we might need to help in developing or running our application.
+
+There are tools both to run our application as well as to help us develop it.  A *linter* is one such development tool.  It helps us check our code statically, that is just looking at the source without running it. We installed ESLint and some associated plugins and configurations, saw how this was recorded in `package.json` and added a script to run it.
+
+Finally, we had a look at `.gitignore` and how it spares us from uploading unnecessary large volumes of data to GitHub.

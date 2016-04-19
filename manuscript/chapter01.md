@@ -113,3 +113,11 @@ If we go to [GitHub](https://github.com) we will now see our changes reflected i
 If we open the README.md file, we will see its raw, unformatted contents and at the top we can see there is a button labeled `History`.  This will show us each of the changes done on the file (not many right now) each accompanied with its commit description and time stamp and, if we click on any of the entries, we will see the file with its changes marked green for the additions and red for the deletions. Two columns of line numbers on the left correspond to the before and after source files.
 
 There is not much to see right now but try it out later on once we have done some few changes. There is far more to git and GitHub than what we have mentioned so far.  It really shines when used with large teams in big projects but, for the time being, it is good to becomes somewhat familiar with it.
+
+## Summary
+
+We have learned how to install several of the tools we will need to develop our application: NodeJS, NPM and optionally some JavaScript editors written in JavaScript.
+
+We have also installed GIT which allows us to work with GitHub, a place where we can store our code, keep track of the changes, share it with others, track bugs and issues and, in general, manage much of the process of creating an application.
+
+Finally, we created a *repository* within GitHub to test these tools.

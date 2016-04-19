@@ -186,3 +186,10 @@ http.createServer((req, res) => {
 ```
 
 Subscribing to the `request` and `listening` events is such a frequent thing to do that the developers of the `http` module have made it easier, we just pass the request handler function to the `createServer` method and the `listening` callback to the `listen` method.  Also, we don't actually need to check for the `error` argument because most of the errors at that stage simply produce fatal errors and the application will terminate before we have any chance to do something about it.
+
+
+## Summary
+
+We have seen how easy it is to have a web server up and running using plain NodeJS without any extras, which is due to several features built into NodeJS, such as its *module* system, and, most important of all, the *event loop*.
+
+We have also seen some standard coding practices such as the use of *callbacks* and *chaining*.

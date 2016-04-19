@@ -46,6 +46,8 @@ The REST standard doesn't really force you to do things in any particular way.  
 
 Optional query parameters should also be specified such as those that allow queries by field value or to enumerate the fields to be returned, as we commented earlier.
 
+## Loading sample data
+
 For the time being, we will store our information in memory.  This is certainly not practical for any real-life application, but it will help us concentrate on issues other than data storage. Our data comes from a JSON file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/data.json) which we will read and keep in memory.
 
 We need to load [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L6) the [File System](https://nodejs.org/docs/latest/api/fs.html) package which is included in the NodeJS distribution so we don't need to install it via NPM.
@@ -71,6 +73,8 @@ fs.readFile(path.join(__dirname, 'data.json'), (err, data) => {
 
 The `readFile` method is asynchronous so we have to provide a callback for it to tell us when the read has succeeded.  In most NodeJS async methods, the first argument is an error object which, if it is not `null`, means the operation has not succeeded.  If that is the case, we show the error and exit.  Otherwise, the second argument `data` will contain the full contents of the file.  Since it is in JSON, we parse it and save it to `global.data`.
 
+## Global variables
+
 As it name implies, [`global`](https://nodejs.org/docs/latest/api/globals.html) is NodeJS global object, available everywhere, much as the `window` object is in a browser.  Every property of `global` is accessible just by name, for example, there is `global.setTimeout` just like there is a `window.setTimeout` in the browser and both can be called by its name, `setTimeout`, the global name being implicit.  We have already used a couple of such properties.  Both `__dirname` and, to some extent, `require` are properties of `global`.
 
 We can make our own properties globally accessible just by setting them as properties of `global`, we just have to make sure we are not colliding with an existing property.  Since we are going to use the data we've just read everywhere, it makes sense to make it globally accessible.
@@ -86,6 +90,8 @@ ESLint will complain about using the global variable `data`.  ESLint knows about
 The `false` value means we don't want this global variable written, only read.  This might sound strange, how do we set it if it is read-only?  When we set it we did `global.data = .... whatever`. ESLint doesn't mind us changing the `data` property of the `global` object, it would have complained if we did `data = ... ` even though both amount to the same thing.
 
 Our earlier server code has been trimmed of all those `app.get( ... ` routes we had put there to try out different features, which we don't need any more.  There is another change that might pass unnoticed, the earlier code is now contained within the callback function [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L11-L30).  This is because only if and when we succeed reading the `data.json` file it makes any sense to start the web server.  It would make no sense to start it if there is no data to serve.
+
+## Writing a module to respond to REST requests
 
 The Express server has a default router which we have been using so far.  All those `app.get` we wrote earlier are registered with the default router which will dispatch each of the callbacks according to the full path in the URL received.  When we have many routes sharing the very same prefix, in this case `/data/v1`, it is inefficient (and boring) to repeat it over and over again.  For these cases we can create an additional router [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L19-L23) that will respond to that prefix and will deal with the rest of the path from that point on.
 
@@ -203,3 +209,13 @@ We then store that project record into the array at the position given by our ne
 For updating records via `put` we first locate the existing record (project or task) and use `Object.assign` to merge the new values from `req.body` into the existing record.  We return an error if the record does not exist.
 
 For deleting we simply delete the whole entry.  We first try to locate the record to be deleted and return an error if not found.  We might have handled things differently.  We might not check for the existence of the record assuming that if not found it has already been deleted, which should be fine as that is what the user wanted.  We might have also returned the old record as it was before deletion though, being a potentially big piece of data, it might be a waste of bandwidth.  If the client code wanted it, it might have gotten it first.
+
+## Summary
+
+We have learned about the REST (**Re**presentational **S**tate **T**ransfer) protocol to accept and respond to data requests from the client.  We have defined the API we will be using in our application.
+
+We have loaded a sample of data and showed how we can read it via suitable URLs.
+
+We have learned how to write our own modules which we can use as well as the ones loaded via NPM.  We wrote one such module to  handle our REST request.
+
+By separating our code into various modules we keep each modules small, focused and thus easy to understand and maintain.
