@@ -5,6 +5,10 @@ const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
 
+const server = http.createServer(app);
+
+module.exports = server;
+
 const PORT = process.env.npm_package_myServerApp_port || 8080;
 
 fs.readFile(path.join(__dirname, 'data.json'), (err, data) => {
@@ -24,8 +28,9 @@ fs.readFile(path.join(__dirname, 'data.json'), (err, data) => {
 
   app.use(express.static(path.join(__dirname, '../public')));
 
-  http.createServer(app)
-    .listen(PORT, () => {
+  if (require.main === module) {
+    server.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}/`);
     });
+  };
 });
