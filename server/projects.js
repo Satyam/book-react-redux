@@ -35,7 +35,7 @@ module.exports = (router) => {
 
   router.post('/', (req, res) => {
     const pid = nextId++;
-    const prj = Object.assign({name: '', descr: '', tasks: {}}, req.body || {});
+    const prj = Object.assign({name: '', descr: '', tasks: {}}, req.body);
     data[pid] = prj;
     res.json({pid: pid});
   });
@@ -44,7 +44,7 @@ module.exports = (router) => {
     const prj = data[req.params.pid];
     if (prj) {
       const tid = nextId++;
-      prj.tasks[tid] = Object.assign({descr: '', completed: false}, req.body || {});
+      prj.tasks[tid] = Object.assign({descr: '', completed: false}, req.body);
       res.json({tid: tid});
     } else {
       res.status(404).send(`Project ${req.params.pid} not found`);
@@ -54,7 +54,7 @@ module.exports = (router) => {
   router.put('/:pid', (req, res) => {
     const prj = data[req.params.pid];
     if (prj) {
-      Object.assign(prj, req.body || {});
+      Object.assign(prj, req.body);
       res.json(prj);
     } else {
       res.status(404).send(`Project ${req.params.pid} not found`);
@@ -66,7 +66,7 @@ module.exports = (router) => {
     if (prj) {
       const task = prj.tasks[req.params.tid];
       if (task) {
-        Object.assign(task, req.body || {});
+        Object.assign(task, req.body);
         res.json(task);
       } else {
         res.status(404).send(`Task ${req.params.tid} not found`);
