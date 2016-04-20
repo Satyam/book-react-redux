@@ -33,7 +33,7 @@ module.exports = (router) => {
     }
   });
 
-  router.post('/projects', (req, res) => {
+  router.post('/', (req, res) => {
     const pid = nextId++;
     const prj = Object.assign({name: '', descr: ''}, req.body || {});
     data[pid] = prj;
