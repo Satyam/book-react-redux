@@ -249,7 +249,7 @@ describe('Server testing', () => {
               expect(response.headers['content-type']).to.contain('application/json');
               const data = response.data;
               expect(data.descr).to.be.equal('some task');
-              expect(data.object).to.be.false;
+              expect(data.completed).to.be.false;
             });
         });
 
