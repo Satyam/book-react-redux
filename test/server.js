@@ -135,7 +135,7 @@ describe('Server testing', () => {
           },
           (response) => {
             expect(response.status).to.equal(404);
-            expect(response.data).to.equal('Task 99 not found');
+            expect(response.data).to.equal('Task 99 in project 34 not found');
           }
         );
     });
@@ -148,7 +148,7 @@ describe('Server testing', () => {
           },
           (response) => {
             expect(response.status).to.equal(404);
-            expect(response.data).to.equal('Project 99 not found');
+            expect(response.data).to.equal('Task 99 in project 99 not found');
           }
         );
     });
@@ -166,7 +166,7 @@ describe('Server testing', () => {
     });
 
     it('Put on /projects/99 should fail', () => {
-      return http.put('/99')
+      return http.put('/99', { descr: '' })
        .then(
          (response) => {
            throw new Error('Should not have found it');
@@ -179,27 +179,27 @@ describe('Server testing', () => {
     });
 
     it('Put on /projects/34/99 should fail', () => {
-      return http.put('/34/99')
+      return http.put('/34/99', { descr: '' })
        .then(
          (response) => {
            throw new Error('Should not have found it');
          },
          (response) => {
            expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Task 99 not found');
+           expect(response.data).to.equal('Task 99 in project 34 not found');
          }
        );
     });
 
     it('Put on /projects/99/99 should fail', () => {
-      return http.put('/99/99')
+      return http.put('/99/99', { descr: '' })
        .then(
          (response) => {
            throw new Error('Should not have found it');
          },
          (response) => {
            expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Project 99 not found');
+           expect(response.data).to.equal('Task 99 in project 99 not found');
          }
        );
     });
@@ -225,7 +225,7 @@ describe('Server testing', () => {
          },
          (response) => {
            expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Task 99 not found');
+           expect(response.data).to.equal('Task 99 in project 34 not found');
          }
        );
     });
@@ -238,7 +238,7 @@ describe('Server testing', () => {
          },
          (response) => {
            expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Project 99 not found');
+           expect(response.data).to.equal('Task 99 in project 99 not found');
          }
        );
     });
@@ -257,16 +257,22 @@ describe('Server testing', () => {
           const data = response.data;
           expect(data).to.be.an.object;
           expect(data.pid).to.exist;
-          pid = data.pid;
+          pid = String(data.pid);
         });
       });
 
       afterEach('Delete the project', () => {
         return http.delete(`/${pid}`)
-          .then((response) => {
-            expect(response.status).to.equal(200);
-            expect(response.headers['content-length']).to.equal('0');
-          });
+          .then(
+            (response) => {
+              expect(response.status).to.equal(200);
+              expect(response.headers['content-length']).to.equal('0');
+            },
+            (response) => {
+              expect(response.status).to.equal(404);
+              expect(response.data).to.equal(`Project ${pid} not found`);
+            }
+          );
       });
 
       it('New project should exist', () => {
@@ -282,8 +288,33 @@ describe('Server testing', () => {
           });
       });
 
+      it('Deleted project should be gone', () => {
+        return http.delete(`/${pid}`)
+          .then((response) => {
+            expect(response.status).to.equal(200);
+            expect(response.headers['content-length']).to.equal('0');
+            return http.get(`/${pid}`);
+          })
+          .then(
+            (response) => {
+              throw new Error('Should not have found it');
+            },
+            (response) => {
+              expect(response.status).to.equal(404);
+              expect(response.data).to.equal(`Project ${pid} not found`);
+            }
+          );
+      });
+
       it('Change the project name', () => {
         return http.put(`/${pid}`, {name: 'changed name'})
+          .then((response) => {
+            expect(response.status).to.equal(200);
+            expect(response.headers['content-type']).to.contain('application/json');
+            const data = response.data;
+            expect(data.pid).to.equal(pid);
+            return http.get(`/${pid}`);
+          })
           .then((response) => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
@@ -297,6 +328,13 @@ describe('Server testing', () => {
 
       it('Change the project description', () => {
         return http.put(`/${pid}`, {descr: 'changed description'})
+          .then((response) => {
+            expect(response.status).to.equal(200);
+            expect(response.headers['content-type']).to.contain('application/json');
+            const data = response.data;
+            expect(data.pid).to.equal(pid);
+            return http.get(`/${pid}`);
+          })
           .then((response) => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
@@ -346,6 +384,13 @@ describe('Server testing', () => {
 
         it('Mark the task completed', () => {
           return http.put(`/${pid}/${tid}`, {completed: true})
+          .then((response) => {
+            expect(response.status).to.equal(200);
+            expect(response.headers['content-type']).to.contain('application/json');
+            const data = response.data;
+            expect(data.pid).to.equal(pid);
+            return http.get(`/${pid}/${tid}`);
+          })
           .then((response) => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
