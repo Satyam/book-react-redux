@@ -7,6 +7,6 @@
     "semi": [1, "always"]
   },
   "globals": {
-    "data": false
+    "db": false
   }
 }

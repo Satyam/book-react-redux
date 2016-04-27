@@ -10,7 +10,8 @@
     "coverage": "istanbul cover node_modules/.bin/_mocha"
   },
   "myWebServer": {
-    "port": 8080
+    "port": 8080,
+    "host": "http://localhost"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,8 @@
     "axios": "^0.9.1",
     "body-parser": "^1.15.0",
     "cookie-parser": "^1.4.1",
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "sqlite3": "^3.1.3"
   },
   "devDependencies": {
     "chai": "^3.5.0",

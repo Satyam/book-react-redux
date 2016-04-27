@@ -4,33 +4,52 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const sqlite3 = require('sqlite3').verbose();
 
 const server = http.createServer(app);
 
-module.exports = server;
-
 const PORT = process.env.npm_package_myServerApp_port || 8080;
 
-fs.readFile(path.join(__dirname, 'data.json'), (err, data) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-  global.data = JSON.parse(data);
+app.use('/data', bodyParser.json());
 
-  app.use('/data', bodyParser.json());
+const projectsRouter = express.Router();
+app.use('/data/v1/projects', projectsRouter);
 
-  const projectsRouter = express.Router();
-  app.use('/data/v1/projects', projectsRouter);
+const projects = require('./projects.js');
 
-  const projects = require('./projects.js');
-  projects(projectsRouter);
+app.use(express.static(path.join(__dirname, '../public')));
 
-  app.use(express.static(path.join(__dirname, '../public')));
-
-  if (require.main === module) {
-    server.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}/`);
+const webServer = {
+  start: (done) => {
+    global.db = new sqlite3.Database(':memory:', (err) => {
+      if (err) return done(err);
+      fs.readFile(path.join(__dirname, 'data.sql'), 'utf8', (err, data) => {
+        if (err) return done(err);
+        db.exec(data, (err) => {
+          if (err) return done(err);
+          projects(projectsRouter, (err) => {
+            if (err) return done(err);
+            server.listen(PORT, () => {
+              console.log(`Server running at http://localhost:${PORT}/`);
+              done();
+            });
+          });
+        });
+      });
     });
-  };
-});
+  },
+  stop: (done) => {
+    server.close(done);
+  }
+};
+
+module.exports = webServer;
+
+if (require.main === module) {
+  webServer.start((err) => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
+}
