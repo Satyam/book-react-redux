@@ -99,6 +99,9 @@ Functions    : 100% ( 0/0 )
 Lines        : 95% ( 76/80 )
 ================================================================================
 ```
+### Linting
+
+If we now run our linter, we will get thousands of errors, all of them from the folder used for the output of Istanbul. The `.gitignore` file that GitHub produced for us already knows about Istanbul and similar tools [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.gitignore#L14) so GIT won't bother uploading those files.  We need to do something similar for ESLint.  By providing a `.eslintignore` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.eslintignore) listing the file and folder patterns of files we don't want checked, we can tell ESLint to ignore those files.
 
 ## Summary
 
