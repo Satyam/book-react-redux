@@ -85,7 +85,7 @@ module.exports = (router, done) => {
     createProject.run({
       $name: req.body.name,
       $descr: req.body.descr
-    }, (err) => {
+    }, function (err) {
       if (err) {
         res.status(500).send(err);
         return;
@@ -108,7 +108,7 @@ module.exports = (router, done) => {
         $descr: req.body.descr || '',
         $completed: req.body.completed || 0,
         $pid: req.params.pid
-      }, (err) => {
+      }, function (err) {
         if (err) {
           res.status(500).send(err);
           return;
@@ -127,7 +127,7 @@ module.exports = (router, done) => {
       $name: req.body.name,
       $descr: req.body.descr,
       $pid: req.params.pid
-    }, (err) => {
+    }, function (err) {
       if (err) {
         if (err.errno === 25) {
           res.status(404).send(`project ${req.params.pid} not found`);
@@ -154,7 +154,7 @@ module.exports = (router, done) => {
       $completed: req.body.completed ? 1 : 0,
       $pid: req.params.pid,
       $tid: req.params.tid
-    }, (err) => {
+    }, function (err) {
       if (err) {
         if (err.errno === 25) {
           res.status(404).send(`Task ${req.params.tid} in project ${req.params.pid} not found`);
@@ -174,14 +174,14 @@ module.exports = (router, done) => {
   router.delete('/:pid', (req, res) => {
     deleteTasksInProject.run({
       $pid: req.params.pid
-    }, (err) => {
+    }, function (err) {
       if (err) {
         res.status(500).send(err);
         return;
       }
       deleteProject.run({
         $pid: req.params.pid
-      }, (err) => {
+      }, function (err) {
         if (err) {
           res.status(500).send(err);
           return;
@@ -199,7 +199,7 @@ module.exports = (router, done) => {
     deleteTask.run({
       $pid: req.params.pid,
       $tid: req.params.tid
-    }, (err) => {
+    }, function (err) {
       if (err) {
         res.status(500).send(err);
         return;
