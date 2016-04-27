@@ -38,6 +38,14 @@ module.exports = (router, done) => {
     if (Object.keys(req.query).length === 0) {
       selectAllProjects.all(cb);
     } else {
+      if (req.query.fields && !/^\s*\w+\s*(,\s*\w+\s*)*$/.test(req.query.fields)) {
+        res.status(400).send('Bad request');
+        return;
+      }
+      if (req.query.search && !/^\s*\w+\s*=\s*\w[\w\s]*$/.test(req.query.search)) {
+        res.status(400).send('Bad request');
+        return;
+      }
       const sql = 'select ' +
         (req.query.fields || '*') +
         ' from projects' +

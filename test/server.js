@@ -142,6 +142,18 @@ describe('Server testing', () => {
         });
     });
 
+    it('SQL injection ', function () {
+      return http.get('/?fields=* from sqlite_master;select *')
+      .then(
+        (response) => {
+          throw new Error('Should not have let it go');
+        },
+        (response) => {
+          expect(response.status).to.equal(400);
+        }
+      );
+    });
+
     it('Get on /25 should return that project', () => {
       return http.get('/25')
         .then((response) => {
