@@ -1,5 +1,3 @@
-/*global db:false */
-'use strict';
 module.exports = (router, done) => {
   const selectAllProjects = db.prepare('select * from projects', (err) => {
     if (err) return done(err);
@@ -30,13 +28,25 @@ module.exports = (router, done) => {
   });
 
   router.get('/', (req, res) => {
-    selectAllProjects.all((err, prjs) => {
+    const cb = (err, prjs) => {
       if (err) {
         res.status(500).send(err);
       } else {
         res.json(prjs);
       }
-    });
+    };
+    if (Object.keys(req.query).length === 0) {
+      selectAllProjects.all(cb);
+    } else {
+      const sql = 'select ' +
+        (req.query.fields || '*') +
+        ' from projects' +
+         (req.query.search
+           ? ' where ' + req.query.search.replace(/([^=]+)=(.+)/, '$1 like "%$2%"')
+           : ''
+         );
+      db.all(sql, cb);
+    }
   });
 
   router.get('/:pid', (req, res) => {
@@ -119,7 +129,7 @@ module.exports = (router, done) => {
   });
 
   router.put('/:pid', (req, res) => {
-    let sql = 'update projects set ' +
+    const sql = 'update projects set ' +
       Object.keys(req.body).map((column) => `${column} = $${column}`).join(',') +
      ' where pid = $pid';
 
@@ -145,7 +155,7 @@ module.exports = (router, done) => {
   });
 
   router.put('/:pid/:tid', (req, res) => {
-    let sql = 'update tasks set ' +
+    const sql = 'update tasks set ' +
       Object.keys(req.body).map((column) => `${column} = $${column}`).join(',') +
       ' where pid = $pid and tid = $tid';
 
