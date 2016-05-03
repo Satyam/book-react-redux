@@ -1,0 +1,107 @@
+/* ######### CSS for progress bar ######### */
+
+a div.progress{ /* style for progress element that gets added to each A element of a spy menu when the "enableprogress" option is enabled and set to "progress" */
+background: #E5E5E5;
+position: absolute;
+height: 100%;
+width: 100%;
+top: 0;
+left: 0;
+z-index: -1;
+}
+
+
+/* ######### CSS for horizontal menu demo  ######### */
+
+ul.underlinemenu{
+padding: 6px 0 7px 0; /*6px should equal top padding of "ul li a" below, 7px should equal bottom padding + bottom border of "ul li a" below*/
+margin: 0;
+text-align: right; //set value to "left", "center", or "right"*/
+text-transform: uppercase;
+width: 100%;
+overflow: hidden;
+padding-bottom: 15px;
+z-index: 1000;
+position:fixed;
+top: 0;
+right: 0;
+box-shadow: 0 5px 5px #c7c7c7;
+background: rgb(255,254,249);
+background: -moz-linear-gradient(top,  rgba(255,254,249,1) 0%, rgba(249,242,182,1) 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,254,249,1)), color-stop(100%,rgba(249,242,182,1)));
+background: -webkit-linear-gradient(top,  rgba(255,254,249,1) 0%,rgba(249,242,182,1) 100%);
+background: -o-linear-gradient(top,  rgba(255,254,249,1) 0%,rgba(249,242,182,1) 100%);
+background: -ms-linear-gradient(top,  rgba(255,254,249,1) 0%,rgba(249,242,182,1) 100%);
+background: linear-gradient(to bottom,  rgba(255,254,249,1) 0%,rgba(249,242,182,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fffef9', endColorstr='#f9f2b6',GradientType=0 );
+
+
+}
+
+ul.underlinemenu li{
+display: inline;
+}
+
+ul.underlinemenu li a{
+color: #494949;
+font: bold 16px Arial;
+padding: 6px 3px 4px 3px; /*top padding is 6px, bottom padding is 4px*/
+margin-right: 10px; /*spacing between each menu link*/
+text-decoration: none;
+border-bottom: 8px solid #a7a7a7;
+
+}
+
+ul.underlinemenu li a:hover, ul.underlinemenu li a.selected{
+color: black;
+border-bottom-color: darkred;
+text-shadow: 1px 1px 1px yellow;
+}
+
+/* ######### CSS for vertical menu demo  ######### */
+
+#contentcontainer p{
+margin: 0;
+}
+
+ul.shadowblockmenu-v{
+font: bold 14px Germand;
+width: 120px; /* width of menu */
+padding: 0;
+margin: 0;
+list-style: none;
+}
+
+ul.shadowblockmenu-v li{
+margin: 0;
+margin-bottom: 5px;
+padding:0;
+width: 100%;
+}
+
+ul.shadowblockmenu-v li a{
+display:block;
+width: 100%;
+text-transform: uppercase;
+color: #494949;
+padding: 10px 15px;
+text-decoration: none;
+border-bottom: 1px solid #cacaca;
+border-right: 1px solid #cacaca; /*right border between menu items*/
+-moz-box-shadow: inset 7px 0 10px rgba(114,114,114, 0.6); /* Add inset shadow to each menu item. First 3 values in (114,114,114, 0.5) specifies rgb values, last specifies opacity */
+-webkit-box-shadow: inset 7px 0 10px rgba(114,114,114, 0.6);
+box-shadow: inset 7px 0 10px rgba(114,114,114, 0.6);
+text-shadow: 0 -1px 1px #cfcfcf; /* CSS text shadow to give text some depth */
+-moz-transition: all 0.2s ease-in-out; /* Enable CSS transition between property changes */
+-webkit-transition: all 0.2s ease-in-out;
+-o-transition: all 0.2s ease-in-out;
+-ms-transition: all 0.2s ease-in-out;
+transition: all 0.2s ease-in-out;
+}
+
+ul.shadowblockmenu-v li a:hover, ul.shadowblockmenu-v li a.selected{
+color: black;
+-moz-box-shadow: inset 7px 0 10px rgba(216,89,39, 0.5), inset 0 0 15px rgba(216,89,39, 0.6), inset 0 0 20px rgba(216,89,39, 0.8); /* Add 3 inset shadows to each menu item  */
+-webkit-box-shadow: inset 7px 0 10px rgba(216,89,39, 0.5), inset 0 0 15px rgba(216,89,39, 0.6), inset 0 0 20px rgba(216,89,39, 0.8);
+box-shadow: inset 7px 0 10px rgba(216,89,39, 0.5), inset 0 0 15px rgba(216,89,39, 0.6), inset 0 0 20px rgba(216,89,39, 0.8);
+}
