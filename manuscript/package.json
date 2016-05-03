@@ -11,9 +11,10 @@
   "dependencies": {
     "denodeify": "^1.2.1",
     "highlight.js": "^9.3.0",
+    "less": "^2.6.1",
+    "less-plugin-clean-css": "^1.5.1",
     "lodash": "^4.11.1",
     "markdown-it": "^6.0.1",
-    "markdown-it-toc-and-anchor": "^4.1.0",
     "uslug": "^1.0.4"
   }
 }

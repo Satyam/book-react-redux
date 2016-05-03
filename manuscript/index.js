@@ -7,6 +7,8 @@ const axios = require('axios');
 const unique = require('lodash/uniq');
 const denodeify = require('denodeify');
 const path = require('path');
+const less = require('less');
+const CleanCss = require('less-plugin-clean-css');
 
 const readFile = denodeify(fs.readFile);
 const writeFile = denodeify(fs.writeFile);
@@ -186,7 +188,7 @@ readFile('book.txt', 'utf8')
     };
   })
   .then((values) => writeFile(
-      '/home/satyam/book-react-redux-gh-pages/index.html',
+      'gh-pages/index.html',
       `<!DOCTYPE html>
 <html>
   <head>
@@ -222,5 +224,13 @@ readFile('book.txt', 'utf8')
 </html>
 `
     ))
-  .then(() => console.log('It\'s saved!'));
+  .then(() =>
+    readFile('./index.less', 'utf8')
+    .then((data) => less.render(data, {
+      compress: true,
+      plugins: [new CleanCss({advanced: true})]
+    }))
+    .then((output) => writeFile('gh-pages/index.css', output.css)))
+  .then(() => console.log('It\'s saved!'))
+  .catch(console.error);
 });
