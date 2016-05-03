@@ -55,7 +55,7 @@ Mocha will add serveral *global* methods such as `describe` and `it` that ESLint
 /*globals describe:false, it:false, before:false, after:false*/
 ```
 
-However, doing this on each and every test file would become tedious.  ESLint allows us to add extra `.eslintrc` files in any folder with extra configuration options. When ESLint enters a folder, it first checks for an `.eslintrc` file there and, if it finds one, it will merge the configuration options in that file with the options it is already working with.  Thus, by adding a `.eslintrc.json` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-6-1/test/.eslintrc.json) in the `/test` folder we can tell ESLint about our new *globals*. Actually, this is even easier because ESLint already knows about Mocha so we can just tell it to assume the environment these files are meant to run in is, besides NodeJS, Mocha so that it will immediately accept all of Mocha's globals.
+However, doing this on each and every test file would become tedious.  ESLint allows us to add extra `.eslintrc` files in any folder with extra configuration options. When ESLint enters a folder, it first checks for an `.eslintrc` file there and, if it finds one, it will merge the configuration options in that file with the options it is already working with.  Thus, by adding a `.eslintrc.json` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-06-01/test/.eslintrc.json) in the `/test` folder we can tell ESLint about our new *globals*. Actually, this is even easier because ESLint already knows about Mocha so we can just tell it to assume the environment these files are meant to run in is, besides NodeJS, Mocha so that it will immediately accept all of Mocha's globals.
 
 ```json
 {
@@ -115,7 +115,7 @@ We are sending an `http` `get` request on the root `'/'` and we expect the serve
 
 Axios returns a `Promise` which will be resolved when a reply arrives. The function at the `then` part of the Promise will then be called. The `then` is also chainable so it still returns a Promise which we return  so that Mocha itself can chain to it, wait for its completion and report on its success or failure.
 
-For the last test, we have to somehow turn around the normal response of Mocha because we do expect an error [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-6-1/test/server.js#L37-L47).  
+For the last test, we have to somehow turn around the normal response of Mocha because we do expect an error [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-06-01/test/server.js#L37-L47).  
 
 ```js
 it('Get /xyz should return a "page not found" error', function () {
