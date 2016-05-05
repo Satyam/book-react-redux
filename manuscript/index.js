@@ -170,11 +170,13 @@ readFile('book.txt', 'utf8')
       contents += chapter.text;
       chapter.toc.forEach((item) => {
         const l = parseInt(item.tag.substr(1), 10);
-        if (l < level) {
+        while (l < level) {
           toc += '</ul>\n';
+          level--;
         }
-        if (l > level) {
+        while (l > level) {
           toc += `<ul class="level-h${level}">`;
+          level++;
         }
         toc += `<li><a href="#${item.link}">${item.text}</a></li>\n`;
         level = l;
