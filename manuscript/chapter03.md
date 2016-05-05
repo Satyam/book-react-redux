@@ -24,18 +24,15 @@ Now we may fix some of them.  NPM suggests version `1.0.0`.  Those numbers follo
 
 Something else we might want to change is the `"main" : "index.js"` entry.  That came from the prompt `entry point: (index.js)`.  Lets change it to `"main" : "server/index.js"`. Save the change and go to a terminal/ command prompt and type `node .`.  The server will now be started.  Originally, we had to do `node server` or `node server/index.js`.  When given a folder instead of a full file name, NodeJS actually looks first for a file called `package.json` for the `main` entry and if it doesn't find it, only then it goes searching for an `index.js` which is what we've been doing so far.  Now that we do have a `package.json` we can let NodeJS find it for us.  Note the dot at the end of `node .`, otherwise, NodeJS runs in interactive mode and prompts us for input.
 
-The main entry point declared in `package.json` is mostly used for libraries, that is, when your code is meant to be depended upon, not when doing an application.  To start running an application, it is much better to use the `scripts.start` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-01/package.json#L7) property.
+The main entry point declared in `package.json` is mostly used for libraries, that is, when your code is meant to be depended upon, not when doing an application.  To start running an application, it is much better to use the `scripts.start` property.
 
-```json
-"scripts": {
-  "start": "node server/index.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-01/package.json#L6-L9)
 
 The `npm init` command already created a `scripts.test` property which we will use later on.  We simply add the `start` entry whose value is the command to start the server.  Then we can do:
 
-`npm start`
+```bash
+npm start
+```
 
 and the server will start.  Using the `npm start` command for running applications is  the recommended way. Most developers, when looking at your application, on seeing a `package.json` file will expect to find the command to start your application there.
 
@@ -45,19 +42,13 @@ There are also a series of *pre* and *post* entries that, if found, will be exec
 
 There is an extra benefit of running commands from NPM.  All of the information in the `package.json` file will be available to the program being run with the `npm_package_` prefix with underscores instead of dots separating the properties.  For example, you can read `npm_package_version` or `npm_package_scripts_start`.  
 
-You can freely add your own properties though, to avoid conflicts with existing options, it is better to use your own property object name. The `config` property already exists so avoid using that one.  Existing properties are all lowercase so mixing some uppercase characters is a good idea, for example [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-01/package.json#L10-L12):
+You can freely add your own properties though, to avoid conflicts with existing options, it is better to use your own property object name. The `config` property already exists so avoid using that one.  Existing properties are all lowercase so mixing some uppercase characters is a good idea, for example:
 
-```json
-"myWebServer": {
-  "port": 8080
-},
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-01/package.json#L10-L12)
 
-Our server program [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-01/server/index.js#L3) can now have:
+Our server program can now have:
 
-```js
-const PORT = process.env.npm_package_myWebServer_port || 8080;
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-01/server/index.js#L3)
 
 This will allow other team members to easily find configuration options without having to go looking into the source files.
 
@@ -66,7 +57,9 @@ This will allow other team members to easily find configuration options without 
 
 As mentioned earlier, NodeJS comes with some packages pre-installed such as `http` which we have used earlier.  For extra packages, we have to use NPM to install them.  For [Express](https://www.npmjs.com/package/express), we do:
 
-`npm install express --save`
+```bash
+npm install express --save
+```
 
 The command `npm install` will look for the package name in the [NPM registry](https://www.npmjs.com/) and, if found, download and install it. The name given in the command should be exactly as in the heading of the entry in the NPM registry for Express it should be [express](https://www.npmjs.com/package/express).  The `--save` option instructs the installer to save the reference to that package in our `package.json` file.  If we take a look at it, we may see that it now has the following added:
 
@@ -84,7 +77,7 @@ Now you will find an extra folder in your project called `node_modules` and insi
 
 Let us add some other packages.  The following are optional sub-modules of Express itself which we will use later on.  Do:
 
-```
+```bash
 npm install body-parser --save
 npm install cookie-parser --save
 ```
@@ -103,7 +96,7 @@ and the `node_modules` folder will contain a folder for each of those extra pack
 
 One of the benefits of the `package.json` files is that it records all the dependencies so that anyone can recall them.  Lets go and delete the `node_modules` folder. Now, we don't have any of the dependencies. However, we still have the `package.json` file so we can reestablish all the dependencies.  If we now do:
 
-```
+```bash
 node install
 ```
 
@@ -117,29 +110,21 @@ ESLint is the third generation of linters for JavaScript.  The first one, [JSLin
 
 Do:
 
-`npm install eslint --save-dev`
-
-We have used the `--save-dev` option instead of simply `--save`.  This means that this package dependency is meant to help us in development, not for the final product. Using the `--production` option when doing `npm install` will not install them (the default is to install all dependencies). In `package.json` we now have [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/package.json#L35-L39):
-
-```json
-"devDependencies": {
-  "eslint": "^2.8.0"
-}
+```sh
+npm install eslint --save-dev
 ```
 
-Let us go and add another script to `package.json` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/package.json#L8):
+We have used the `--save-dev` option instead of simply `--save`.  This means that this package dependency is meant to help us in development, not for the final product. Using the `--production` option when doing `npm install` will not install them (the default is to install all dependencies). In `package.json` we now have:
 
-```json
-"scripts": {
-  "start": "node server/index.js",
-  "lint": "eslint . || exit 0",
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/package.json#L35-L40)
+
+Let us go and add another script `lint` to `package.json`:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/package.json#L6-L10)
 
 If we now do:
 
-```
+```sh
 npm run lint
 ```
 
@@ -147,23 +132,15 @@ We will get one fatal error message on the first `const` because it is an ES6 ke
 
 To tell ESLint what we want it to do we need to add a *rules* file.  We can write one of our own or pick one of several standard ones available in the NPM registry, for example:
 
-`npm install eslint-config-standard --save-dev`
+```sh
+npm install eslint-config-standard --save-dev
+```
 
 Though this ESLint rule set is named `standard` there is no actual standard backing it.  It is a reasonable compilation of many often-used rules but it is not endorsed by any standards body or group.  However, it wouldn't be bad if it were.
 
-This downloads and installs the rules, but it does not tell ESLint that it should follow them.  There are various ways to do that.  In this book we will  add a configuration file `.eslintrc.json` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/.eslintrc.json) containing:
+This downloads and installs the rules, but it does not tell ESLint that it should follow them.  There are various ways to do that.  In this book we will  add a configuration file `.eslintrc.json`  containing:
 
-```json
-{
-  "extends": "standard",
-  "env": {
-    "node": true
-  },
-  "rules": {
-    "semi": [1, "always"]
-  }
-}
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/.eslintrc.json)
 
 This tells ESLint that
 
@@ -187,20 +164,28 @@ Usually, ESLint is installed *globally* to make it accessible directly as a comm
 
 To install applications *globally* we use the `-g` option on `npm install` and we don't use the `--save` or `--save-dev` options because we don't actually want it listed on our `package.json` file.  Thus, we would do:
 
-```
+```bash
 npm install -g eslint
 npm install -g eslint-config-standard
 ```
 
 These two commands will install both ESLint and the `standard` set of rules in a shared folder (`/usr/lib/node_modules` for Linux users).  We can still have a `.eslintrc.json` file in our home folder (`~/.eslintrc.json`) with our preferences so that we can use the `eslint .` command right from the terminal in any project and check anything anywhere with our home set of rules.
 
-We can still set per-project rules by creating a local `eslintrc` file extending our own defaults plus adding our own, as we already did [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.eslintrc.json#L2). ESLint configuration files can go on forever extending one another with the later rules overriding the previous settings.
+We can still set per-project rules by creating a local `eslintrc` file extending our own defaults plus adding our own, as we already did:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.eslintrc.json#L2)
+
+ESLint configuration files can go on forever extending one another with the later rules overriding the previous settings.
 
 ## Ignored files
 
 Looking at our GitHub repository [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/chapter-03-02) once we committed and pushed all these changes, we can see that there is no `node_modules` folder, which is a good thing since, at this point, it has about 17MB of data and it makes no sense to put a copy of all that in GitHub.  After all, the `npm install` command can easily reconstruct it from the dependencies listed in `package.json`.
 
-That trick is thanks to the `.gitignore` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.gitignore#L27) file which is a list of file patterns of files and/or folders that Git should ignore, with comments preceded by sharp `#` signs.  `node_modules` is listed down at the end of the list.  This file was produced by GitHub when we originally created our repository and asked for a `.gitignore` file for `Node` which adds NodeJS-specific entries such as `node_modules`.   
+That trick is thanks to the `.gitignore` file which is a list of file patterns of files and/or folders that Git should ignore, with comments preceded by sharp `#` signs.  
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.gitignore)
+
+`node_modules` is listed down at the end of the list.  This file was produced by GitHub when we originally created our repository and asked for a `.gitignore` file for `Node` which adds NodeJS-specific entries such as `node_modules`.   
 
 ## Summary
 

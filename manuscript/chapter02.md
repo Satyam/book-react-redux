@@ -1,47 +1,36 @@
 # Creating a simple web server
 
-NodeJS has been designed to be used primarily in web sites so creating a web server is pretty easy. In many other languages such as PHP we would need to have a web server, such as [Apache](https://httpd.apache.org/) plus the interpreter for [PHP](http://www.php.net/). Not so in NodeJS. The following code [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js) is all we need to start with:
+NodeJS has been designed to be used primarily in web sites so creating a web server is pretty easy. In many other languages such as PHP we would need to have a web server, such as [Apache](https://httpd.apache.org/) plus the interpreter for [PHP](http://www.php.net/). Not so in NodeJS. The following code is all we need to start with:
 
-```js
-const http = require('http');
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js)
 
-const PORT = 8080;
+> All the code for the book is available at [https://github.com/Satyam/book-react-redux](https://github.com/Satyam/book-react-redux) which includes [instructions](https://github.com/Satyam/book-react-redux#sample-code-for-each-chapter) on how to see or download the code for any of the chapters. You can see the original of the segments of code included in this book by clicking on the *Octocat* :octocat: icon in the frame.  The Octocat is GitHub's mascot.
 
-const server = http.createServer();
+NodeJS programs are made of *modules*, little bits of code that provide useful functionality.  NodeJS already offers a good number of such [modules](https://nodejs.org/docs/latest/api/index.html).  One of them is `http` and to load it we do:
 
-server.on('request', (req, res) => {
-  console.log(`Received request for ${req.url}`);
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.write('Hello World!\n');
-  res.end(`Received request for ${req.url}`);
-});
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L1)
 
-server.on('listening', (error) => {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log(`Server running at http://localhost:${PORT}/`);
-  }
-});
-
-server.listen(PORT);
-```
-
-> All the code for the book is available at [https://github.com/Satyam/book-react-redux](https://github.com/Satyam/book-react-redux) which includes [instructions](https://github.com/Satyam/book-react-redux#sample-code-for-each-chapter) on how to see or download the code for any of the chapters.
-
-NodeJS programs are made of *modules*, little bits of code that provide useful functionality.  NodeJS already offers a good number of such [modules](https://nodejs.org/docs/latest/api/index.html).  One of them is `http` and to load it [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L1), we use `require('http')`.  We save a reference to that module in the `http` constant.  It is usual, though not required, to name the references to the modules after the name of the module itself.
+We save a reference to that module in the `http` constant.  It is usual, though not required, to name the references to the modules after the name of the module itself.
 
 We are using the `const` keyword instead of a simple `var` because we want to make sure we don't accidentally change its contents later on.  It might surprise C programmers because in in C constants are numeric or string literals.  In JavaScript any variable can contain anything, numbers, booleans, functions or full objects.  By declaring it as `const` we just mean that we want to protect it from accidental changes later on.
 
-`PORT` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L3) is more of a traditional constant in the C sense, a plain numeric value.  Following the regular convention, we use an all-uppercase name for it.  This is not mandatory, just a convention.  The `PORT` will be the part after the `:` in the URL:
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L3)
+
+`PORT` is more of a traditional constant in the C sense, a plain numeric value.  Following the regular convention, we use an all-uppercase name for it.  This is not mandatory, just a convention.  The `PORT` will be the part after the `:` in the URL:
 
 `http://localhost:8080`
 
-We might already have an active web server running on our machine which will be listening in the standard port number of 80.  We don't want to interfere with your existing web server so we put ours to listen on another port.  The low port numbers (below 1024) are mostly reserved for [well known services](https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports).  It is customary to use 8080 for temporary test web servers.  If we get an error stating that the port is already in use, simply use some other number.
+We might already have an active web server running on our machine which will be listening in the standard port number of 80.  We don't want to interfere with any existing web server so we put ours to listen on another port.  The low port numbers (below 1024) are mostly reserved for [well known services](https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports).  It is customary to use 8080 for temporary test web servers.  If we get an error stating that the port is already in use, we can simply use some other number.
 
-The `http.createServer` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L5) function creates an instance of a web server, which we save into the variable `server` declared as a constant to keep it safe.
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L5)
 
-We want to know when our server receives any request, that is, a user has navigated to an URL on this web server.  So, we tell [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L7-L12) the `server` that `on` receiving a `'request'` it should let us know.  It will do so by calling the function we provide.  We are using [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions) which were incorporated in ECMAScript 2015 or *ES6* as it is often called (`const` is also new to ES6). Basically, the two fragments below are more or less equivalent:
+The `http.createServer`  function creates an instance of a web server, which we save into the variable `server` declared as a constant to keep it safe.
+
+We want to know when our server receives any request, that is, a user has navigated to an URL on this web server.  So, we tell  the `server` that `on` receiving a `'request'` it should let us know.  
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L7-L12)
+
+It will do so by calling the function we provide.  We are using [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions) which were incorporated in ECMAScript 2015 or *ES6* as it is often called (`const` is also new to ES6). Basically, the two fragments below are more or less equivalent:
 
 ```js
 (req, res) => {
@@ -49,19 +38,27 @@ We want to know when our server receives any request, that is, a user has naviga
 function (req, res) {
 ```
 
-So, for each request our web server receives it will call our function providing it with two arguments, a request `req`, containing information about the request such as the URL (`req.url`) or the headers.  It also provides a response object `res` that allows us to return a response to the browser.
+So, for each request our web server receives it will call our function providing it with two arguments, a request `req`, containing information about the request just received such as the URL (`req.url`) or the headers.  It also provides a response object `res` that allows us to return a response to the browser.
 
 We use `res.writeHead` to start the reply to the browser by giving it the 200 HTTP response code for Ok, then we add one header to change the default `Content-Type` of `text/html`.  We want to send back plain text instead of HTML so we change it to `text/plain`.
 
 With `res.write` we start sending the text we mean to show on the browser. The *response* object `res` will keep accepting text as long as we keep writing into it.  To tell it we are done we do a final call to `res.end`. We are using the same [template string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/template_strings) as in the earlier `console.log` where we tell JavaScript to interpolate the value of `req.url` into the template.
 
-We also want to know when the server becomes ready to start listening [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L14-L20) so we ask the `server` that `on` `'listening'`, it should let us know by calling the function we provide.  This is also an *arrow function*. It receives an `error` argument which, if not null, will contain an error message, otherwise, it means the server is ready.
+We also want to know when the server becomes ready to start listening so we ask the `server` that `on` `'listening'`, it should let us know by calling the function we provide.  
 
-Finally [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L22) we tell the `server` we want to `listen` on the given `PORT`.  
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L14-L20)
 
-You might have noticed in some of the links above (the ones with the OctoCat :octocat:) that they point  to highlighted lines or ranges of lines in the sample code in GitHub.  This is just one of many features in GitHub that makes it great when doing development in teams, we can use these links to talk about code with other people, as we are doing here.
+This is also an *arrow function*. It receives an `error` argument which, if not null, will contain an error message, otherwise, it means the server is ready.
 
-We can run this brief script by typing `node server`.  Since `server` is a folder, NodeJS will try to run a file named `index.js`.  The program will soon print `Server running at http://localhost:8080/`.
+Finally we tell the `server` we want to `listen` on the given `PORT`.  
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js#L22)
+
+If you clicked in any of the OctoCat :octocat: links above you might have noticed that they point  to highlighted lines or ranges of lines in the sample code in GitHub.  This is just one of many features in GitHub that makes it great when doing development in teams, we can use these links to talk about code with other people, as we are doing here.
+
+We can run this brief script by typing `node server`.  Since `server` is a folder, NodeJS will try to run a file named `index.js`.  The program will soon print
+
+`Server running at http://localhost:8080/`.
 
 Now, if we go to a browser and navigate to that URL, the server script will print:
 
@@ -135,31 +132,11 @@ In our sample web server, we call several functions within the `server` instance
 
 Using those references to the very same object they belong to allow for what is called *chaining* where we can chain one function call right after the other.
 
-We can see this in action in the following example [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-02/server/index.js):
+We can see this in action in the following example:
 
-```js
-const http = require('http');
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-02/server/index.js)
 
-const PORT = 8080;
-
-http.createServer()
-  .on('request', (req, res) => {
-    console.log(`Received request for ${req.url}`);
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.write('Hello World!\n');
-    res.end(`Received request for ${req.url}`);
-  })
-  .on('listening', (error) => {
-    if (error) {
-      console.error(error);
-    } else {
-      console.log(`Server running at http://localhost:${PORT}/`);
-    }
-  })
-  .listen(PORT);
-```
-
-It is our very same web server changed to use chaining.  First thing to notice is that we are no longer declaring a variable `server`.  The `http.createServer()` function already returns an instance of an HTTP server and all the functions, such as `on` that would otherwise have nothing better to return, keep returning references to the same HTTP server instance they belong to.  We have chained several operations one after another to the same instance.
+It is our very same web server changed to use chaining.  First thing to notice is that we are no longer declaring a variable `server`.  The `http.createServer()` function already returns an instance of an HTTP server and all the functions, such as `on`, that would otherwise have nothing better to return, keep returning references to the same HTTP server instance they belong to.  We have chained several operations one after another to the same instance.
 
 Good styling dictates that when doing chaining the chained functions (`.on` or `.listen`) to start with the dot on a separate line indented one position from the original source of the object instance.  All functions chained to the same object should be at the same depth.  Also note that there are no semicolons at the end of the chained functions because otherwise the statement would be finished and the object reference lost.
 
@@ -167,23 +144,9 @@ You might expect `res` to be similarly chainable but, unfortunately it is not. t
 
 ## ... and finally
 
-We can shorten our code even more [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-03/server/index.js):
+We can shorten our code even more:
 
-```js
-const http = require('http');
-
-const PORT = 8080;
-
-http.createServer((req, res) => {
-    console.log(`Received request for ${req.url}`);
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.write('Hello World!\n');
-    res.end(`Received request for ${req.url}`);
-  })
-  .listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
-  });
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-03/server/index.js):
 
 Subscribing to the `request` and `listening` events is such a frequent thing to do that the developers of the `http` module have made it easier, we just pass the request handler function to the `createServer` method and the `listening` callback to the `listen` method.  Also, we don't actually need to check for the `error` argument because most of the errors at that stage simply produce fatal errors and the application will terminate before we have any chance to do something about it.
 

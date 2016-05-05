@@ -2,54 +2,33 @@
 
 We will modify our previous web server [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-03/server/index.js) to use Express:
 
-```js
-const http = require('http');
-const express = require('express');
-const app = express();
-
-const PORT = process.env.npm_package_myServerApp_port || 8080;
-
-app.get('*', (req, res) => {
-  console.log(`Received request for ${req.url}`);
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.write('Hello World!\n');
-  res.end(`Received request for ${req.url}`);
-});
-
-http.createServer(app)
-  .listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
-  });
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js)
 
 It really doesn't look that much different, we can actually see the difference [(:octocat:)](https://github.com/Satyam/book-react-redux/commit/aecc6b2b8c800f3be18ab90ac1b03da4c1d63075#diff-0861d6d6b50d7d695344bf2d86d6e5e6) in GitHub.
 
-First [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js#L2-L3) we load the Express package into the constant `express` and then create an instance of the Express server by running the default function in the package, which we store in `app`.
+First we load the Express package into the constant `express` and then create an instance of the Express server by running the default function in the package, which we store in `app`.
 
-That `app` will handle the requests for us.  When we call `createServer`, instead of providing a function to handle the `'request'` event as we did before [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-03/server/index.js#L5), we let the Express request handler `app` to do it for us [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js#L14).
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js#L2-L3)
+
+That `app` will handle the requests for us.  When we call `createServer`, instead of providing a function to handle the `'request'` event as we did before [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-02-03/server/index.js#L5), we let the Express request handler `app` to do it for us:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js#L14)
 
 That allows us to use the [Express router](http://expressjs.com/en/guide/routing.html).  There are four basic methods in the `app` object that corresponds to HTTP request methods: `app.get`, `app.post`, `app.put` and `app.delete`. These methods register a callback function to listen to a particular type of request. Each gets as its arguments the path they should respond to and the function to call back when the path is matched.
 
-Here [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js#L7), we have used `app.get` which is the standard request you get when navigating to a URL.  The first argument is a wildcard `'*'` which means we want any request, the second is the very same arrow function we used earlier.  It still receives the very same `req` and `res` objects as before, but greatly augmented with very many extra properties and methods.   Using those new methods, we could now write our callback function like this [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-02/server/index.js#L11-L16):
+Here, we have used `app.get` which is the standard request you get when navigating to a URL.  
 
-```js
-app.get('*', (req, res) => {
-  console.log(`Received request for ${req.url}`);
-  res.type('text')
-    .status(200)
-    .send(`Received request for ${req.url}`);
-});
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js#L7)
+
+The first argument is a wildcard `'*'` which means we want to respond to a request for any URL, the second is the very same arrow function we used earlier.  It still receives the very same `req` and `res` objects as before, but greatly augmented with very many extra properties and methods.   Using those new methods, we could now write our callback function like this:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-02/server/index.js#L11-L16)
 
 The first thing to highlight is that the new methods are now chainable. The `type` method allows us to set the content type in a far easier way than `writeHead` did and likewise with `status`. Though the `send` method doesn't look that much different from `write` or `end` it is actually able to do some extra magic which we will use later on.
 
-There is no limit to the number of routes you can register with the router.  We have added a couple of extra routes [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-02/server/index.js#L7-L9):
+There is no limit to the number of routes you can register with the router.  We have added a couple of extra routes:
 
-```js
-app.get('/hello', (req, res) => res.send('Hi, long time no see!'));
-
-app.get('/bye', (req, res) => res.send('See you later'));
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-02/server/index.js#L7-L9)
 
 Now, if we navigate to `http://localhost:8080/hello` we will get `Hi, long time no see!` and if we go to `http://localhost:8080/bye` we get `See you later`. Since we haven't used neither `type` or `status`, Express will assume the default `text/html` content type and a 200 response status code. Since now the reply is HTML, the browser will show it in a different typeface than it did with the `text/plain` response.
 
@@ -61,27 +40,21 @@ The router also supports a [limited form](http://expressjs.com/en/guide/routing.
 
 ## Request parameters
 
-It would be impossible to plan for routes matching all possible queries with variable parts.  Express allows for parameters [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-03/server/index.js#L7) within the routes.
+It would be impossible to plan for routes matching all possible queries with variable parts.  Express allows for parameters within the routes.
 
-```js
-app.get('/hello/:name', (req, res) => res.send(`Hi ${req.params.name}, long time no see!`));
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-03/server/index.js#L7)
 
 A segment of a path with a leading colon `:` and up to the next slash `/` represents a parameter. Express will accept anything in that position and will save it in the `req.params` object under the given parameter name.  The above will match `http://localhost:8080/hello/John` and reply with `Hi John, long time no see!`, however it will not match our previous `http://localhost:8080/hello` because there is no `/:name` parameter.  Parameters must be there for the route to match. However, a question mark `?` after the parameter name makes it optional.
 
-Express will also accept any mix [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-03/server/index.js#L9) of fixed and variable parts:
+Express will also accept any mix of fixed and variable parts:
 
-```js
-app.get('/elect/:fname/:lname?/for/:position', (req, res) => res.send(req.params));
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-03/server/index.js#L9)
 
 With such a route, navigating to `http://localhost:8080/elect/joe/doe/for/mayor` will produce `{"fname":"joe","lname":"doe","position":"mayor"}` and it will also accept `http://localhost:8080/elect/joe/for/mayor` resulting in `{"fname":"joe","position":"mayor"}`. The `send` method is smart enough to convert the `req.params` object to JSON when sending it.
 
-Express will also look for query parameters [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-03/server/index.js#L11) (the part of the URL after the question mark). Query parameters do not affect the route.
+Express will also look for query parameters (the part of the URL after the question mark). Query parameters do not affect the route.
 
-```js
-app.get('/search', (req, res) => res.send(`You are searching for "${req.query.q}"`));
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-03/server/index.js#L11)
 
 In response to `http://localhost:8080/search?q=whatever`, it will respond with `You are searching for "whatever"`.  In response to `http://localhost:8080/search ` it will reply `You are searching for "undefined"`.
 
@@ -101,19 +74,14 @@ The `path.join` function is part of NodeJS but it is not loaded by default so we
 
 We have dropped the wildcard route at the end of the list of routes because we are now serving actual files for everything but our matched routes or returning a `404 Not Found` error otherwise.  We now have a home page at `/public/index.html` [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/chapter-04-04/public). We could also put a `favicon.ico` there so it gets shown in the address bar.
 
-We will add more middleware to our server which we first load [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L5-L6):
+We will add more middleware to our server which we first load:
 
-```js
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L5-L6)
 
-and then use [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L12-L13):
 
-```js
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(cookieParser());
-```
+and then use:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L12-L13)
 
 Unlike the `express.static` middleware, we put these two before our dynamic routes because we want them to have the request processed for any request. They don't send anything back to the browser. They act like filters, pre-processing the information received before it gets acted upon.
 
@@ -123,31 +91,25 @@ The body can be sent encoded in various ways and the `body-parser` middleware pr
 
 ## Reading data from a form
 
-Our home page now has a form [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/public/index.html#L10-L12) with a single input field in it:
+Our home page now has a form with a single input field in it:
 
-```html
-<form method="post" action="form">
-  <input name="field1"/>
-</form>
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/public/index.html#L10-L12)
 
-The value of that field will be posted to the `/form` path, where we can read it [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L23):
+The value of that field will be posted to the `/form` path, where we can read it:
 
-```js
-app.post('/form', (req, res) => res.send(`You have entered "${req.body.field1}"`));
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L23)
 
 Here we have used `app.post` instead of `app.get` as we've done so far since that is the method declared in the `<form method="post">` tag.
 
-Middleware can also be restricted to respond to specific routes.  For example, all our data *post*s and *put*s will go in JSON to the `/data` route so we limit our decoding to just that route [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L10) leaving the rest to be url-decoded:
+Middleware can also be restricted to respond to specific routes.  For example, all our data *post*s and *put*s will go in JSON to the `/data` route so we limit our decoding to just that route leaving the rest to be url-decoded:
 
-```js
-app.use('/data', bodyParser.json());
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L10)
 
 We have also added the [`cookie-parser`](https://github.com/expressjs/cookie-parser) middleware which reads the cookies we might have sent in earlier responses via [`res.cookie`](http://expressjs.com/en/api.html#res.cookie) and makes them available in the `req.cookies` object.
 
-We now have [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L25-L36) the `http://localhost:8080/cookie` path to read and increment the `chocolateChip` cookie count and `http://localhost:8080/naughtyChild` to clear it.
+We now have the `http://localhost:8080/cookie` path to read and increment the `chocolateChip` cookie count and `http://localhost:8080/naughtyChild` to clear it.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L25-L36)
 
 ## Summary
 

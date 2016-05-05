@@ -50,26 +50,15 @@ Optional query parameters should also be specified such as those that allow quer
 
 For the time being, we will store our information in memory.  This is certainly not practical for any real-life application, but it will help us concentrate on issues other than data storage. Our data comes from a JSON file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/data.json) which we will read and keep in memory.
 
-We need to load [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L6) the [File System](https://nodejs.org/docs/latest/api/fs.html) package which is included in the NodeJS distribution so we don't need to install it via NPM.
+We need to load the [File System](https://nodejs.org/docs/latest/api/fs.html) package which is included in the NodeJS distribution so we don't need to install it via NPM.
 
-```js
-const fs = require('fs');
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L6)
 
-We then use the `readFile` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L10) method to read the full file.  To compose the pathname to the file we use the [`path.join`](https://nodejs.org/docs/latest/api/path.html#path_path_join_path1_path2) method in a similar way we did when we set the folder to fetch static content from.
+We then use the `readFile` method to read the full file.  
 
-```js
-fs.readFile(path.join(__dirname, 'data.json'), (err, data) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-  global.data = JSON.parse(data);
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L10-L16)
 
-  // ... rest of code
-
-});
-```
+To compose the pathname to the file we use the [`path.join`](https://nodejs.org/docs/latest/api/path.html#path_path_join_path1_path2) method in a similar way we did when we set the folder to fetch static content from.
 
 The `readFile` method is asynchronous so we have to provide a callback for it to tell us when the read has succeeded.  In most NodeJS async methods, the first argument is an error object which, if it is not `null`, means the operation has not succeeded.  If that is the case, we show the error and exit.  Otherwise, the second argument `data` will contain the full contents of the file.  Since it is in JSON, we parse it and save it to `global.data`.
 
@@ -79,13 +68,13 @@ As it name implies, [`global`](https://nodejs.org/docs/latest/api/globals.html) 
 
 We can make our own properties globally accessible just by setting them as properties of `global`, we just have to make sure we are not colliding with an existing property.  Since we are going to use the data we've just read everywhere, it makes sense to make it globally accessible.
 
-ESLint will complain about using the global variable `data`.  ESLint knows about the standard, well-known global names for [whichever environment](http://eslint.org/docs/user-guide/configuring#specifying-environments) we are working on, that is why we specified that our environment would be `node` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/.eslintrc.json#L3-L5).  If there is anything beyond those globals, it will flag it as an *undeclared* variable, which usually signals a typo.  To prevent that, we add our own list of globals (for the time being just `data`) to `eslintrc.json` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/.eslintrc.json#L9-L11):
+ESLint will complain about using the global variable `data`.  ESLint knows about the standard, well-known global names for [whichever environment](http://eslint.org/docs/user-guide/configuring#specifying-environments) we are working on, that is why we specified that our environment would be `node`:
 
-```json
-"globals": {
-  "data": false
-}
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/.eslintrc.json#L3-L5).  
+
+If there is anything beyond those globals, it will flag it as an *undeclared* variable, which usually signals a typo.  To prevent that, we add our own list of globals (for the time being just `data`) to `eslintrc.json`:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/.eslintrc.json#L9-L11)
 
 The `false` value means we don't want this global variable written, only read.  This might sound strange, how do we set it if it is read-only?  When we set it we did `global.data = .... whatever`. ESLint doesn't mind us changing the `data` property of the `global` object, it would have complained if we did `data = ... ` even though both amount to the same thing.
 
@@ -93,53 +82,36 @@ Our earlier server code has been trimmed of all those `app.get( ... ` routes we 
 
 ## Writing a module to respond to REST requests
 
-The Express server has a default router which we have been using so far.  All those `app.get` we wrote earlier are registered with the default router which will dispatch each of the callbacks according to the full path in the URL received.  When we have many routes sharing the very same prefix, in this case `/data/v1`, it is inefficient (and boring) to repeat it over and over again.  For these cases we can create an additional router [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L19-L23) that will respond to that prefix and will deal with the rest of the path from that point on.
+The Express server has a default router which we have been using so far.  All those `app.get` we wrote earlier are registered with the default router which will dispatch each of the callbacks according to the full path in the URL received.  When we have many routes sharing the very same prefix, in this case `/data/v1`, it is inefficient (and boring) to repeat it over and over again.  For these cases we can create an additional router that will respond to that prefix and will deal with the rest of the path from that point on.
 
-```js
-const projectsRouter = express.Router();
-app.use('/data/v1/projects', projectsRouter);
-
-const projects = require('./projects.js');
-projects(projectsRouter);
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L19-L23)
 
 First, we request a new router instance from Express which we call `projectsRouter`.  We tell our instance of the Express server to `use` that router to deal with paths starting with `/data/v1/projects`.  Finally, we call `projects` and provide it with this router instance.
 
-Where did `projects` came from?  It is a module we created ourselves. We loaded it right before we used it [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L22) via:
+Where did `projects` came from?  It is a module we created ourselves. We loaded it right before we used it via:
 
-```js
-const projects = require('./projects.js');
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L22)
+
 
 The `projects` come from the file `./projects.js` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js) which we created ourselves.  When the `require` function gets a module name starting with `.` or `/` it will not search for that module in the usual places ( NodeJS built-in library or `node_modules`) but will assume you are providing a full file name to a very specific file and load that one instead.
 
 Loading modules in NodeJS is not the same as loading them in the browser via the `<script>` tag. In the browser, everything in the loaded file gets merged into whatever is already there, as if all those JavaScript files were concatenated together. This can get quite messy as all the variables declared in all files get into the same name space, possibly colliding with one another.
 
-In NodeJS when you `require` another module, you only get to see whatever the loaded file exports.  In our sample, we export a *fat arrow* function [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L3) which will receive our router instance.
+In NodeJS when you `require` another module, you only get to see whatever the loaded file exports.  In our sample, we export a *fat arrow* function which will receive our router instance.
 
-```js
-module.exports = (router) => {
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L3)
 
-Since what we exported is a function, on the other side, we can execute it [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L23):
+Since what we exported is a function, on the other side, we can execute it:
 
-```js
-projects(projectsRouter);
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L23)
 
-For example, if we receive a request for `/data/v1/projects` the `projectsRouter` will recognize it is the path it is meant to respond to and pass on the implicit `/` at the end.  We then respond to the `/` path like this [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L5-L11):
+For example, if we receive a request for `/data/v1/projects` the `projectsRouter` will recognize it is the path it is meant to respond to and pass on the implicit `/` at the end.  We then respond to the `/` path like this:
 
-```js
-router.get('/', (req, res) => {
-  res.json(Object.keys(data).map(pid => ({
-    pid: pid,
-    name: data[pid].name,
-    descr: data[pid].descr
-  })));
-});
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L5-L11)
 
-We use `Object.keys` list all the keys in the `data` object, which happen to be the `pid`s.  `Object.keys` returns an array and we use the `map` method of this Array instance.  We then use the `pid` to assemble each item in the response with the `pid` then the `name` and description `descr`.  Since `data` was set as a global earlier [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L15) we can use it freely here.
+We use `Object.keys` list all the keys in the `data` object, which happen to be the `pid`s.  `Object.keys` returns an array and we use the `map` method of this Array instance.  We then use the `pid` to assemble each item in the response with the `pid` then the `name` and description `descr`.  Since `data` was set as a global earlier we can use it freely here.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L15)
 
 We can use `res.send` instead of `res.json` since when Express is requested to send an Object or an Array, it will send it JSON-encoded.  However, it is better to state our intent as clearly as possible.
 
@@ -151,56 +123,33 @@ We can try it out by starting our server via `npm start` and then, in a browser 
 
 It might not look good but it is not meant to be seen by humans, it is meant for our client-side code to read.  
 
-For our second route [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L13-L20) `'/:pid'` we need to access the `pid` which we do by using `req.params.pid`:
+For our second route `'/:pid'` we need to access the `pid` which we do by using `req.params.pid`:
 
-```js
-router.get('/:pid', (req, res) => {
-  const prj = data[req.params.pid];
-  if (prj) {
-    res.json(prj);
-  } else {
-    res.status(404).send(`Project ${req.params.pid} not found`);
-  }
-});
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L13-L20)
 
 If we find no actual project for that number, we respond with a regular `404` HTTP response code, however, in this case it is not a page that was not found but a specific project.
 
-We respond very much the same way for the next route [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L22-L34) either with the task data or a 404 error when the project or the task is not found.
+We respond very much the same way for the next route either with the task data or a 404 error when the project or the task is not found.
 
-```js
-router.get('/:pid/:tid', (req, res) => {
-  const prj = data[req.params.pid];
-  if (prj) {
-    const task = prj.tasks[req.params.tid];
-    if (task) {
-      res.json(task);
-    } else {
-      res.status(404).send(`Task ${req.params.tid} not found`);
-    }
-  } else {
-    res.status(404).send(`Project ${req.params.pid} not found`);
-  }
-});
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L22-L34)
 
 For a POST operation, i.e.: adding a new record, we have to receive data, not send it.  We cannot receive large amounts of data via the URL as we have been doing with the few parameters we have been using so far.  To be able to receive data we need to access it from the body.
 
-We have access to `req.body` because we already loaded the `body-parser` middleware.  Since we are only going to use JSON on the REST data exchanges, we will parse JSON [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L17) only on the `/data` path.  We don't include the version part of the path since it is fair to assume that other versions would use the same data format.  Most middleware such as `body-parser` is quite versatile and tolerant.  If in a later version  we decide to use another data format, instead of failing, `body-parse` will let it go through, expecting that some later parser might deal with it.  Also, if we want to parse JSON on another path, we can add as many instances of `body-parser` elsewhere as needed.
+We have access to `req.body` because we already loaded the `body-parser` middleware.  Since we are only going to use JSON on the REST data exchanges, we will parse JSON  only on the `/data` path.  
 
-To create a new project [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L36-L41) we first try to create a new project id `pid`.  We get it from the variable `nextId` which we set at the very top of the file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L1)to a number larger than any ID in the data file.  We increment that value as soon as we read from it.  It might seem strange that we go through so much trouble to get a `pid` when we might as well push the new record into an Array of projects and figure out its position.  As it happens, we don't want to use an Array even though our indexes are numeric, because items within an array can move and what now has index 10 may become 9 after record 5 is deleted.  Though within JavaScript empty Array slots take no memory, there is no way to skip over empty slots in JSON.  We want our `pid`s and `tid`s to be permanent and not be just temporary indexes.  That is why we take the trouble of producing unique, permanent IDs.  In an SQL database, we would use an auto-increment integer field, in a noSQL database, we would take whatever unique record identifier that the database generated for us.
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L17)
 
-```js
-router.post('/projects', (req, res) => {
-  let pid = Object.keys(data).length;
-  while (pid in data) pid++;
-  let prj = Object.assign({name: '', descr: ''}, req.body || {});
-  data[pid] = prj;
-  res.json({pid: pid});
-});
-```
+We don't include the version part of the path since it is fair to assume that other versions would use the same data format.  Most middleware such as `body-parser` is quite versatile and tolerant.  If in a later version  we decide to use another data format, instead of failing, `body-parse` will let it go through, expecting that some later parser might deal with it.  Also, if we want to parse JSON on another path, we can add as many instances of `body-parser` elsewhere as needed.
 
-We count how many keys our `data` object has and try that for our `pid`.  We check whether there is already a record with that key and if there is, we increment it. This is not an optimal strategy but it is good enough for this example.
+To create a new project  we first try to create a new project id `pid`.  
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L36-L41)
+
+We get it from the variable `nextId` which we set at the very top of the file to a number larger than any ID in the data file.  
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L1)
+
+We increment that value as soon as we read from it.  It might seem strange that we go through so much trouble to get a `pid` when we might as well push the new record into an Array of projects and figure out its position.  As it happens, we don't want to use an Array even though our indexes are numeric, because items within an array can move and what now has index 10 may become 9 after record 5 is deleted.  Though within JavaScript empty Array slots take no memory, there is no way to skip over empty slots in JSON.  We want our `pid`s and `tid`s to be permanent and not be just temporary indexes.  That is why we take the trouble of producing unique, permanent IDs.  In an SQL database, we would use an auto-increment integer field, in a noSQL database, we would take whatever unique record identifier that the database generated for us.
 
 We build our new record using `Object.assign` to merge a couple of default values with the data coming from the client in `req.body`.  Since there might be no data (we might want to validate for that) we also default to an empty object.
 
@@ -208,7 +157,13 @@ We then store that project record into the array at the position given by our ne
 
 For updating records via `put` we first locate the existing record (project or task) and use `Object.assign` to merge the new values from `req.body` into the existing record.  We return an error if the record does not exist.
 
-For deleting we simply delete the whole entry.  We first try to locate the record to be deleted and return an error if not found.  We might have handled things differently.  We might not check for the existence of the record assuming that if not found it has already been deleted, which should be fine as that is what the user wanted.  We might have also returned the old record as it was before deletion though, being a potentially big piece of data, it might be a waste of bandwidth.  If the client code wanted it, it might have gotten it first.
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L54-L62)
+
+For deleting we simply delete the whole entry.  
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/projects.js#L79-L86)
+
+We first try to locate the record to be deleted and return an error if not found.  We might have handled things differently.  We might not check for the existence of the record assuming that if not found it has already been deleted, which should be fine as that is what the user wanted.  We might have also returned the old record as it was before deletion though, being a potentially big piece of data, it might be a waste of bandwidth.  If the client code wanted it, it might have gotten it first.
 
 ## Summary
 

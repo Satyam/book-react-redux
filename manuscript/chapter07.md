@@ -1,4 +1,4 @@
-## Code coverage
+# Code coverage
 
 In the previous chapter, we made a brief list of some of the things we had not checked in our test script.  Those are the *known unknowns* which is bad enough, but then, as expected, there are the *unknown unknowns*.  
 
@@ -6,7 +6,9 @@ As exhausting as writing all those tests might have been, they are not yet as ex
 
 Then, there are coding errors, most of which we have already checked, but several might lay hidden in code that rarely executes, which not even our tests have exercised.  In a compiled language, most of those are discovered at compilation time, but in an interpreted language, if one particular piece of code is never reached, it might never cause the application to fail.  A Linter certainly helps but, as compilers, they are only static checkers, they can't know what the value of the variables are going to be at the time of execution. So, the best alternative is to actually exercise each and every part of the code.
 
-Plenty of times, we check conditions in our code to make sure we only proceed when things are fine.  We may or may not have an *else* for those conditions that are invalid.  We tend to think linearly, we rarely cover all the alternatives in our minds.  What happens when those *elses* run?   Quite often, we even forget to check them.  That is exactly what we've done here, most of those *elses* [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-06-02/server/projects.js#L71-L75) returning `404` errors have not been checked.  
+Plenty of times, we check conditions in our code to make sure we only proceed when things are fine.  We may or may not have an *else* for those conditions that are invalid.  We tend to think linearly, we rarely cover all the alternatives in our minds.  What happens when those *elses* run?   Quite often, we even forget to check them.  That is exactly what we've done here, most of those *elses*  returning `404` errors have not been checked.  
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-06-02/server/projects.js#L71-L75)
 
 That is why we need a tool to check our code *coverage*. We need to make sure that our tests have gone through each end every line of code so that we are sure they all behave correctly.
 
@@ -18,13 +20,15 @@ Beyond the statistics, the uncovered parts of the code are shown highlighted in 
 
 The column to the right of the line numbers show the number of times each line has been executed.  This can also help us determine which lines are executed the most and thus can most affect our application performance.   
 
-Coverage is such a standard operation that the `.gitignore` file that GitHub automatically generated for us already lists [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-06-02/.gitignore#L13-L14) the standard folder for our coverage report.
+Coverage is such a standard operation that the `.gitignore` file that GitHub automatically generated for us already lists  the standard folder for our coverage report.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-06-02/.gitignore#L13-L14)
 
 ### Installing Istanbul
 
 To set up Istanbul we first need to load it.  Just as ESLint, we may load it globally with `npm i -g istanbul` as recommended in its [home page](https://github.com/gotwarlost/istanbul#getting-started) so we share the same copy for all our applications.  However, we can also load it locally.
 
-```
+```sh
 npm i --save-dev istanbul@1.0.0-alpha.2
 ```
 
@@ -36,20 +40,13 @@ Besides, local installs get recorded into `package.json` [(:octocat:)](https://g
 
 ### Running Istanbul
 
-To execute it, we need to add another command [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/package.json#L10) to the `scripts` section of our `package.json`:
+To execute it, we need to add another command  to the `scripts` section of our `package.json`:
 
-```json
-"scripts": {
-  "start": "node server/index.js",
-  "lint": "eslint . || exit 0",
-  "test": "mocha",
-  "coverage": "istanbul cover node_modules/.bin/_mocha"
-}
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/package.json#L6-L11)
 
 That is it.  Now, we can simply run it.
 
-```
+```sh
 npm run coverage
 ```
 
@@ -83,13 +80,15 @@ Lines        : 95% ( 76/80 )
 
 Since our source code is relatively small, any extra line of code we get covered really makes a whole lot of difference.  
 
-Another remaining uncovered branch is the default for non-existing bodies, which is repeated in several places [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-06-02/server/projects.js#L57):
+Another remaining uncovered branch is the default for non-existing bodies, which is repeated in several places:
 
-```js
- Object.assign(prj, req.body || {});
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-06-02/server/projects.js#L57)
 
-If `req.body` is `null` or `undefined`, we provide an empty object.  We haven't done any tests for PUT and POST with no data.  So, we add those tests and, surprisingly, our coverage results don't improve.  The `|| {}` alternative is never used.  What is going on?  As it turns out, the `body-parser` middleware kindly provides an empty object when none is received, thus our default is completely unnecessary. It is not that we missed a test for that condition, it is a condition that can't ever happen. When we drop those [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/server/projects.js#L57), our coverage of the branches taken improve further as we got rid of a bunch of useless code.
+If `req.body` is `null` or `undefined`, we provide an empty object.  We haven't done any tests for PUT and POST with no data.  So, we add those tests and, surprisingly, our coverage results don't improve.  The `|| {}` alternative is never used.  What is going on?  As it turns out, the `body-parser` middleware kindly provides an empty object when none is received, thus our default is completely unnecessary. It is not that we missed a test for that condition, it is a condition that can't ever happen. When we drop those:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/server/projects.js#L57)
+
+our coverage of the branches taken improve further as we got rid of a bunch of useless code.
 
 ```
 =============================== Coverage summary ===============================
@@ -99,6 +98,7 @@ Functions    : 100% ( 0/0 )
 Lines        : 95% ( 76/80 )
 ================================================================================
 ```
+
 ### Linting
 
 If we now run our linter, we will get thousands of errors, all of them from the folder used for the output of Istanbul. The `.gitignore` file that GitHub produced for us already knows about Istanbul and similar tools [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.gitignore#L14) so GIT won't bother uploading those files.  We need to do something similar for ESLint.  By providing a `.eslintignore` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.eslintignore) listing the file and folder patterns of files we don't want checked, we can tell ESLint to ignore those files.

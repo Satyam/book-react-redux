@@ -14,7 +14,7 @@ A brief itinerary of what we will go through follows, however, you may skip stra
 
 ## Base software
 
-There is some software we need to make sure we have installed.  You might already have it or not.  We'll check that in the first chapter.  To begin with we will need NodeJS. That gives us the ability to leverage our knowledge of JavaScript at both ends.  It is fair to say that JavaScript is not the only alternative on the server side, you might have already used or heard about PHP or Java but unless you have any legacy system and/or experience, nowadays JavaScript is the way to go, one single language across all the application.
+There is some software we need to make sure we have installed.  You might already have it or not.  We'll check that in the first chapter.  To begin with we will need NodeJS, which gives us the ability to leverage our knowledge of JavaScript at both ends.  It is fair to say that JavaScript is not the only alternative on the server side, you might have already used or heard about PHP or Java but unless you have any legacy system and/or experience, nowadays JavaScript is the way to go, one single language across all the application.
 
 Then, we need to create a repository on [GitHub](http://github.com). A repository is the place up in the cloud where all the development team can store and share their work.  GitHub is one major provider of such shared space. Even if we work alone, GitHub will help us to keep track of the progress of the project, report and respond to issues and keep a nice set of safe copies of our job up there in the cloud. It not only works with code, documentation can be stored there as well; after all both this book and the accompanying code are up there in GitHub.
 

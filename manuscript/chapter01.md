@@ -78,7 +78,11 @@ Finally, click on the <kbd>Create repository</kbd> button.  You can actually add
 
 So far you have the basic structure of a project but it is only up there in GitHub, you have nothing in your own computer.  The first thing we need to do is to make a local working copy of it and to do that we will *clone* it.
 
-Somewhere in the page (now it is above the file listing but it used to be on the right so, just look for it) there is a dropdown that lets you pick either <kbd>SSH</kbd> or <kbd>HTTPS</kbd> and to its right there will be a long string that looks like an URL, for example, if you select <kbd>HTTPS</kbd> you might see `https://github.com/MyUserName/MyNewRepository.git`.  Copy that string.
+Somewhere in the page (now it is above the file listing but it used to be on the right so, just look for it) there is a dropdown that lets you pick either <kbd>SSH</kbd> or <kbd>HTTPS</kbd> and to its right there will be a long string that looks like an URL, for example, if you select <kbd>HTTPS</kbd> you might see:
+
+`https://github.com/MyUserName/MyNewRepository.git`
+
+Copy that string.
 
 In a terminal, command prompt or whatever you call it in your operating system type `git clone ` and then paste the URL you copied from GitHub. The `git clone` command  will create a folder with the repository name under your current folder and  download everything in the repository.  It will also add a `.git` folder with some configuration information related to the repository.
 

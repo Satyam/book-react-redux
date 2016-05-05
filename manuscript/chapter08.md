@@ -16,7 +16,7 @@ In our earlier version, we loaded the content of the `data.json` file in memory 
 
 To load SQLite we follow the usual procedure. First, we use `npm i --save sqlite3` to download the package from the NPM registry.  Since we will use SQL in production, we use the `--save` option instead of `--save-dev` so it will be saved as a regular dependency in `package.json` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/package.json#L37).  Then, in our `server/index.js` file we add `const sqlite3 = require('sqlite3');` to load it as we have done with all the packages.  No news there.
 
-So far, the only asynchronous operation we have seriously dealt with has been to put the HTTP server to listen.  We have ignored reading the `data.json` file, which is also an asynchronous operation, because we were going to drop it.  We are now dropping it but have added some more asynchronous operations.  Now, we do the following operations [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L22-L46):
+So far, the only asynchronous operation we have seriously dealt with has been to put the HTTP server to listen.  We have ignored reading the `data.json` file, which is also an asynchronous operation, because we were going to drop it.  We are now dropping it but have added some more asynchronous operations.  Now, we do the following operations:
 
 * Connect to the SQL database
 * Load the `data.sql` file containing the database setup
@@ -24,41 +24,23 @@ So far, the only asynchronous operation we have seriously dealt with has been to
 * Setup some SQL *Prepared Statements*
 * Set the HTTP server to listen to requests
 
-```js
-const webServer = {
-  start: (done) => {
-    global.db = new sqlite3.Database(':memory:', (err) => {
-      if (err) return done(err);
-      fs.readFile(path.join(__dirname, 'data.sql'), 'utf8', (err, data) => {
-        if (err) return done(err);
-        db.exec(data, (err) => {
-          if (err) return done(err);
-          projects(projectsRouter, (err) => {
-            if (err) return done(err);
-            server.listen(PORT, () => {
-              console.log(`Server running at http://localhost:${PORT}/`);
-              done();
-            });
-          });
-        });
-      });
-    });
-  },
-  stop: (done) => {
-    server.close(done);
-  }
-};
-
-module.exports = webServer;
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L22-L46)
 
 To make all those operations available both to run the server regularly via `npm start` or to test it via `npm t` or `npm run coverage` we create a `webServer object` containing a `start` and a `stop` function.  We export that `webServer` object for the benefit of our test script.
 
-In the `start` method, we create a `new sqlite3.Database` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L24) which will be kept in memory.  We could use an actual file or pass an empty string which will tell SQLite to create a temporary file, but we don't really have that much data. We make that `db` instance global by assigning it to `global.db`.
+In the `start` method, we create a `new sqlite3.Database` which will be kept in memory.  
 
-Then, we use the FileSystem `fs` module to read `data.sql` which contains standard SQL statements to create and populate the tables to store our data.  Once read, we tell the `db` to execute `db.exec` all those statements at once [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L26-L28).  
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L24)
 
-We need to do some further setup in `server/projects.js` which is also asynchronous so we have added an extra argument to `projects`, we give it the router instance and now we also add a callback so it can tell us when it is done [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L30).
+We could use an actual file or pass an empty string which will tell SQLite to create a temporary file, but we don't really have that much data. We make that `db` instance global by assigning it to `global.db`.
+
+Then, we use the FileSystem `fs` module to read `data.sql` which contains standard SQL statements to create and populate the tables to store our data.  Once read, we tell the `db` to execute `db.exec` all those statements at once.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L26-L28)
+
+We need to do some further setup in `server/projects.js` which is also asynchronous so we have added an extra argument to `projects`, we give it the router instance and now we also add a callback so it can tell us when it is done.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L30)
 
 Finally, we set our HTTP server to listen.
 
@@ -79,82 +61,47 @@ if (err) return done(err);
 
 Since `done` returns `undefined` and a solitary `return` is like `return undefined`, our shortcut works just the same.  We have not used this kind of shortcut elsewhere because we don't know what the callback might return.
 
-For `close` we simply close the HTTP server [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L42).  Since the database is a temporary one in memory, it really doesn't matter if we close it or not.
+For `close` we simply close the HTTP server.  Since the database is a temporary one in memory, it really doesn't matter if we close it or not.
 
-To start the server [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L48-L55) in production mode using `npm start`, we have:
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L42)
 
-```js
-if (require.main === module) {
-  webServer.start(err => {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
-  });
-}
-```
+To start the server in production mode using `npm start`, we have:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L48-L55)
 
 Once again, we check if this module is the main one and, if so, we call `webServer.start` to get everything up and running.  We provide a callback function which `start` would receive as the `done` argument that, if it does receive an error, it shows it in the console and exits with an error code.
 
-We have made the function which is the default export [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L3) of `server/projects.js` an asynchronous one by adding just one more argument to it, the `done` callback. We had to do this because all SQL operations are asynchronous so at initialization time, when we setup the *prepared statements* we can let our caller know when we are done or otherwise signal an error.
+We have made the function which is the default export of `server/projects.js` an asynchronous one by adding just one more argument to it, the `done` callback. We had to do this because all SQL operations are asynchronous so at initialization time, when we setup the *prepared statements* we can let our caller know when we are done or otherwise signal an error.
 
-A prepared statement is an optimization present in most varieties of SQL which allows the SQL engine to pre-compile and possibly optimize an SQL statement for future execution. For example, `selectAllProjects` contains the prepared statement `'select * from projects'` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L3-L9).
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L3)
 
-```js
-module.exports = (router, done) => {
-  const selectAllProjects = db.prepare(
-    'select * from projects',
-    (err) => {
-      if (err) return done(err);
-    }
-  );
-  const selectProjectByPid = db.prepare(
-    'select * from projects where pid = $pid',
-    (err) => {
-      if (err) return done(err);
-    }
-  );
-  // ...
-```
+A prepared statement is an optimization present in most varieties of SQL which allows the SQL engine to pre-compile and possibly optimize an SQL statement for future execution. For example, `selectAllProjects` contains the prepared statement `'select * from projects'`.
+
+ [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L3-L9)
 
 Prepared statements can have variable parts which will be filled in when they are executed.  Variable parts can be represented in various ways, we have opted to use an identifier preceded by a `$` sign.  Thus when we want to execute `selectProjectByPid`, we have to provide an actual value for `$pid`.
 
-Now, in response to a request for `/data/v1/projects` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L3-L9), we ask the `selectAllProjects` prepared statement to give us `all` the projects it can find.  We give '/' as the path since our `projectsRouter` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L16) already passes on only the requests to `/data/v1/projects`.
+Now, in response to a request for `/data/v1/projects`, we ask the `selectAllProjects` prepared statement to give us `all` the projects it can find.  
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L32-L40)
+
+We give '/' as the path since our `projectsRouter` already passes on only the requests to `/data/v1/projects`.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L16)
 
 We call the `all` method on our `selectAllProjects` prepared statement, meaning, we want all the records it returns instead of one at a time. We provide it with a callback that will receive an error, if any, and an array containing all the projects if there is no error.  If we do get an error, we reply with a 500 HTTP error code along the text of the error or otherwise we send back those projects JSON-encoded.
 
-```js
-router.get('/', (req, res) => {
-  selectAllProjects.all((err, prjs) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.json(prjs);
-    }
-  });
-});
-```
-
 We use a 500 error code here instead of the 404 we have used so far because the only reason for an error is a serious server-side error which fits the error standard description "500: Internal Server Error".  There are plenty of standard [HTTP Status Codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) already defined that cover most needs. It is better to use the correct HTTP error code.
 
-Creating a new project via a POST to `/data/v1/projects` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L84-L95) uses parameters:
+Creating a new project via a POST to `/data/v1/projects` uses parameters:
 
-```js
-router.post('/', (req, res) => {
-  createProject.run({
-    $name: req.body.name,
-    $descr: req.body.descr
-  }, function (err) {
-    if (err) {
-      res.status(500).send(err);
-      return;
-    }
-    res.json({pid: this.lastID});
-  });
-});
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L84-L95)
 
-Here we run the `createProject` prepared statement filling in the `$name` and `$descr` variables with the corresponding information from the body of the request.  If there is an error, we report it back to the client with a 500 error code, otherwise, we get the `pid` of the newly inserted record which SQLite stores in `this.lastID` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L93).  SQLite has two such variables `lastID` which represents the row ID of the last record inserted and `changes` which returns a count of the number of records affected in an insert, update or delete statement.  There is only one copy of each per connection so they must be read immediately after the SQL operation and before any new operation is attempted.  Different SQL engines have different names for these variables but they are always there in one way or another.
+Here we run the `createProject` prepared statement filling in the `$name` and `$descr` variables with the corresponding information from the body of the request.  If there is an error, we report it back to the client with a 500 error code, otherwise, we get the `pid` of the newly inserted record which SQLite stores in `this.lastID`.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L93)
+
+SQLite has two such variables `lastID` which represents the row ID of the last record inserted and `changes` which returns a count of the number of records affected in an insert, update or delete statement.  There is only one copy of each per connection so they must be read immediately after the SQL operation and before any new operation is attempted.  Different SQL engines have different names for these variables but they are always there in one way or another.
 
 We are not using any shortcut to return when an error is found.  The following may work, but it is not safe:
 
@@ -172,20 +119,9 @@ But it lacks clarity, which is important for maintainability, unless the practic
 
 ## Building SQL statements dynamically
 
-We can't use SQL prepared statements everywhere. In an update, what is it we are updating, all of the record or just part of it? In a project, we might independently update the project name or its description.  In a task we might change the description or its completion status. Just two fields per record  would require three prepared statements, one with both SQL field names and another two, each for a separate field.  This is not acceptable.  With more fields the situation would be even worst. So, we build it dynamically [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L121-L145) by concatenating as many fields as values arrive in the request body:
+We can't use SQL prepared statements everywhere. In an update, what is it we are updating, all of the record or just part of it? In a project, we might independently update the project name or its description.  In a task we might change the description or its completion status. Just two fields per record  would require three prepared statements, one with both SQL field names and another two, each for a separate field.  This is not acceptable.  With more fields the situation would be even worst. So, we build it dynamically by concatenating as many fields as values arrive in the request body:
 
-```js
-router.put('/:pid', (req, res) => {
-  let sql = 'update projects set ' +
-    Object.keys(req.body).map((column) => `${column} = $${column}`).join(',') +
-   ' where pid = $pid';
-
-  db.run(sql, {
-    $name: req.body.name,
-    $descr: req.body.descr,
-    $pid: req.params.pid
-  }, function (err) {
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L121-L145)
 
 Since we have no prepared statement, we ask the `db` to `run` the `sql` statement we have just built by concatenating it in bits and pieces. We then provide the parameters to fill into the placeholders in the statement. If either of `name` or `descr` is `undefined` it will not show in the parameter list, but neither will it be in the statement so SQLite won't be expecting it.
 
@@ -209,11 +145,9 @@ Then, we need to run the tests via `npm t`.  These don't come good. Though 10 er
 
 The first two errors are backward-compatible, a client would not complain about those.  The last one is not. However, it is hard to see an application that would complain about it, after all, the client already has the information, the server reply was just a confirmation, an expensive one at that.  So, we opt to accept the change in behavior.  We will not be providing the changed record on our updates, if we want it, you can always ask for it, which is what we do in our tests. Instead of just expecting the data to arrive with the reply to our update, we do an additional query to verify they were properly done  [(:octocat:)](https://github.com/Satyam/book-react-redux/commit/f1fcd70b708e832e3e98872dd27728cef5eef8b5#diff-ad3c25167d0354b9b277e3ab6f375274L289).
 
-Many such changes in behavior are not so simple. The important lesson here is that to do this properly, we need to change the version number [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-02/package.json#L3) in `package.json`  from `"version": "0.1.0"` to:
+Many such changes in behavior are not so simple. The important lesson here is that to do this properly, we need to change the version number in `package.json`  from `"version": "0.1.0"` to:
 
-```json
-"version": "0.2.0"
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-02/package.json#L3)
 
 Whenever we change the first non-zero number part in our version, it means there has been a compatibility change.  If our module were to be listed as a dependency in some other `package.json` like this:
 
@@ -241,35 +175,21 @@ Within a REST request, each part has a clear function. We have dealt with most o
 
 We may add query parameters to our REST API such as search conditions or which fields to return. Often, to handle those cases we need to build the SQL statement dynamically.  However, since the query parameters are usually an exception, we will still use the generic SQL prepared statement for the usual condition and a built one for the exceptional cases.
 
-```js
-router.get('/', (req, res) => {
-  let cb = (err, prjs) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.json(prjs);
-    }
-  };
-  if (Object.keys(req.query).length === 0) {
-    selectAllProjects.all(cb);
-  } else {
-    let sql = 'select ' +
-      (req.query.fields || '*') +
-      ' from projects' +
-       (req.query.search
-         ? ' where ' + req.query.search.replace(/([^=]+)=(.+)/, '$1 like "%$2%"')
-         : ''
-       );
-    db.all(sql, cb);
-  }
-});
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-03/server/projects.js#L30-L50)
 
-We changed the route handler for the GET on `/` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-03/server/projects.js#L30-L50) to handle query parameters.  Since one way or another we are going to use the same callback for queries with or without parameters, we first define the callback function [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-03/server/projects.js#L31-L37) `cb`.
+We changed the route handler for the GET on `/` to handle query parameters.  Since one way or another we are going to use the same callback for queries with or without parameters, we first define the callback function `cb`.
 
-We check whether there are any query parameters [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-03/server/projects.js#L38).  Express already parses the query parameters and places them in an object at `req.query`. If there are none, it will give us an empty object.
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-03/server/projects.js#L31-L37)
 
-If there are no keys in `req.query` we use the `selectAllProjects` prepared statement, otherwise, we build the SQL statement into `sql` and run it [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-03/server/projects.js#L41-L48).  If there is a `fields` key, we expect it to be a comma separated list of fields to list, such as `name,descr` and we concatenate that list, otherwise, we ask for all fields `'*'`.
+We check whether there are any query parameters.  Express already parses the query parameters and places them in an object at `req.query`. If there are none, it will give us an empty object.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-03/server/projects.js#L38)
+
+If there are no keys in `req.query` we use the `selectAllProjects` prepared statement, otherwise, we build the SQL statement into `sql` and run it.  
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-03/server/projects.js#L41-L48)
+
+If there is a `fields` key, we expect it to be a comma separated list of fields to list, such as `name,descr` and we concatenate that list, otherwise, we ask for all fields `'*'`.
 
 If there is a `search` key, we assemble an SQL `where` clause.  We expect the search to be of the form `field=value` which we translate, via a regular expression, into `field like "%value%"` which is an SQL  *wildcard* search for that value anywhere within the field. This is just an example of how a search could be translated, many others would be just as good.  The REST API we are dealing with is not meant for direct human consumption so its syntax could be far more complex and/or cryptic,  after all, there will be client-side software to translate it from the user request.
 
@@ -316,20 +236,13 @@ It lists the only two elements we have created, the two tables `projects` and `t
 
 Once we know the tables available in the server, we could then issue a HTTP GET request to  `'/projects?fields=* from projects;select *'` or any other table we had and steal whatever information is within reach.
 
-This process is called SQL Injection and it is one of the main exploits to steal data from servers. We should always check the data received [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-04/server/projects.js#L41-L48).
+This process is called SQL Injection and it is one of the main exploits to steal data from servers. We should always check the data received.
 
-```js
-if (req.query.fields && !/^\s*\w+\s*(,\s*\w+\s*)*$/.test(req.query.fields)) {
-  res.status(400).send('Bad request');
-  return;
-}
-if (req.query.search && !/^\s*\w+\s*=\s*\w[\w\s]*$/.test(req.query.search)) {
-  res.status(400).send('Bad request');
-  return;
-}
-```
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-04/server/projects.js#L41-L48)
 
-Our test [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-04/test/server.js#L145-L155) now shows that trying to inject anything unexpected fails.
+Our test now shows that trying to inject anything unexpected fails.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-04/test/server.js#L145-L155)
 
 We should never trust the information coming from a remote source.  It might not actually be a user on a browser.
 
