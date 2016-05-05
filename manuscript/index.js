@@ -97,27 +97,26 @@ md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
     const file = match[1];
     const ext = path.extname(file).substr(1);
     const noFrom = typeof match[3] === 'undefined';
-    const from = noFrom ? 0 : parseInt(match[3], 10);
+    const from = noFrom ? 0 : parseInt(match[3], 10) - 1;
     const noTo = typeof match[5] === 'undefined';
     const to = noTo ? (noFrom ? undefined : from + 1) : parseInt(match[5], 10);
     var code = env.files[file].slice(from, to);
     var len = 999;
     code.forEach((line) => {
       var m = /(\s*)/.exec(line);
-      len = Math.min((m[1] || '').length, len);
+      len = Math.min(m[1].length, len);
     });
-    code = code.map((line) => line.substr(len)).join('\n');
-    const highlit = hljs.highlight(ext, code).value;
+    code = code.map((line) => line.substr(len)).join('\n').trim();
     const fileParts = file.split('/');
     const branch = fileParts.shift();
     return `<div class="header">
     <div class="link"><a href="${link}">${octocat}</a></div>
     <div class="branch">Branch: ${branch}</div>
     <div class="filename">File: ${fileParts.join('/')}</div>
-    <div class="from">From: ${noFrom ? 'start' : from}</div>
+    <div class="from">From: ${noFrom ? 'start' : from + 1}</div>
     <div class="to">To: ${to || 'end'}</div>
   </div>
-  <pre><code class="language-${ext}">${highlit}</code></pre>`;
+  <pre><code class="language-${ext}">${code}</code></pre>`;
   }
   return defaultLinkRender(tokens, idx, options, env, self);
 };
@@ -198,29 +197,13 @@ readFile('book.txt', 'utf8')
     <link rel="stylesheet" href="index.css">
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript" src="ddscrollspy.js"></script>
+    <script src="highlight.min.js"></script>
   </head>
   <body>
     <div class="toc">${values.toc}</div>
     <div class="contents unfolded"><div class="close">&lt; close</div>${values.contents}</div>
   </body>
-  <script>
-  jQuery(function($){ // on document load
-    var $toc = $('.toc');
-    var $contents = $('.contents');
-    $toc.ddscrollSpy({spyTarget: $contents});
-    $('.close').on('click', function(ev) {
-      var c = $(this);
-      if ($contents.hasClass('unfolded')) {
-        $toc.hide();
-        c.text('open >');
-      } else {
-        $toc.show();
-        c.text('< close');
-      }
-      $contents.toggleClass('unfolded');
-    })
-  })
-</script>
+  <script type="text/javascript" src="index.js"></script>
 </html>
 `
     ))
