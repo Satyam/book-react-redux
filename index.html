@@ -66,11 +66,11 @@
 <li><a href="#chapter06-summary">Summary</a></li>
 </ul>
 <li><a href="#chapter07-code-coverage">Code coverage</a></li>
-<ul class="level-h1"><li><a href="#chapter07-installing-istanbul">Installing Istanbul</a></li>
+<ul class="level-h1"><ul class="level-h2"><li><a href="#chapter07-installing-istanbul">Installing Istanbul</a></li>
+</ul>
 <li><a href="#chapter07-running-istanbul">Running Istanbul</a></li>
 <li><a href="#chapter07-improving-coverage">Improving coverage</a></li>
 <li><a href="#chapter07-linting">Linting</a></li>
-</ul>
 <li><a href="#chapter07-summary">Summary</a></li>
 </ul>
 <li><a href="#chapter08-switching-to-sql">Switching to SQL</a></li>
@@ -1473,7 +1473,7 @@ coverage</code></pre></div>
 <p>The part after the package name <code>@1.0.0-alpha.2</code> tells NPM to load that particular version of the package.  The default (without the @ part) is to load the latest stale published version. The problem in this case is that the current stable version of Istanbul does not handle some features we will use later on in this book so we have to go for a pre-release version.  Perhaps by the time you read this book, the <code>1.0.0</code> is the stable release and specifying the version is no longer needed</p>
 <p>Anyway, this helps to explain why we are installing it locally instead of globally.  If we were to install a single global version of Istanbul, which one should we install?  The stable or the experimental?  It would be risky to install an experimental version globally, but then, what do we do with this particular application?  That is why it is better to install the tools locally for each application. Each app gets the version it needs.</p>
 <p>Besides, local installs get recorded into <code>package.json</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-07-01/package.json#L43">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which makes it easier to set up the development environment by simply doing <code>npm install</code> on a fresh download of the application.  Global installs don't get recorded so we have to tell each new developer about all the globals we expect, and those developers might not be happy about us forcing them to provide our preferences.</p>
-<h3><a class="self-ref" id="chapter07-running-istanbul" href="#chapter07-running-istanbul"># </a>Running Istanbul</h3>
+<h2><a class="self-ref" id="chapter07-running-istanbul" href="#chapter07-running-istanbul"># </a>Running Istanbul</h2>
 <p>To execute it, we need to add another command  to the <code>scripts</code> section of our <code>package.json</code>:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-07-01/package.json#L6-L11"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -1492,7 +1492,7 @@ coverage</code></pre></div>
 <pre><code class="language-sh">npm run coverage
 </code></pre>
 <p>A <code>coverage</code> folder will be created in our project.  Look for <code>/coverage/lcov-report/index.html</code>. Doble-clicking on it will show the report for our application.  We haven't done that bad, the report shows mostly green indicating we have a reasonably good coverage.  Still, what is missing?</p>
-<h3><a class="self-ref" id="chapter07-improving-coverage" href="#chapter07-improving-coverage"># </a>Improving coverage</h3>
+<h2><a class="self-ref" id="chapter07-improving-coverage" href="#chapter07-improving-coverage"># </a>Improving coverage</h2>
 <p>If we look at the coverage for <code>projects.js</code> we can see that we mostly missed the 404 error returns for non-existing projects or tasks.  We checked that for the GET method, but we haven't checked for wrong <code>pid</code>s or <code>tid</code>s for the other methods.</p>
 <p>Once we get those covered, basically by copying and pasting the error-inducing code for the GET method <a href="https://github.com/Satyam/book-react-redux/blob/chapter-06-02/test/server.js#L116-L153">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and changing the method on each copy <a href="https://github.com/Satyam/book-react-redux/blob/chapter-07-01/test/server.js#L154-L243">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, we go from this:</p>
 <pre><code>=============================== Coverage summary ===============================
@@ -1537,7 +1537,7 @@ Functions    : 100% ( 0/0 )
 Lines        : 95% ( 76/80 )
 ================================================================================
 </code></pre>
-<h3><a class="self-ref" id="chapter07-linting" href="#chapter07-linting"># </a>Linting</h3>
+<h2><a class="self-ref" id="chapter07-linting" href="#chapter07-linting"># </a>Linting</h2>
 <p>If we now run our linter, we will get thousands of errors, all of them from the folder used for the output of Istanbul. The <code>.gitignore</code> file that GitHub produced for us already knows about Istanbul and similar tools <a href="https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.gitignore#L14">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> so GIT won't bother uploading those files.  We need to do something similar for ESLint.  By providing a <code>.eslintignore</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.eslintignore">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> listing the file and folder patterns of files we don't want checked, we can tell ESLint to ignore those files.</p>
 <h2><a class="self-ref" id="chapter07-summary" href="#chapter07-summary"># </a>Summary</h2>
 <p>Hopefully, these few examples have shown how code coverage can help us improve the quality of our code.  Istanbul is very easy to set up once we have our tests in place and it provides us with plenty of information.  It allows us to be confident that we have every alternative covered as well as strip unnecessary code that will never be executed.</p>
