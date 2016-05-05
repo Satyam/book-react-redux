@@ -24,7 +24,7 @@ Coverage is such a standard operation that the `.gitignore` file that GitHub aut
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-06-02/.gitignore#L13-L14)
 
-### Installing Istanbul
+## Installing Istanbul
 
 To set up Istanbul we first need to load it.  Just as ESLint, we may load it globally with `npm i -g istanbul` as recommended in its [home page](https://github.com/gotwarlost/istanbul#getting-started) so we share the same copy for all our applications.  However, we can also load it locally.
 
@@ -38,7 +38,7 @@ Anyway, this helps to explain why we are installing it locally instead of global
 
 Besides, local installs get recorded into `package.json` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/package.json#L43) which makes it easier to set up the development environment by simply doing `npm install` on a fresh download of the application.  Global installs don't get recorded so we have to tell each new developer about all the globals we expect, and those developers might not be happy about us forcing them to provide our preferences.
 
-### Running Istanbul
+## Running Istanbul
 
 To execute it, we need to add another command  to the `scripts` section of our `package.json`:
 
@@ -52,7 +52,7 @@ npm run coverage
 
 A `coverage` folder will be created in our project.  Look for `/coverage/lcov-report/index.html`. Doble-clicking on it will show the report for our application.  We haven't done that bad, the report shows mostly green indicating we have a reasonably good coverage.  Still, what is missing?
 
-### Improving coverage
+## Improving coverage
 
 If we look at the coverage for `projects.js` we can see that we mostly missed the 404 error returns for non-existing projects or tasks.  We checked that for the GET method, but we haven't checked for wrong `pid`s or `tid`s for the other methods.
 
@@ -99,7 +99,7 @@ Lines        : 95% ( 76/80 )
 ================================================================================
 ```
 
-### Linting
+## Linting
 
 If we now run our linter, we will get thousands of errors, all of them from the folder used for the output of Istanbul. The `.gitignore` file that GitHub produced for us already knows about Istanbul and similar tools [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.gitignore#L14) so GIT won't bother uploading those files.  We need to do something similar for ESLint.  By providing a `.eslintignore` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.eslintignore) listing the file and folder patterns of files we don't want checked, we can tell ESLint to ignore those files.
 
