@@ -82,7 +82,21 @@ Our first test is very simple, we will simply check that the server can respond 
 
 We are sending an `http` `get` request on the root `'/'` and we expect the server to respond with a 200 status code, a content type of HTML and somewhere in the body to be that `<title>` tag. The [syntax](http://chaijs.com/api/bdd/) of the calls chained after `expect` is provided by Chai as a series of keywords that turn out quite readable.
 
-Axios returns a `Promise` which will be resolved when a reply arrives. The function at the `then` part of the Promise will then be called. The `then` is also chainable so it still returns a Promise which we return  so that Mocha itself can chain to it, wait for its completion and report on its success or failure.
+Axios returns a `Promise` which will be resolved when a reply arrives. The function at the `then` part of the Promise will then be called. The `then` is also chainable so it still returns a Promise which we return  so that Mocha itself can chain to it, wait for its completion and report on its success or failure.  
+
+It does not look as if we are returning anything to Mocha since there is no `return` statement, however, one of the changes in *fat arrow* functions is that if the body of the function is an expression, the *fat arrow* function implicitly  returns its value.  Normal `function` functions return `undefined` if nothing is returned explicitly, which was always somewhat of a waste. These functions are all equivalent:
+
+```js
+function (x, y) {
+  return x * y;
+}
+
+(x, y) => {
+  return x * y;
+}
+
+(x, y) => x * y;
+```
 
 For the last test, we have to somehow turn around the normal response of Mocha because we do expect an error.
 
@@ -142,15 +156,15 @@ Someone might have noticed that while we have dealt with the asynchronicity of t
 Testing the REST API has made our `server.js` test script grow five-fold, even though we haven't tested everything that could possibly be tested.  Later on, we will see how to find out what we have checked and what not.  Most of the test code is quite repetitive, it usually goes like this:
 
 ```js
-it('whatever the test ...', () => {
-  return http.method(URL /* possible object with data: {descr: 'changed description'} */)
+it('whatever the test ...', () =>
+  http.method(URL /* possible object with data: {descr: 'changed description'} */)
     .then((response) => {
       expect(response.status).to.equal(200);
       expect(response.headers['content-type']).to.contain('application/json');
       let data = response.data;
       // further tests on the data
-    });
-});
+    })
+);
 ```
 
 Most tests will call some `method` (`get`, `post`, `put` or `delete`) on the `http` object which is a pre-configured Axios instance such as the one we use for static pages:
