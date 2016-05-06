@@ -18,24 +18,24 @@ describe('Static pages test', () => {
   after('Closing the server', (done) => {
     server.close(done);
   });
-  it('Get / should return home page', () => {
-    return http.get('/')
+  it('Get / should return home page', () =>
+    http.get('/')
       .then((response) => {
         expect(response.status).to.equal(200);
         expect(response.headers['content-type']).to.contain('text/html');
         expect(response.data).to.contain('<title>Sample Web Page</title>');
-      });
-  });
-  it('Get /index.html should return the same home page', () => {
-    return http.get('/index.html')
+      })
+  );
+  it('Get /index.html should return the same home page', () =>
+    http.get('/index.html')
       .then((response) => {
         expect(response.status).to.equal(200);
         expect(response.headers['content-type']).to.contain('text/html');
         expect(response.data).to.contain('<title>Sample Web Page</title>');
-      });
-  });
-  it('Get /xyz should return a "page not found" error', () => {
-    return http.get('/xyz')
+      })
+  );
+  it('Get /xyz should return a "page not found" error', () =>
+    http.get('/xyz')
       .then(
         (response) => {
           throw new Error('Should not have found it');
@@ -43,6 +43,6 @@ describe('Static pages test', () => {
         (response) => {
           expect(response.status).to.equal(404);
         }
-      );
-  });
+      )
+  );
 });
