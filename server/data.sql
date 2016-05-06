@@ -1,6 +1,8 @@
 DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS tasks;
 
+PRAGMA foreign_keys = on;
+
 CREATE TABLE projects (
   pid INTEGER PRIMARY KEY,
   name TEXT,
@@ -10,7 +12,8 @@ CREATE TABLE tasks (
   tid INTEGER PRIMARY KEY,
   pid INTEGER,
   descr TEXT,
-  completed TINYINT
+  completed TINYINT,
+  FOREIGN KEY (pid) REFERENCES projects(pid)
 );
 INSERT INTO projects (pid, name, descr) VALUES (
   25,
