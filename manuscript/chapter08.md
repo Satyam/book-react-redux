@@ -73,17 +73,17 @@ Once again, we check if this module is the main one and, if so, we call `webServ
 
 We have made the function which is the default export of `server/projects.js` an asynchronous one by adding just one more argument to it, the `done` callback. We had to do this because all SQL operations are asynchronous so at initialization time, when we setup the *prepared statements* we can let our caller know when we are done or otherwise signal an error.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L3)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L1)
 
 A prepared statement is an optimization present in most varieties of SQL which allows the SQL engine to pre-compile and possibly optimize an SQL statement for future execution. For example, `selectAllProjects` contains the prepared statement `'select * from projects'`.
 
- [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L3-L9)
+ [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L1-L7)
 
 Prepared statements can have variable parts which will be filled in when they are executed.  Variable parts can be represented in various ways, we have opted to use an identifier preceded by a `$` sign.  Thus when we want to execute `selectProjectByPid`, we have to provide an actual value for `$pid`.
 
 Now, in response to a request for `/data/v1/projects`, we ask the `selectAllProjects` prepared statement to give us `all` the projects it can find.  
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L32-L40)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L30-L38)
 
 We give '/' as the path since our `projectsRouter` already passes on only the requests to `/data/v1/projects`.
 
@@ -95,11 +95,11 @@ We use a 500 error code here instead of the 404 we have used so far because the 
 
 Creating a new project via a POST to `/data/v1/projects` uses parameters:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L84-L95)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L82-L93)
 
 Here we run the `createProject` prepared statement filling in the `$name` and `$descr` variables with the corresponding information from the body of the request.  If there is an error, we report it back to the client with a 500 error code, otherwise, we get the `pid` of the newly inserted record which SQLite stores in `this.lastID`.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L93)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L91)
 
 SQLite has two such variables `lastID` which represents the row ID of the last record inserted and `changes` which returns a count of the number of records affected in an insert, update or delete statement.  There is only one copy of each per connection so they must be read immediately after the SQL operation and before any new operation is attempted.  Different SQL engines have different names for these variables but they are always there in one way or another.
 
@@ -121,7 +121,7 @@ But it lacks clarity, which is important for maintainability, unless the practic
 
 We can't use SQL prepared statements everywhere. In an update, what is it we are updating, all of the record or just part of it? In a project, we might independently update the project name or its description.  In a task we might change the description or its completion status. Just two fields per record  would require three prepared statements, one with both SQL field names and another two, each for a separate field.  This is not acceptable.  With more fields the situation would be even worst. So, we build it dynamically by concatenating as many fields as values arrive in the request body:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L121-L145)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L119-L143)
 
 Since we have no prepared statement, we ask the `db` to `run` the `sql` statement we have just built by concatenating it in bits and pieces. We then provide the parameters to fill into the placeholders in the statement. If either of `name` or `descr` is `undefined` it will not show in the parameter list, but neither will it be in the statement so SQLite won't be expecting it.
 
