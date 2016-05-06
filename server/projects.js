@@ -1,5 +1,3 @@
-/*global db:false */
-'use strict';
 module.exports = (router, done) => {
   const selectAllProjects = db.prepare('select * from projects', (err) => {
     if (err) return done(err);
@@ -119,7 +117,7 @@ module.exports = (router, done) => {
   });
 
   router.put('/:pid', (req, res) => {
-    let sql = 'update projects set ' +
+    const sql = 'update projects set ' +
       Object.keys(req.body).map((column) => `${column} = $${column}`).join(',') +
      ' where pid = $pid';
 
@@ -145,7 +143,7 @@ module.exports = (router, done) => {
   });
 
   router.put('/:pid/:tid', (req, res) => {
-    let sql = 'update tasks set ' +
+    const sql = 'update tasks set ' +
       Object.keys(req.body).map((column) => `${column} = $${column}`).join(',') +
       ' where pid = $pid and tid = $tid';
 
