@@ -15,8 +15,6 @@ app.use('/data', bodyParser.json());
 const dataRouter = express.Router();
 app.use('/data/v1', dataRouter);
 
-const projectsRoutes = require('./projects/routes.js');
-
 app.use(express.static(path.join(__dirname, '../public')));
 
 const webServer = {
@@ -27,7 +25,8 @@ const webServer = {
         if (err) return done(err);
         db.exec(data, (err) => {
           if (err) return done(err);
-          projectsRoutes(dataRouter, (err) => {
+          const projectsRoutes = require('./projects/routes.js');
+          projectsRoutes(dataRouter, '/projects', (err) => {
             if (err) return done(err);
             server.listen(PORT, () => {
               console.log(`Server running at http://localhost:${PORT}/`);

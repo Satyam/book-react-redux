@@ -14,11 +14,11 @@ const send400 = (res) => void res.status(400).send('Bad request');
 const testFields = /^\s*\w+\s*(,\s*\w+\s*)*$/;
 const testSearch = /^\s*\w+\s*=\s*\w[\w\s]*$/;
 
-module.exports = (dataRouter, done) => {
-  const projectRouter = express.Router();
-  dataRouter.use('/projects', projectRouter);
+module.exports = (dataRouter, branch, done) => {
+  const projectsRouter = express.Router();
+  dataRouter.use(branch, projectsRouter);
 
-  projectRouter.get('/', (req, res) => {
+  projectsRouter.get('/', (req, res) => {
     const fields = req.query.fields;
     const search = req.query.search;
 
@@ -31,20 +31,20 @@ module.exports = (dataRouter, done) => {
     processPrj('getAllProjects', res, null, null, {fields, search});
   });
 
-  projectRouter.get('/:pid', (req, res) => {
+  projectsRouter.get('/:pid', (req, res) => {
     const pid = Number(req.params.pid);
     if (Number.isNaN(pid)) return send400(res);
     processPrj('getProjectById', res, {pid});
   });
 
-  projectRouter.get('/:pid/:tid', (req, res) => {
+  projectsRouter.get('/:pid/:tid', (req, res) => {
     const pid = Number(req.params.pid);
     const tid = Number(req.params.tid);
     if (Number.isNaN(pid) || Number.isNaN(tid)) return send400(res);
     processPrj('getTaskByTid', res, {pid, tid});
   });
 
-  projectRouter.post('/', (req, res) => {
+  projectsRouter.post('/', (req, res) => {
     const name = req.body.name;
     const descr = req.body.descr;
     if (name === undefined && descr === undefined) return send400(res);
@@ -54,7 +54,7 @@ module.exports = (dataRouter, done) => {
     processPrj('addProject', res, null, data);
   });
 
-  projectRouter.post('/:pid', (req, res) => {
+  projectsRouter.post('/:pid', (req, res) => {
     const pid = Number(req.params.pid);
     if (Number.isNaN(pid)) return send400(res);
     const descr = req.body.descr;
@@ -66,7 +66,7 @@ module.exports = (dataRouter, done) => {
     processPrj('addTaskToProject', res, {pid}, data);
   });
 
-  projectRouter.put('/:pid', (req, res) => {
+  projectsRouter.put('/:pid', (req, res) => {
     const pid = Number(req.params.pid);
     if (Number.isNaN(pid)) return send400(res);
     const name = req.body.name;
@@ -78,7 +78,7 @@ module.exports = (dataRouter, done) => {
     processPrj('updateProject', res, {pid}, data);
   });
 
-  projectRouter.put('/:pid/:tid', (req, res) => {
+  projectsRouter.put('/:pid/:tid', (req, res) => {
     const pid = Number(req.params.pid);
     const tid = Number(req.params.tid);
     if (Number.isNaN(pid) || Number.isNaN(tid)) return send400(res);
@@ -91,13 +91,13 @@ module.exports = (dataRouter, done) => {
     processPrj('updateTask', res, {pid, tid}, data);
   });
 
-  projectRouter.delete('/:pid', (req, res) => {
+  projectsRouter.delete('/:pid', (req, res) => {
     const pid = Number(req.params.pid);
     if (Number.isNaN(pid)) return send400(res);
     processPrj('deleteProject', res, {pid});
   });
 
-  projectRouter.delete('/:pid/:tid', (req, res) => {
+  projectsRouter.delete('/:pid/:tid', (req, res) => {
     const pid = Number(req.params.pid);
     const tid = Number(req.params.tid);
     if (Number.isNaN(pid) || Number.isNaN(tid)) return send400(res);
