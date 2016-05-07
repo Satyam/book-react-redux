@@ -179,7 +179,6 @@ readFile('book.txt', 'utf8')
           level++;
         }
         toc += `<li><a href="#${item.link}">${item.text}</a></li>\n`;
-        level = l;
       });
     });
     toc += '</ul></li></ul>';

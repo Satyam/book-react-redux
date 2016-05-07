@@ -164,5 +164,21 @@ td, th {
   @media screen {
     display: none;
   }
-  margin: 0 1em;
+  color: blue;
+  margin: 0 0.3em;
+}
+
+a {
+  text-decoration: none;
+  @media print {
+    &:visited {
+      color: blue;
+    }
+  }
+}
+
+blockquote {
+  margin-left: 1em;
+  border-left: thick solid silver;
+  padding-left: 1em;  
 }
