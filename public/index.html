@@ -5,10 +5,19 @@
     <title>Sample Web Page</title>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    <p>Write something and press <kbd>Enter</kbd></p>
-    <form method="post" action="form">
-      <input name="field1"/>
-    </form>
+    <div id="contents"></div>
+    <script src="/node_modules/axios/dist/axios.js"></script>
+    <script>
+      axios.get('/data/v1/projects')
+        .then(response => {
+          document.getElementById('contents').innerHTML =
+          `<h1>Projects:</h1><ul>${
+            response.data.map(item =>
+              `<li><a href="project.html?${item.pid}">${item.name}</a></li>`
+            ).join('\n')
+          }</ul>`;
+          document.title = "Projects";
+        });
+    </script>
   </body>
 </html>
