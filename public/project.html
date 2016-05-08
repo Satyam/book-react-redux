@@ -7,7 +7,9 @@
   <body>
     <div id="contents"></div>
     <script src="/node_modules/axios/dist/axios.js"></script>
-    <script>
+    <script src="//cdn.polyfill.io/v1/polyfill.min.js?features=Promise" defer async></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <script type="text/babel">
       axios.get(`/data/v1/projects/${window.location.search.substr(1)}`)
         .then(response => {
           const prj = response.data;
