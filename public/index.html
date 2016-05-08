@@ -8,18 +8,6 @@
     <div id="contents"></div>
     <script src="/node_modules/axios/dist/axios.js"></script>
     <script src="//cdn.polyfill.io/v1/polyfill.min.js?features=Promise" defer async></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
-    <script type="text/babel">
-      axios.get('/data/v1/projects')
-        .then(response => {
-          document.getElementById('contents').innerHTML =
-          `<h1>Projects:</h1><ul>${
-            response.data.map(item =>
-              `<li><a href="project.html?${item.pid}">${item.name}</a></li>`
-            ).join('\n')
-          }</ul>`;
-          document.title = "Projects";
-        });
-    </script>
+    <script src="lib/index.js"></script>
   </body>
 </html>
