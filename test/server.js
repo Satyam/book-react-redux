@@ -384,7 +384,6 @@ describe('Server testing', () => {
               throw new Error('Should not have found it');
             },
             (response) => {
-              console.log(386, response);
               expect(response.status).to.equal(404);
               expect(response.data).to.equal('Item(s) not found');
             }
