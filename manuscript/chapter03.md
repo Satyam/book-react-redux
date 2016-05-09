@@ -140,7 +140,7 @@ Though this ESLint rule set is named `standard` there is no actual standard back
 
 This downloads and installs the rules, but it does not tell ESLint that it should follow them.  There are various ways to do that.  In this book we will  add a configuration file `.eslintrc.json`  containing:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/.eslintrc.json)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.eslintrc.json)
 
 This tells ESLint that
 

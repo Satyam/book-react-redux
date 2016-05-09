@@ -76,7 +76,7 @@ However, it is not a good idea to let every data server plug itself into whichev
 
 The projects router will receive the `dataRouter` and the `branch` it should respond to.  
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/server/projects/routes.js#L17-L21)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/projects/routes.js#L17-L21)
 
 Each module might choose to generate a new sub-router, as we did here by creating a new `projectsRouter`, or it might use the `dataRouter` and concatenate the `branch` into each of the paths:
 
@@ -190,13 +190,15 @@ projectsRouter.put('/:pid',
 
 It is just a number of chained middleware and handlers each doing its part in the processing of the request.
 
+## Summary
+
 Now we have much less code repetition than we had before, all our validation is concentrated each in one simple validator. Should we later change the `pid`s or `tid`s to something else instead of plain integers, for example, UUIDs such as `{3F2504E0-4F89-41D3-9A0C-0305E82C3301}` we can change it in a few places.
 
 Our code coverage also increases.  Since there is less repetition, there are fewer repeated lines and branches that need to be separately tested with extra tests.  Now, with the same number of tests, we go through most of the code.  
 
 Another interesting effect in our code coverage is that the column showing the number of times a certain line of code has been used increases since those fewer lines are used more times each.    
 
-We haven't added any tests since doing SQL Injection but we certainly should, though they wouldn't add much for the purpose of this book. Please feel free to try on your own. Our validators should be thoroughly checked forcing errors and making sure they detect them. One advantage of putting our validators into a separate file is that they can be tested on their own, without having to go through Express' routing or doing actual SQL transactions.
+We haven't added any tests since doing SQL Injection but we certainly should, though they wouldn't add much for the purpose of this book. Please feel free to try on your own. Our validators should be thoroughly checked forcing errors and making sure they detect them. One advantage of putting our validators into a separate file is that they can be tested on their own, without having to go through Express' routing or doing actual SQL transactions.  As a general rule, there should be one set of tests for each file, as a matter of fact, the `/test` folder should reproduce the file structure of the rest of application, having one test file per application file.
 
 To top this off, we will do further chaining of the JavaScript kind.  The `get`, `post`, `put` and `delete` methods are also chainable so all our routes definitions can be reduced to the following:
 
