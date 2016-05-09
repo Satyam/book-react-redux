@@ -15,6 +15,11 @@ const writeFile = denodeify(fs.writeFile);
 
 const linkGitHubRE = /\[\(:memo:\)\]\(https:\/\/github.com\/Satyam\/book-react-redux\/blob\/([^#\)]+)/g;
 const octocatRE = /:octocat:/g;
+const ampRE = /&/g;
+const ltRE = /</g;
+const gtRE = />/g;
+const memoRE=/\(:memo:([^\)]*)\)/;
+
 const octocat = '<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />';
 
 const rawGitHub = axios.create({
@@ -23,13 +28,7 @@ const rawGitHub = axios.create({
 });
 
 const md = markdown({
-  html: true,
-  highlight: (str, lang) => {
-    if (lang && hljs.getLanguage(lang)) {
-      return hljs.highlight(lang, str).value;
-    }
-    return ''; // use external default escaping
-  }
+  html: true
 });
 
 let tocArray = [];
@@ -57,7 +56,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
   const pOpen = tokens[idx];
   const pContent = tokens[idx + 1];
   const pClose = tokens[idx + 2];
-  if (pContent.content.startsWith('[(:memo:)]')) {
+  if (memoRE.exec(pContent.content)) {
     pOpen.tag = 'div';
     pOpen.attrJoin('class', 'code-insert');
     pClose.tag = 'div';
@@ -74,8 +73,9 @@ const linkRE = /https:\/\/github.com\/Satyam\/book-react-redux\/blob\/([^#]+)(#L
 md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
   const link = tokens[idx].attrs[tokens[idx].attrIndex('href')][1];
   const text = tokens[idx + 1].content;
-  // tokens.splice(idx + 1, 2);
-  if (text === '(:memo:)') {
+  const m = memoRE.exec(text);
+  if (m) {
+    var ext = m[1];
     tokens[idx + 1].content = '';
     Object.assign(tokens[idx + 2], {
       type: 'text',
@@ -95,7 +95,7 @@ md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
 
     const match = linkRE.exec(link);
     const file = match[1];
-    const ext = path.extname(file).substr(1);
+    ext = ext || path.extname(file).substr(1);
     const noFrom = typeof match[3] === 'undefined';
     const from = noFrom ? 0 : parseInt(match[3], 10) - 1;
     const noTo = typeof match[5] === 'undefined';
@@ -106,7 +106,9 @@ md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
       var m = /(\s*)/.exec(line);
       len = Math.min(m[1].length, len);
     });
-    code = code.map((line) => line.substr(len)).join('\n').trim();
+    code = code.map((line) => line.substr(len)).join('\n').trim()
+      .replace(ampRE, '&amp;').replace(ltRE, '&lt;').replace(gtRE, '&gt;');
+    // }
     const fileParts = file.split('/');
     const branch = fileParts.shift();
     return `<div class="header">
@@ -120,11 +122,12 @@ md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
   }
   return defaultLinkRender(tokens, idx, options, env, self);
 };
+// Samples of original and converted link
 // https://github.com/Satyam/book-react-redux/blob/chapter-07-01/test/server.js#L154-L243
 // https://raw.githubusercontent.com/Satyam/book-react-redux/chapter-07-01/test/server.js
 readFile('book.txt', 'utf8')
 .then((data) => {
-  const chapters = data.trim().split('\n'); // ['_preface.md']; //
+  const chapters = data.trim().split('\n');
   Promise.all(chapters.map((chapter) =>
     readFile(chapter, 'utf8')
     .then((text) => {
