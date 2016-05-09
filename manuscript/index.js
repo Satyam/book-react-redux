@@ -13,7 +13,7 @@ const CleanCss = require('less-plugin-clean-css');
 const readFile = denodeify(fs.readFile);
 const writeFile = denodeify(fs.writeFile);
 
-const linkGitHubRE = /\[\(:memo:\)\]\(https:\/\/github.com\/Satyam\/book-react-redux\/blob\/([^#\)]+)/g;
+const linkGitHubRE = /\[\(:memo:([^\)]*)\)\]\(https:\/\/github.com\/Satyam\/book-react-redux\/blob\/([^#\)]+)/g;
 const octocatRE = /:octocat:/g;
 const ampRE = /&/g;
 const ltRE = /</g;
@@ -134,7 +134,7 @@ readFile('book.txt', 'utf8')
       var links = [];
       var match;
       while ((match = linkGitHubRE.exec(text)) !== null) {
-        links.push(match[1]);
+        links.push(match[2]);
       }
       links = unique(links);
       var rawFiles = {};
