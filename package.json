@@ -8,8 +8,7 @@
     "lint": "eslint . || exit 0",
     "test": "mocha",
     "coverage": "istanbul cover node_modules/.bin/_mocha",
-    "build": "babel client --presets es2015 --out-dir public/lib",
-    "webpack": "webpack client/index.js public/lib/index.js && webpack client/project.js public/lib/project.js"
+    "build": "webpack client/index.js public/lib/index.js && webpack client/project.js public/lib/project.js"
   },
   "myWebServer": {
     "port": 8080,
