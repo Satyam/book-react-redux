@@ -8,7 +8,7 @@
     "lint": "eslint . || exit 0",
     "test": "mocha",
     "coverage": "istanbul cover node_modules/.bin/_mocha",
-    "build": "webpack client/index.js public/lib/index.js && webpack client/project.js public/lib/project.js"
+    "build": "webpack"
   },
   "myWebServer": {
     "port": 8080,
