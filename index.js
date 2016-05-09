@@ -1,8 +1,4 @@
 jQuery(function($){ // on document load
-  $('pre code.language-html').each(function(i, block) {
-    const b = $(this);
-    b.text(b.html());
-  });
   $('pre code').each(function(i, block) {
     hljs.highlightBlock(block);
   });
