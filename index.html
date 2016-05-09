@@ -66,8 +66,7 @@
 <li><a href="#chapter06-summary">Summary</a></li>
 </ul>
 <li><a href="#chapter07-code-coverage">Code coverage</a></li>
-<ul class="level-h1"><ul class="level-h2"><li><a href="#chapter07-installing-istanbul">Installing Istanbul</a></li>
-</ul>
+<ul class="level-h1"><li><a href="#chapter07-installing-istanbul">Installing Istanbul</a></li>
 <li><a href="#chapter07-running-istanbul">Running Istanbul</a></li>
 <li><a href="#chapter07-improving-coverage">Improving coverage</a></li>
 <li><a href="#chapter07-linting">Linting</a></li>
@@ -80,6 +79,21 @@
 <li><a href="#chapter08-handling-url-query-parameters">Handling URL Query Parameters</a></li>
 <li><a href="#chapter08-sql-injection">SQL Injection</a></li>
 <li><a href="#chapter08-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter09-separating-concerns">Separating Concerns</a></li>
+<ul class="level-h1"><li><a href="#chapter09-simplifying-validation-with-middleware">Simplifying validation with middleware</a></li>
+<li><a href="#chapter09-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter10-client-side">Client side</a></li>
+<ul class="level-h1"><li><a href="#chapter10-the-way-not-to-do-it">The way not to do it</a></li>
+<li><a href="#chapter10-polyfills">Polyfills</a></li>
+<li><a href="#chapter10-transpiling">Transpiling</a></li>
+</ul>
+<li><a href="#chapter11-modules-imports-and-exports">Modules, Imports and Exports</a></li>
+<ul class="level-h1"><li><a href="#chapter11-webpack">WebPack</a></li>
+<li><a href="#chapter11-packaging-and-transpiling">Packaging and Transpiling</a></li>
+<li><a href="#chapter11-almost-a-single-page-application">Almost a Single Page Application</a></li>
+<li><a href="#chapter11-summary">Summary</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded"><div class="close">&lt; close</div><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
 <p>With the rapid pace of progress in the creation of libraries and tools for web development, most information comes in brief articles and blog posts.  There are not very many comprehensive guides to all that may be needed from A to Z.</p>
@@ -195,14 +209,14 @@ const PORT = 8080;
 
 const server = http.createServer();
 
-server.on('request', (req, res) => {
+server.on('request', (req, res) =&gt; {
   console.log(`Received request for ${req.url}`);
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.write('Hello World!\n');
   res.end(`Received request for ${req.url}`);
 });
 
-server.on('listening', (error) => {
+server.on('listening', (error) =&gt; {
   if (error) {
     console.error(error);
   } else {
@@ -253,7 +267,7 @@ server.listen(PORT);</code></pre></div>
     <div class="from">From: 7</div>
     <div class="to">To: 12</div>
   </div>
-  <pre><code class="language-js">server.on('request', (req, res) => {
+  <pre><code class="language-js">server.on('request', (req, res) =&gt; {
   console.log(`Received request for ${req.url}`);
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.write('Hello World!\n');
@@ -262,7 +276,7 @@ server.listen(PORT);</code></pre></div>
 <p>It will do so by calling the function we provide.  We are using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions">arrow functions</a> which were incorporated in ECMAScript 2015 or <em>ES6</em> as it is often called (<code>const</code> is also new to ES6). Basically, the two fragments below are more or less equivalent:</p>
 <pre><code class="language-js">(req, res) =&gt; {
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+function (req, res) {
 </code></pre>
 <p>So, for each request our web server receives it will call our function providing it with two arguments, a request <code>req</code>, containing information about the request just received such as the URL (<code>req.url</code>) or the headers.  It also provides a response object <code>res</code> that allows us to return a response to the browser.</p>
 <p>We use <code>res.writeHead</code> to start the reply to the browser by giving it the 200 HTTP response code for Ok, then we add one header to change the default <code>Content-Type</code> of <code>text/html</code>.  We want to send back plain text instead of HTML so we change it to <code>text/plain</code>.</p>
@@ -275,7 +289,7 @@ server.listen(PORT);</code></pre></div>
     <div class="from">From: 14</div>
     <div class="to">To: 20</div>
   </div>
-  <pre><code class="language-js">server.on('listening', (error) => {
+  <pre><code class="language-js">server.on('listening', (error) =&gt; {
   if (error) {
     console.error(error);
   } else {
@@ -346,13 +360,13 @@ In our sample web server, we call several functions within the <code>server</cod
 const PORT = 8080;
 
 http.createServer()
-  .on('request', (req, res) => {
+  .on('request', (req, res) =&gt; {
     console.log(`Received request for ${req.url}`);
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.write('Hello World!\n');
     res.end(`Received request for ${req.url}`);
   })
-  .on('listening', (error) => {
+  .on('listening', (error) =&gt; {
     if (error) {
       console.error(error);
     } else {
@@ -376,13 +390,13 @@ http.createServer()
 
 const PORT = 8080;
 
-http.createServer((req, res) => {
+http.createServer((req, res) =&gt; {
     console.log(`Received request for ${req.url}`);
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.write('Hello World!\n');
     res.end(`Received request for ${req.url}`);
   })
-  .listen(PORT, () => {
+  .listen(PORT, () =&gt; {
     console.log(`Server running at http://localhost:${PORT}/`);
   });</code></pre>:</div>
 <p>Subscribing to the <code>request</code> and <code>listening</code> events is such a frequent thing to do that the developers of the <code>http</code> module have made it easier, we just pass the request handler function to the <code>createServer</code> method and the <code>listening</code> callback to the <code>listen</code> method.  Also, we don't actually need to check for the <code>error</code> argument because most of the errors at that stage simply produce fatal errors and the application will terminate before we have any chance to do something about it.</p>
@@ -394,8 +408,8 @@ http.createServer((req, res) => {
 <p>We also want to keep a record of what packages we install for our application so that anyone else can set it up in the same way.  NPM uses a file called <code>package.json</code> to do that.</p>
 <p>To create our <code>package.json</code> file, we go to the root of our project and type <code>npm init</code> and answer a few questions.  It is not crucial that we answer them right the first time, the file is editable and we can change much of it later on.  NPM will offer defaults for each answer which we might accept by pressing <kbd>Enter</kbd> so, if you are not sure about something, simply accept what NPM offers.</p>
 <p>NPM knows about Git and GitHub so it will link to the repository created in chapter 1.  It also adds an entry for bug tracking:</p>
-<pre><code class="language-json">"bugs": {
-  "url": "https://github.com/Satyam/book-react-redux/issues"
+<pre><code class="language-json">&quot;bugs&quot;: {
+  &quot;url&quot;: &quot;https://github.com/Satyam/book-react-redux/issues&quot;
 },
 </code></pre>
 <p>Bug tracking is one of many extras offered by GitHub beyond serving Git requests.  In the current version of GitHub, a series of tabs at the top of the page allow you to access several features of any project.  So far we have seen the <code>Code</code> tab but there are several others such as <code>Issues</code>, <code>Wiki</code> or <code>Graphs</code> that are very useful.  The <code>Settings</code> tab allows us to decide which of these features we want in our repositories.</p>
@@ -413,7 +427,7 @@ http.createServer((req, res) => {
   </div>
   <pre><code class="language-json">"scripts": {
   "start": "node server/index.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
+  "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
 },</code></pre></div>
 <p>The <code>npm init</code> command already created a <code>scripts.test</code> property which we will use later on.  We simply add the <code>start</code> entry whose value is the command to start the server.  Then we can do:</p>
 <pre><code class="language-bash">npm start
@@ -448,8 +462,8 @@ http.createServer((req, res) => {
 <pre><code class="language-bash">npm install express --save
 </code></pre>
 <p>The command <code>npm install</code> will look for the package name in the <a href="https://www.npmjs.com/">NPM registry</a> and, if found, download and install it. The name given in the command should be exactly as in the heading of the entry in the NPM registry for Express it should be <a href="https://www.npmjs.com/package/express">express</a>.  The <code>--save</code> option instructs the installer to save the reference to that package in our <code>package.json</code> file.  If we take a look at it, we may see that it now has the following added:</p>
-<pre><code class="language-json">"dependencies": {
-  "express": "^4.13.4"
+<pre><code class="language-json">&quot;dependencies&quot;: {
+  &quot;express&quot;: &quot;^4.13.4&quot;
 }
 </code></pre>
 <p>This is how NPM keeps track of the extra modules it loads, it means that our app needs the <code>express</code> package version <code>4.13.4</code> or higher up to, but not including, any <code>5.y.z</code>.  Changes in the major version usually mean there might be some incompatible changes with the previous one so, once you program for a particular major version, you want to keep within that one.</p>
@@ -460,10 +474,10 @@ http.createServer((req, res) => {
 npm install cookie-parser --save
 </code></pre>
 <p>The <code>package.json</code> file will now show more dependencies:</p>
-<pre><code class="language-json">"dependencies": {
-  "body-parser": "^1.15.0",
-  "cookie-parser": "^1.4.1",
-  "express": "^4.13.4"
+<pre><code class="language-json">&quot;dependencies&quot;: {
+  &quot;body-parser&quot;: &quot;^1.15.0&quot;,
+  &quot;cookie-parser&quot;: &quot;^1.4.1&quot;,
+  &quot;express&quot;: &quot;^4.13.4&quot;
 }
 </code></pre>
 <p>and the <code>node_modules</code> folder will contain a folder for each of those extra packages.</p>
@@ -502,7 +516,7 @@ npm install cookie-parser --save
   <pre><code class="language-json">"scripts": {
   "start": "node server/index.js",
   "lint": "eslint . || exit 0",
-  "test": "echo \"Error: no test specified\" && exit 1"
+  "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
 },</code></pre></div>
 <p>If we now do:</p>
 <pre><code class="language-sh">npm run lint
@@ -514,8 +528,8 @@ npm install cookie-parser --save
 <p>Though this ESLint rule set is named <code>standard</code> there is no actual standard backing it.  It is a reasonable compilation of many often-used rules but it is not endorsed by any standards body or group.  However, it wouldn't be bad if it were.</p>
 <p>This downloads and installs the rules, but it does not tell ESLint that it should follow them.  There are various ways to do that.  In this book we will  add a configuration file <code>.eslintrc.json</code>  containing:</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/.eslintrc.json"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
-    <div class="branch">Branch: master</div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-03-02/.eslintrc.json"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-03-02</div>
     <div class="filename">File: .eslintrc.json</div>
     <div class="from">From: start</div>
     <div class="to">To: end</div>
@@ -527,9 +541,6 @@ npm install cookie-parser --save
   },
   "rules": {
     "semi": [1, "always"]
-  },
-  "globals": {
-    "db": false
   }
 }</code></pre></div>
 <p>This tells ESLint that</p>
@@ -618,7 +629,7 @@ const app = express();
 
 const PORT = process.env.npm_package_myServerApp_port || 8080;
 
-app.get('*', (req, res) => {
+app.get('*', (req, res) =&gt; {
   console.log(`Received request for ${req.url}`);
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.write('Hello World!\n');
@@ -626,7 +637,7 @@ app.get('*', (req, res) => {
 });
 
 http.createServer(app)
-  .listen(PORT, () => {
+  .listen(PORT, () =&gt; {
     console.log(`Server running at http://localhost:${PORT}/`);
   });</code></pre></div>
 <p>It really doesn't look that much different, we can actually see the difference <a href="https://github.com/Satyam/book-react-redux/commit/aecc6b2b8c800f3be18ab90ac1b03da4c1d63075#diff-0861d6d6b50d7d695344bf2d86d6e5e6">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> in GitHub.</p>
@@ -658,7 +669,7 @@ const app = express();</code></pre></div>
     <div class="from">From: 7</div>
     <div class="to">To: 7</div>
   </div>
-  <pre><code class="language-js">app.get('*', (req, res) => {</code></pre></div>
+  <pre><code class="language-js">app.get('*', (req, res) =&gt; {</code></pre></div>
 <p>The first argument is a wildcard <code>'*'</code> which means we want to respond to a request for any URL, the second is the very same arrow function we used earlier.  It still receives the very same <code>req</code> and <code>res</code> objects as before, but greatly augmented with very many extra properties and methods.   Using those new methods, we could now write our callback function like this:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-04-02/server/index.js#L11-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -667,7 +678,7 @@ const app = express();</code></pre></div>
     <div class="from">From: 11</div>
     <div class="to">To: 16</div>
   </div>
-  <pre><code class="language-js">app.get('*', (req, res) => {
+  <pre><code class="language-js">app.get('*', (req, res) =&gt; {
   console.log(`Received request for ${req.url}`);
   res.type('text')
     .status(200)
@@ -682,9 +693,9 @@ const app = express();</code></pre></div>
     <div class="from">From: 7</div>
     <div class="to">To: 9</div>
   </div>
-  <pre><code class="language-js">app.get('/hello', (req, res) => res.send('Hi, long time no see!'));
+  <pre><code class="language-js">app.get('/hello', (req, res) =&gt; res.send('Hi, long time no see!'));
 
-app.get('/bye', (req, res) => res.send('See you later'));</code></pre></div>
+app.get('/bye', (req, res) =&gt; res.send('See you later'));</code></pre></div>
 <p>Now, if we navigate to <code>http://localhost:8080/hello</code> we will get <code>Hi, long time no see!</code> and if we go to <code>http://localhost:8080/bye</code> we get <code>See you later</code>. Since we haven't used neither <code>type</code> or <code>status</code>, Express will assume the default <code>text/html</code> content type and a 200 response status code. Since now the reply is HTML, the browser will show it in a different typeface than it did with the <code>text/plain</code> response.</p>
 <p>The syntax of the new ES6 arrow functions allows us to write the callback far more succinctly than before.</p>
 <p>Whatever other URL we navigate to, it will fall through to the wildcard response. Express matches the routes in the order they are registered so we should never put a the wildcard first because it would then match all requests and never reach the other responses.  We will rarely use such a catch-all wildcard route except for diagnostics.  The Express router will reply with a regular <code>404 Not Found</code> page if no route matches the requested URL.</p>
@@ -698,7 +709,7 @@ app.get('/bye', (req, res) => res.send('See you later'));</code></pre></div>
     <div class="from">From: 7</div>
     <div class="to">To: 7</div>
   </div>
-  <pre><code class="language-js">app.get('/hello/:name?', (req, res) => res.send(`Hi ${req.params.name}, long time no see!`));</code></pre></div>
+  <pre><code class="language-js">app.get('/hello/:name?', (req, res) =&gt; res.send(`Hi ${req.params.name}, long time no see!`));</code></pre></div>
 <p>A segment of a path with a leading colon <code>:</code> and up to the next slash <code>/</code> represents a parameter. Express will accept anything in that position and will save it in the <code>req.params</code> object under the given parameter name.  The above will match <code>http://localhost:8080/hello/John</code> and reply with <code>Hi John, long time no see!</code>, however it will not match our previous <code>http://localhost:8080/hello</code> because there is no <code>/:name</code> parameter.  Parameters must be there for the route to match. However, a question mark <code>?</code> after the parameter name makes it optional.</p>
 <p>Express will also accept any mix of fixed and variable parts:</p>
 <div class="code-insert"><div class="header">
@@ -708,7 +719,7 @@ app.get('/bye', (req, res) => res.send('See you later'));</code></pre></div>
     <div class="from">From: 9</div>
     <div class="to">To: 9</div>
   </div>
-  <pre><code class="language-js">app.get('/elect/:fname/:lname?/for/:position', (req, res) => res.send(req.params));</code></pre></div>
+  <pre><code class="language-js">app.get('/elect/:fname/:lname?/for/:position', (req, res) =&gt; res.send(req.params));</code></pre></div>
 <p>With such a route, navigating to <code>http://localhost:8080/elect/joe/doe/for/mayor</code> will produce <code>{&quot;fname&quot;:&quot;joe&quot;,&quot;lname&quot;:&quot;doe&quot;,&quot;position&quot;:&quot;mayor&quot;}</code> and it will also accept <code>http://localhost:8080/elect/joe/for/mayor</code> resulting in <code>{&quot;fname&quot;:&quot;joe&quot;,&quot;position&quot;:&quot;mayor&quot;}</code>. The <code>send</code> method is smart enough to convert the <code>req.params</code> object to JSON when sending it.</p>
 <p>Express will also look for query parameters (the part of the URL after the question mark). Query parameters do not affect the route.</p>
 <div class="code-insert"><div class="header">
@@ -718,12 +729,12 @@ app.get('/bye', (req, res) => res.send('See you later'));</code></pre></div>
     <div class="from">From: 11</div>
     <div class="to">To: 11</div>
   </div>
-  <pre><code class="language-js">app.get('/search', (req, res) => res.send(`You are searching for "${req.query.q}"`));</code></pre></div>
+  <pre><code class="language-js">app.get('/search', (req, res) =&gt; res.send(`You are searching for "${req.query.q}"`));</code></pre></div>
 <p>In response to <code>http://localhost:8080/search?q=whatever</code>, it will respond with <code>You are searching for &quot;whatever&quot;</code>.  In response to <code>http://localhost:8080/search</code> it will reply <code>You are searching for &quot;undefined&quot;</code>.</p>
 <p>Express cannot retrieve the part of the URL after the hash <code>#</code> mark since browsers do not send that to the server but handle it locally once the page has arrived.</p>
 <h2><a class="self-ref" id="chapter04-using-middleware" href="#chapter04-using-middleware"># </a>Using Middleware</h2>
 <p>The functionality offered by Express can be extended via <em>middleware</em>. Only one comes prepackaged, <a href="http://expressjs.com/en/4x/api.html#express.static"><code>express.static</code></a>:</p>
-<pre><code class="language-js">app.use(express.static(path.join(__dirname, <span class="hljs-string">'../public'</span>)));
+<pre><code class="language-js">app.use(express.static(path.join(__dirname, '../public')));
 </code></pre>
 <p>We are telling Express to <code>use</code> the <code>express.static</code> middleware which should serve static files from the <code>/public</code> folder within our project folder.  Middleware is registered in Express just like routes so the order is important. In general, our dynamic responses have to go first, otherwise Express might assume they are file requests.  Only if no route matches should Express look for static files.</p>
 <p>The <code>path.join</code> function is part of NodeJS but it is not loaded by default so we had to add <code>const path = require('path');</code> to make it available.</p>
@@ -760,9 +771,9 @@ app.use(cookieParser());</code></pre></div>
     <div class="from">From: 10</div>
     <div class="to">To: 12</div>
   </div>
-  <pre><code class="language-html"><form method="post" action="form">
-  <input name="field1"/>
-</form></code></pre></div>
+  <pre><code class="language-html">&lt;form method="post" action="form"&gt;
+  &lt;input name="field1"/&gt;
+&lt;/form&gt;</code></pre></div>
 <p>The value of that field will be posted to the <code>/form</code> path, where we can read it:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-04-04/server/index.js#L23"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -771,7 +782,7 @@ app.use(cookieParser());</code></pre></div>
     <div class="from">From: 23</div>
     <div class="to">To: 23</div>
   </div>
-  <pre><code class="language-js">app.post('/form', (req, res) => res.send(`You have entered "${req.body.field1}"`));</code></pre></div>
+  <pre><code class="language-js">app.post('/form', (req, res) =&gt; res.send(`You have entered "${req.body.field1}"`));</code></pre></div>
 <p>Here we have used <code>app.post</code> instead of <code>app.get</code> as we've done so far since that is the method declared in the <code>&lt;form method=&quot;post&quot;&gt;</code> tag.</p>
 <p>Middleware can also be restricted to respond to specific routes.  For example, all our data <em>post</em>s and <em>put</em>s will go in JSON to the <code>/data</code> route so we limit our decoding to just that route leaving the rest to be url-decoded:</p>
 <div class="code-insert"><div class="header">
@@ -791,14 +802,14 @@ app.use(cookieParser());</code></pre></div>
     <div class="from">From: 25</div>
     <div class="to">To: 36</div>
   </div>
-  <pre><code class="language-js">app.get('/cookie', (req, res) => {
+  <pre><code class="language-js">app.get('/cookie', (req, res) =&gt; {
   var chocolateChips = parseInt(req.cookies.chocolateChip || 0, 10);
   res
     .cookie('chocolateChip', chocolateChips + 1)
     .send(`I now have ${chocolateChips} chocolate chip cookies`);
 });
 
-app.get('/naughtyChild', (req, res) => {
+app.get('/naughtyChild', (req, res) =&gt; {
   res
     .clearCookie('chocolateChip')
     .send('No cookies for you');
@@ -899,7 +910,7 @@ app.get('/naughtyChild', (req, res) => {
     <div class="from">From: 10</div>
     <div class="to">To: 16</div>
   </div>
-  <pre><code class="language-js">fs.readFile(path.join(__dirname, 'data.json'), (err, data) => {
+  <pre><code class="language-js">fs.readFile(path.join(__dirname, 'data.json'), (err, data) =&gt; {
   if (err) {
     console.error(err);
     process.exit(1);
@@ -968,7 +979,7 @@ app.get('/naughtyChild', (req, res) => {
     <div class="from">From: 3</div>
     <div class="to">To: 3</div>
   </div>
-  <pre><code class="language-js">module.exports = (router) => {</code></pre></div>
+  <pre><code class="language-js">module.exports = (router) =&gt; {</code></pre></div>
 <p>Since what we exported is a function, on the other side, we can execute it:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-05-01/server/index.js#L23"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -986,8 +997,8 @@ app.get('/naughtyChild', (req, res) => {
     <div class="from">From: 5</div>
     <div class="to">To: 11</div>
   </div>
-  <pre><code class="language-js">router.get('/', (req, res) => {
-  res.json(Object.keys(data).map((pid) => ({
+  <pre><code class="language-js">router.get('/', (req, res) =&gt; {
+  res.json(Object.keys(data).map((pid) =&gt; ({
     pid: pid,
     name: data[pid].name,
     descr: data[pid].descr
@@ -1004,7 +1015,7 @@ app.get('/naughtyChild', (req, res) => {
   <pre><code class="language-js">global.data = JSON.parse(data);</code></pre></div>
 <p>We can use <code>res.send</code> instead of <code>res.json</code> since when Express is requested to send an Object or an Array, it will send it JSON-encoded.  However, it is better to state our intent as clearly as possible.</p>
 <p>We can try it out by starting our server via <code>npm start</code> and then, in a browser go to <code>http://localhost:8080/data/v1/projects</code> which will show in our browser more or less like this:</p>
-<pre><code class="language-json">[{<span class="hljs-attr">"pid"</span>:<span class="hljs-string">"25"</span>,<span class="hljs-attr">"name"</span>:<span class="hljs-string">"Writing a Book on Web Dev Tools"</span>,<span class="hljs-attr">"descr"</span>:<span class="hljs-string">"Tasks required to write a book on the tools required to develop a web application"</span>},{<span class="hljs-attr">"pid"</span>:<span class="hljs-string">"34"</span>,<span class="hljs-attr">"name"</span>:<span class="hljs-string">"Cook a Spanish omelette"</span>,<span class="hljs-attr">"descr"</span>:<span class="hljs-string">"Steps to cook a Spanish omelette or 'tortilla'"</span>}]
+<pre><code class="language-json">[{&quot;pid&quot;:&quot;25&quot;,&quot;name&quot;:&quot;Writing a Book on Web Dev Tools&quot;,&quot;descr&quot;:&quot;Tasks required to write a book on the tools required to develop a web application&quot;},{&quot;pid&quot;:&quot;34&quot;,&quot;name&quot;:&quot;Cook a Spanish omelette&quot;,&quot;descr&quot;:&quot;Steps to cook a Spanish omelette or 'tortilla'&quot;}]
 </code></pre>
 <p>It might not look good but it is not meant to be seen by humans, it is meant for our client-side code to read.</p>
 <p>For our second route <code>'/:pid'</code> we need to access the <code>pid</code> which we do by using <code>req.params.pid</code>:</p>
@@ -1015,7 +1026,7 @@ app.get('/naughtyChild', (req, res) => {
     <div class="from">From: 13</div>
     <div class="to">To: 20</div>
   </div>
-  <pre><code class="language-js">router.get('/:pid', (req, res) => {
+  <pre><code class="language-js">router.get('/:pid', (req, res) =&gt; {
   const prj = data[req.params.pid];
   if (prj) {
     res.json(prj);
@@ -1032,7 +1043,7 @@ app.get('/naughtyChild', (req, res) => {
     <div class="from">From: 22</div>
     <div class="to">To: 34</div>
   </div>
-  <pre><code class="language-js">router.get('/:pid/:tid', (req, res) => {
+  <pre><code class="language-js">router.get('/:pid/:tid', (req, res) =&gt; {
   const prj = data[req.params.pid];
   if (prj) {
     const task = prj.tasks[req.params.tid];
@@ -1064,7 +1075,7 @@ app.get('/naughtyChild', (req, res) => {
     <div class="from">From: 36</div>
     <div class="to">To: 41</div>
   </div>
-  <pre><code class="language-js">router.post('/', (req, res) => {
+  <pre><code class="language-js">router.post('/', (req, res) =&gt; {
   const pid = nextId++;
   const prj = Object.assign({name: '', descr: ''}, req.body || {});
   data[pid] = prj;
@@ -1090,7 +1101,7 @@ app.get('/naughtyChild', (req, res) => {
     <div class="from">From: 54</div>
     <div class="to">To: 62</div>
   </div>
-  <pre><code class="language-js">router.put('/:pid', (req, res) => {
+  <pre><code class="language-js">router.put('/:pid', (req, res) =&gt; {
   const prj = data[req.params.pid];
   if (prj) {
     Object.assign(prj, req.body || {});
@@ -1107,7 +1118,7 @@ app.get('/naughtyChild', (req, res) => {
     <div class="from">From: 79</div>
     <div class="to">To: 86</div>
   </div>
-  <pre><code class="language-js">router.delete('/:pid', (req, res) => {
+  <pre><code class="language-js">router.delete('/:pid', (req, res) =&gt; {
   if (req.params.pid in data) {
     delete data[req.params.pid];
     res.send();
@@ -1137,7 +1148,7 @@ app.get('/naughtyChild', (req, res) => {
   </div>
   <pre><code class="language-json">"scripts": {
   "start": "node server/index.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
+  "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
 },</code></pre></div>
 <p>It hasn't added any other placeholders for any of the other possible scripts.  Moreover, the <code>npm test</code> command can be shortened to <code>npm t</code>.  These are indications that at least NPM takes testing seriously.  And so should we.</p>
 <h2><a class="self-ref" id="chapter06-loading-testing-software" href="#chapter06-loading-testing-software"># </a>Loading testing software</h2>
@@ -1194,7 +1205,7 @@ npm i axios --save
 <p>It is customary to separate test files from those used in production code so our test files will go into a separate folder.  Unless we explicitly tell Mocha which script file or files to run, it will search for files using the pattern <code>./test/*.js</code> and run all the scripts it finds.</p>
 <p>We will place all our test scripts into the <code>/test</code> folder <a href="https://github.com/Satyam/book-react-redux/tree/chapter-06-01/test">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and will start with <code>server.js</code>.</p>
 <p>Mocha will add serveral <em>global</em> methods such as <code>describe</code> and <code>it</code> that ESLint doesn't know about, so it will complain about them.  We could add a comment at the beginning of our source files to give instructions to ESLint:</p>
-<pre><code class="language-js"><span class="hljs-comment">/*globals describe:false, it:false, before:false, after:false*/</span>
+<pre><code class="language-js">/*globals describe:false, it:false, before:false, after:false*/
 </code></pre>
 <p>However, doing this on each and every test file would become tedious.  ESLint allows us to add extra <code>.eslintrc</code> files in any folder with extra configuration options. When ESLint enters a folder, it first checks for an <code>.eslintrc</code> file there and, if it finds one, it will merge the configuration options in that file with the options it is already working with.  Thus, by adding a <code>.eslintrc.json</code> file in the <code>/test</code> folder we can tell ESLint about our new <em>globals</em>. Actually, this is even easier because ESLint already knows about Mocha so we can just tell it to assume the environment these files are meant to run in is, besides NodeJS, Mocha so that it will immediately accept all of Mocha's globals.</p>
 <div class="code-insert"><div class="header">
@@ -1236,8 +1247,8 @@ const http = axios.create({
   responseType: 'json'
 });</code></pre></div>
 <p>To write a test, we start with a description and what should be expected.</p>
-<pre><code class="language-js">describe(<span class="hljs-string">'Static pages test'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-  it(<span class="hljs-string">'Get / should return home page'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+<pre><code class="language-js">describe('Static pages test', function () {
+  it('Get / should return home page', function () {
 </code></pre>
 <p>Both <code>describe</code> and <code>it</code> accept a string which will be printed as the tests are executed, in green for success, in red for failed ones.  As the second argument, both expect a callback function. The documentation for Mocha states that we should not use <em>fat arrow</em> functions because Mocha forces <code>this</code> within the callback to a value of its choice that allows us access to several functions. However, if we don't need to use any of those functions (and right now, we don't), we may use <em>fat arrow</em> functions.</p>
 <p>Mocha allows for synchronous or asynchronous tests.  All HTTP operations are asynchronous because we don't actually know when the server will respond.  If we don't tell Mocha that a test is asynchronous, it will assume the test is passed when the test function reaches the end without errors, even if the reply from the server is still to arrive.</p>
@@ -1251,16 +1262,27 @@ const http = axios.create({
     <div class="from">From: 21</div>
     <div class="to">To: 28</div>
   </div>
-  <pre><code class="language-js">it('Get / should return home page', () => {
-  return http.get('/')
-    .then((response) => {
+  <pre><code class="language-js">it('Get / should return home page', () =&gt;
+  http.get('/')
+    .then((response) =&gt; {
       expect(response.status).to.equal(200);
       expect(response.headers['content-type']).to.contain('text/html');
-      expect(response.data).to.contain('<title>Sample Web Page</title>');
-    });
-});</code></pre></div>
+      expect(response.data).to.contain('&lt;title&gt;Sample Web Page&lt;/title&gt;');
+    })
+);</code></pre></div>
 <p>We are sending an <code>http</code> <code>get</code> request on the root <code>'/'</code> and we expect the server to respond with a 200 status code, a content type of HTML and somewhere in the body to be that <code>&lt;title&gt;</code> tag. The <a href="http://chaijs.com/api/bdd/">syntax</a> of the calls chained after <code>expect</code> is provided by Chai as a series of keywords that turn out quite readable.</p>
 <p>Axios returns a <code>Promise</code> which will be resolved when a reply arrives. The function at the <code>then</code> part of the Promise will then be called. The <code>then</code> is also chainable so it still returns a Promise which we return  so that Mocha itself can chain to it, wait for its completion and report on its success or failure.</p>
+<p>It does not look as if we are returning anything to Mocha since there is no <code>return</code> statement, however, one of the changes in <em>fat arrow</em> functions is that if the body of the function is an expression, the <em>fat arrow</em> function implicitly  returns its value.  Normal <code>function</code> functions return <code>undefined</code> if nothing is returned explicitly, which was always somewhat of a waste. These functions are all equivalent:</p>
+<pre><code class="language-js">function (x, y) {
+  return x * y;
+}
+
+(x, y) =&gt; {
+  return x * y;
+}
+
+(x, y) =&gt; x * y;
+</code></pre>
 <p>For the last test, we have to somehow turn around the normal response of Mocha because we do expect an error.</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-06-01/test/server.js#L37-L47"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -1269,17 +1291,17 @@ const http = axios.create({
     <div class="from">From: 37</div>
     <div class="to">To: 47</div>
   </div>
-  <pre><code class="language-js">it('Get /xyz should return a "page not found" error', () => {
-  return http.get('/xyz')
+  <pre><code class="language-js">it('Get /xyz should return a "page not found" error', () =&gt;
+  http.get('/xyz')
     .then(
-      (response) => {
+      (response) =&gt; {
         throw new Error('Should not have found it');
       },
-      (response) => {
+      (response) =&gt; {
         expect(response.status).to.equal(404);
       }
-    );
-});</code></pre></div>
+    )
+);</code></pre></div>
 <p>The <code>then</code> method of a <code>Promise</code> actually accepts two callbacks, one for success, which is the one we usually use, and a second one for failure.  Here, we listen to both outcomes.  In the <em>success</em> callback, which is invalid in this case, we throw an error which Mocha will report.  In the second, we check that the status code on the <em>failed</em> response is, indeed, 404.  Since the failure is caught and supposedly fixed (unless the status code is something else but 404), the <code>Promise</code> is now considered successful and that is what Mocha will report.</p>
 <h2><a class="self-ref" id="chapter06-running-the-tests" href="#chapter06-running-the-tests"># </a>Running the tests</h2>
 <p>We have to run both the server and the test.  To do that we may either open two terminal windows and run the server via <code>npm start</code> in one of them and then <code>npm t</code> (shorthand for <code>npm test</code>) in the other.  Alternatively, if the operating system allows it, we could run the server in the background doing <code>npm start &amp;</code> and then <code>npm t</code>.</p>
@@ -1294,7 +1316,7 @@ const http = axios.create({
     <div class="to">To: 30</div>
   </div>
   <pre><code class="language-js">http.createServer(app)
-  .listen(PORT, () => {
+  .listen(PORT, () =&gt; {
     console.log(`Server running at http://localhost:${PORT}/`);
   });</code></pre></div>
 <p>This created and set the server to listen to requests all at once.  We have to break that into two so we can export the server.</p>
@@ -1317,7 +1339,7 @@ module.exports = server;</code></pre></div>
     <div class="to">To: 35</div>
   </div>
   <pre><code class="language-js">if (require.main === module) {
-  server.listen(PORT, () => {
+  server.listen(PORT, () =&gt; {
     console.log(`Server running at http://localhost:${PORT}/`);
   });
 };</code></pre></div>
@@ -1331,10 +1353,10 @@ module.exports = server;</code></pre></div>
     <div class="to">To: 5</div>
   </div>
   <pre><code class="language-js">const server = require('..');</code></pre></div>
-<pre><code class="language-js"><span class="hljs-comment">/* Any of these would do just as well:
+<pre><code class="language-js">/* Any of these would do just as well:
 const server = require('../server');
 const server = require('..');
-*/</span>
+*/
 </code></pre>
 <p>Since the server, when loaded as a module, will not start listening, we add these two extra commands to our test suite:</p>
 <div class="code-insert"><div class="header">
@@ -1344,10 +1366,10 @@ const server = require('..');
     <div class="from">From: 15</div>
     <div class="to">To: 20</div>
   </div>
-  <pre><code class="language-js">before('Starting server', (done) => {
+  <pre><code class="language-js">before('Starting server', (done) =&gt; {
   server.listen(PORT, done);
 });
-after('Closing the server', (done) => {
+after('Closing the server', (done) =&gt; {
   server.close(done);
 });</code></pre></div>
 <p>Within each <code>describe</code>, Mocha will look for and execute <code>before</code> callbacks, then it will look for the <code>it</code> tests or further <code>describe</code> test suites and execute those and finally it will call the <code>after</code> callback, if there is any.  There are also <code>beforeEach</code> and <code>afterEach</code> that, if present, will be called not just once per test suite but for each and every individual test within the suite.  We are not using those here.</p>
@@ -1357,25 +1379,25 @@ after('Closing the server', (done) => {
 <p>Someone might have noticed that while we have dealt with the asynchronicity of the <code>listen</code> method of the server, we have not dealt with that of reading the data file.  There are a few ways to deal with that but, in the end, it really doesn't matter as the use of that <code>data.json</code> file is just an interim way to just get going with the parts of the application we really care about at this point.  Since it works anyway and, in the long run, it will be replaced, we won't deal with this issue right now.  It is noticeable in that the first test is somewhat slow and Mocha reports the delay in yellow as a warning or red as unacceptable.</p>
 <h2><a class="self-ref" id="chapter06-testing-the-data-server" href="#chapter06-testing-the-data-server"># </a>Testing the data server</h2>
 <p>Testing the REST API has made our <code>server.js</code> test script grow five-fold, even though we haven't tested everything that could possibly be tested.  Later on, we will see how to find out what we have checked and what not.  Most of the test code is quite repetitive, it usually goes like this:</p>
-<pre><code class="language-js">it(<span class="hljs-string">'whatever the test ...'</span>, () =&gt; {
-  <span class="hljs-keyword">return</span> http.method(URL <span class="hljs-comment">/* possible object with data: {descr: 'changed description'} */</span>)
+<pre><code class="language-js">it('whatever the test ...', () =&gt;
+  http.method(URL /* possible object with data: {descr: 'changed description'} */)
     .then((response) =&gt; {
-      expect(response.status).to.equal(<span class="hljs-number">200</span>);
-      expect(response.headers[<span class="hljs-string">'content-type'</span>]).to.contain(<span class="hljs-string">'application/json'</span>);
-      <span class="hljs-keyword">let</span> data = response.data;
-      <span class="hljs-comment">// further tests on the data</span>
-    });
-});
+      expect(response.status).to.equal(200);
+      expect(response.headers['content-type']).to.contain('application/json');
+      let data = response.data;
+      // further tests on the data
+    })
+);
 </code></pre>
 <p>Most tests will call some <code>method</code> (<code>get</code>, <code>post</code>, <code>put</code> or <code>delete</code>) on the <code>http</code> object which is a pre-configured Axios instance such as the one we use for static pages:</p>
-<pre><code class="language-js"><span class="hljs-keyword">const</span> http = axios.create({
-  baseURL: <span class="hljs-string">`http://localhost:<span class="hljs-subst">${PORT}</span>`</span>
+<pre><code class="language-js">const http = axios.create({
+  baseURL: `http://localhost:${PORT}`
 });
 </code></pre>
 <p>Or the one we use to access the REST API, which already points to <code>/data/v1</code></p>
-<pre><code class="language-js"><span class="hljs-keyword">const</span> http = axios.create({
-  baseURL: <span class="hljs-string">`http://localhost:<span class="hljs-subst">${PORT}</span>/data/v1/projects`</span>,
-  responseType: <span class="hljs-string">'json'</span>
+<pre><code class="language-js">const http = axios.create({
+  baseURL: `http://localhost:${PORT}/data/v1/projects`,
+  responseType: 'json'
 });
 </code></pre>
 <p>Depending on the <em>method</em> we may need to add further information, for example, both the POST and PUT methods need an object with the data to insert or modify, which Axios will take care to JSON-encode.</p>
@@ -1466,7 +1488,7 @@ after('Closing the server', (done) => {
   </div>
   <pre><code class="language-"># Coverage directory used by tools like istanbul
 coverage</code></pre></div>
-<h3><a class="self-ref" id="chapter07-installing-istanbul" href="#chapter07-installing-istanbul"># </a>Installing Istanbul</h3>
+<h2><a class="self-ref" id="chapter07-installing-istanbul" href="#chapter07-installing-istanbul"># </a>Installing Istanbul</h2>
 <p>To set up Istanbul we first need to load it.  Just as ESLint, we may load it globally with <code>npm i -g istanbul</code> as recommended in its <a href="https://github.com/gotwarlost/istanbul#getting-started">home page</a> so we share the same copy for all our applications.  However, we can also load it locally.</p>
 <pre><code class="language-sh">npm i --save-dev istanbul@1.0.0-alpha.2
 </code></pre>
@@ -1566,16 +1588,16 @@ Lines        : 95% ( 76/80 )
     <div class="to">To: 46</div>
   </div>
   <pre><code class="language-js">const webServer = {
-  start: (done) => {
-    global.db = new sqlite3.Database(':memory:', (err) => {
+  start: (done) =&gt; {
+    global.db = new sqlite3.Database(':memory:', (err) =&gt; {
       if (err) return done(err);
-      fs.readFile(path.join(__dirname, 'data.sql'), 'utf8', (err, data) => {
+      fs.readFile(path.join(__dirname, 'data.sql'), 'utf8', (err, data) =&gt; {
         if (err) return done(err);
-        db.exec(data, (err) => {
+        db.exec(data, (err) =&gt; {
           if (err) return done(err);
-          projects(projectsRouter, (err) => {
+          projects(projectsRouter, (err) =&gt; {
             if (err) return done(err);
-            server.listen(PORT, () => {
+            server.listen(PORT, () =&gt; {
               console.log(`Server running at http://localhost:${PORT}/`);
               done();
             });
@@ -1584,7 +1606,7 @@ Lines        : 95% ( 76/80 )
       });
     });
   },
-  stop: (done) => {
+  stop: (done) =&gt; {
     server.close(done);
   }
 };
@@ -1599,7 +1621,7 @@ module.exports = webServer;</code></pre></div>
     <div class="from">From: 24</div>
     <div class="to">To: 24</div>
   </div>
-  <pre><code class="language-js">global.db = new sqlite3.Database(':memory:', (err) => {</code></pre></div>
+  <pre><code class="language-js">global.db = new sqlite3.Database(':memory:', (err) =&gt; {</code></pre></div>
 <p>We could use an actual file or pass an empty string which will tell SQLite to create a temporary file, but we don't really have that much data. We make that <code>db</code> instance global by assigning it to <code>global.db</code>.</p>
 <p>Then, we use the FileSystem <code>fs</code> module to read <code>data.sql</code> which contains standard SQL statements to create and populate the tables to store our data.  Once read, we tell the <code>db</code> to execute <code>db.exec</code> all those statements at once.</p>
 <div class="code-insert"><div class="header">
@@ -1609,9 +1631,9 @@ module.exports = webServer;</code></pre></div>
     <div class="from">From: 26</div>
     <div class="to">To: 28</div>
   </div>
-  <pre><code class="language-js">fs.readFile(path.join(__dirname, 'data.sql'), 'utf8', (err, data) => {
+  <pre><code class="language-js">fs.readFile(path.join(__dirname, 'data.sql'), 'utf8', (err, data) =&gt; {
   if (err) return done(err);
-  db.exec(data, (err) => {</code></pre></div>
+  db.exec(data, (err) =&gt; {</code></pre></div>
 <p>We need to do some further setup in <code>server/projects.js</code> which is also asynchronous so we have added an extra argument to <code>projects</code>, we give it the router instance and now we also add a callback so it can tell us when it is done.</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/index.js#L30"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -1620,16 +1642,16 @@ module.exports = webServer;</code></pre></div>
     <div class="from">From: 30</div>
     <div class="to">To: 30</div>
   </div>
-  <pre><code class="language-js">projects(projectsRouter, (err) => {</code></pre></div>
+  <pre><code class="language-js">projects(projectsRouter, (err) =&gt; {</code></pre></div>
 <p>Finally, we set our HTTP server to listen.</p>
 <p>We do each operation sequentially. Each asynchronous operation takes a callback function whose first argument is an error object.  So, to proceed with each step we first check that the previous step has had no errors.  If <code>err</code> is not null, we call <code>done(err)</code> to notify our caller that there has been an error.  We have used a shortcut, we might have written this like this:</p>
-<pre><code class="language-js"><span class="hljs-keyword">if</span> (err) {
+<pre><code class="language-js">if (err) {
   done(err);
-  <span class="hljs-keyword">return</span>;
+  return;
 }
 </code></pre>
 <p>But we know that <code>done</code> does not return anything, thus, we are free to write:</p>
-<pre><code class="language-js"><span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">return</span> done(err);
+<pre><code class="language-js">if (err) return done(err);
 </code></pre>
 <p>Since <code>done</code> returns <code>undefined</code> and a solitary <code>return</code> is like <code>return undefined</code>, our shortcut works just the same.  We have not used this kind of shortcut elsewhere because we don't know what the callback might return.</p>
 <p>For <code>close</code> we simply close the HTTP server.  Since the database is a temporary one in memory, it really doesn't matter if we close it or not.</p>
@@ -1650,7 +1672,7 @@ module.exports = webServer;</code></pre></div>
     <div class="to">To: 55</div>
   </div>
   <pre><code class="language-js">if (require.main === module) {
-  webServer.start((err) => {
+  webServer.start((err) =&gt; {
     if (err) {
       console.error(err);
       process.exit(1);
@@ -1660,39 +1682,39 @@ module.exports = webServer;</code></pre></div>
 <p>Once again, we check if this module is the main one and, if so, we call <code>webServer.start</code> to get everything up and running.  We provide a callback function which <code>start</code> would receive as the <code>done</code> argument that, if it does receive an error, it shows it in the console and exits with an error code.</p>
 <p>We have made the function which is the default export of <code>server/projects.js</code> an asynchronous one by adding just one more argument to it, the <code>done</code> callback. We had to do this because all SQL operations are asynchronous so at initialization time, when we setup the <em>prepared statements</em> we can let our caller know when we are done or otherwise signal an error.</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L3"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L1"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-08-01</div>
     <div class="filename">File: server/projects.js</div>
-    <div class="from">From: 3</div>
-    <div class="to">To: 3</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 1</div>
   </div>
-  <pre><code class="language-js">module.exports = (router, done) => {</code></pre></div>
+  <pre><code class="language-js">module.exports = (router, done) =&gt; {</code></pre></div>
 <p>A prepared statement is an optimization present in most varieties of SQL which allows the SQL engine to pre-compile and possibly optimize an SQL statement for future execution. For example, <code>selectAllProjects</code> contains the prepared statement <code>'select * from projects'</code>.</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L3-L9"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L1-L7"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-08-01</div>
     <div class="filename">File: server/projects.js</div>
-    <div class="from">From: 3</div>
-    <div class="to">To: 9</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 7</div>
   </div>
-  <pre><code class="language-js">module.exports = (router, done) => {
-  const selectAllProjects = db.prepare('select * from projects', (err) => {
+  <pre><code class="language-js">module.exports = (router, done) =&gt; {
+  const selectAllProjects = db.prepare('select * from projects', (err) =&gt; {
     if (err) return done(err);
   });
-  const selectProjectByPid = db.prepare('select * from projects where pid = $pid', (err) => {
+  const selectProjectByPid = db.prepare('select * from projects where pid = $pid', (err) =&gt; {
     if (err) return done(err);
   });</code></pre></div>
 <p>Prepared statements can have variable parts which will be filled in when they are executed.  Variable parts can be represented in various ways, we have opted to use an identifier preceded by a <code>$</code> sign.  Thus when we want to execute <code>selectProjectByPid</code>, we have to provide an actual value for <code>$pid</code>.</p>
 <p>Now, in response to a request for <code>/data/v1/projects</code>, we ask the <code>selectAllProjects</code> prepared statement to give us <code>all</code> the projects it can find.</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L32-L40"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L30-L38"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-08-01</div>
     <div class="filename">File: server/projects.js</div>
-    <div class="from">From: 32</div>
-    <div class="to">To: 40</div>
+    <div class="from">From: 30</div>
+    <div class="to">To: 38</div>
   </div>
-  <pre><code class="language-js">router.get('/', (req, res) => {
-  selectAllProjects.all((err, prjs) => {
+  <pre><code class="language-js">router.get('/', (req, res) =&gt; {
+  selectAllProjects.all((err, prjs) =&gt; {
     if (err) {
       res.status(500).send(err);
     } else {
@@ -1713,13 +1735,13 @@ module.exports = webServer;</code></pre></div>
 <p>We use a 500 error code here instead of the 404 we have used so far because the only reason for an error is a serious server-side error which fits the error standard description &quot;500: Internal Server Error&quot;.  There are plenty of standard <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">HTTP Status Codes</a> already defined that cover most needs. It is better to use the correct HTTP error code.</p>
 <p>Creating a new project via a POST to <code>/data/v1/projects</code> uses parameters:</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L84-L95"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L82-L93"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-08-01</div>
     <div class="filename">File: server/projects.js</div>
-    <div class="from">From: 84</div>
-    <div class="to">To: 95</div>
+    <div class="from">From: 82</div>
+    <div class="to">To: 93</div>
   </div>
-  <pre><code class="language-js">router.post('/', (req, res) => {
+  <pre><code class="language-js">router.post('/', (req, res) =&gt; {
   createProject.run({
     $name: req.body.name,
     $descr: req.body.descr
@@ -1733,33 +1755,33 @@ module.exports = webServer;</code></pre></div>
 });</code></pre></div>
 <p>Here we run the <code>createProject</code> prepared statement filling in the <code>$name</code> and <code>$descr</code> variables with the corresponding information from the body of the request.  If there is an error, we report it back to the client with a 500 error code, otherwise, we get the <code>pid</code> of the newly inserted record which SQLite stores in <code>this.lastID</code>.</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L93"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L91"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-08-01</div>
     <div class="filename">File: server/projects.js</div>
-    <div class="from">From: 93</div>
-    <div class="to">To: 93</div>
+    <div class="from">From: 91</div>
+    <div class="to">To: 91</div>
   </div>
   <pre><code class="language-js">res.json({pid: this.lastID});</code></pre></div>
 <p>SQLite has two such variables <code>lastID</code> which represents the row ID of the last record inserted and <code>changes</code> which returns a count of the number of records affected in an insert, update or delete statement.  There is only one copy of each per connection so they must be read immediately after the SQL operation and before any new operation is attempted.  Different SQL engines have different names for these variables but they are always there in one way or another.</p>
 <p>We are not using any shortcut to return when an error is found.  The following may work, but it is not safe:</p>
-<pre><code class="language-js"><span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">500</span>).send(err);
+<pre><code class="language-js">if (err) return res.status(500).send(err);
 </code></pre>
 <p>If we did this, we would be returning a copy of <code>res</code> but we don't know what the Express router might do with that.  We might use:</p>
-<pre><code class="language-js"><span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">return</span> <span class="hljs-keyword">void</span> res.status(<span class="hljs-number">500</span>).send(err);
+<pre><code class="language-js">if (err) return void res.status(500).send(err);
 </code></pre>
 <p>But it lacks clarity, which is important for maintainability, unless the practice is standardized across the organization. One-off hacks are never a good idea but if it becomes standard practice, it would be OK (and it would allow us to improve our coverage statistics).</p>
 <h2><a class="self-ref" id="chapter08-building-sql-statements-dynamically" href="#chapter08-building-sql-statements-dynamically"># </a>Building SQL statements dynamically</h2>
 <p>We can't use SQL prepared statements everywhere. In an update, what is it we are updating, all of the record or just part of it? In a project, we might independently update the project name or its description.  In a task we might change the description or its completion status. Just two fields per record  would require three prepared statements, one with both SQL field names and another two, each for a separate field.  This is not acceptable.  With more fields the situation would be even worst. So, we build it dynamically by concatenating as many fields as values arrive in the request body:</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L121-L145"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-01/server/projects.js#L119-L143"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-08-01</div>
     <div class="filename">File: server/projects.js</div>
-    <div class="from">From: 121</div>
-    <div class="to">To: 145</div>
+    <div class="from">From: 119</div>
+    <div class="to">To: 143</div>
   </div>
-  <pre><code class="language-js">router.put('/:pid', (req, res) => {
-    let sql = 'update projects set ' +
-      Object.keys(req.body).map((column) => `${column} = $${column}`).join(',') +
+  <pre><code class="language-js">router.put('/:pid', (req, res) =&gt; {
+    const sql = 'update projects set ' +
+      Object.keys(req.body).map((column) =&gt; `${column} = $${column}`).join(',') +
      ' where pid = $pid';
 
     db.run(sql, {
@@ -1811,8 +1833,8 @@ module.exports = webServer;</code></pre></div>
   </div>
   <pre><code class="language-json">"version": "0.2.0",</code></pre></div>
 <p>Whenever we change the first non-zero number part in our version, it means there has been a compatibility change.  If our module were to be listed as a dependency in some other <code>package.json</code> like this:</p>
-<pre><code class="language-json">"dependencies": {
-  "how_to_do_a_todo_app": "^0.1.0"
+<pre><code class="language-json">&quot;dependencies&quot;: {
+  &quot;how_to_do_a_todo_app&quot;: &quot;^0.1.0&quot;
 }
 </code></pre>
 <p>NPM would load any version <code>0.1.0</code> or later, such as <code>0.1.1</code> or <code>0.1.999999</code> but it would never load <code>0.2.0</code> because when the first non-zero number changes, it means there is a compatibility issue.</p>
@@ -1841,8 +1863,8 @@ module.exports = webServer;</code></pre></div>
     <div class="from">From: 30</div>
     <div class="to">To: 50</div>
   </div>
-  <pre><code class="language-js">router.get('/', (req, res) => {
-  const cb = (err, prjs) => {
+  <pre><code class="language-js">router.get('/', (req, res) =&gt; {
+  const cb = (err, prjs) =&gt; {
     if (err) {
       res.status(500).send(err);
     } else {
@@ -1870,7 +1892,7 @@ module.exports = webServer;</code></pre></div>
     <div class="from">From: 31</div>
     <div class="to">To: 37</div>
   </div>
-  <pre><code class="language-js">const cb = (err, prjs) => {
+  <pre><code class="language-js">const cb = (err, prjs) =&gt; {
   if (err) {
     res.status(500).send(err);
   } else {
@@ -1907,30 +1929,30 @@ db.all(sql, cb);</code></pre></div>
 <p>As expected, we then test our changes <a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-03/test/server.js#L89-L143">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
 <h2><a class="self-ref" id="chapter08-sql-injection" href="#chapter08-sql-injection"># </a>SQL Injection</h2>
 <p>The previous example shows us the danger of relying on information coming from a remote client to build an SQL statement. We may add the following test to our suite to see how it can be done:</p>
-<pre><code class="language-js">it(<span class="hljs-string">'SQL injection '</span>, () =&gt; http.get(<span class="hljs-string">'/?fields=* from sqlite_master;select *'</span>)
+<pre><code class="language-js">it('SQL injection ', () =&gt; http.get('/?fields=* from sqlite_master;select *')
   .then((response) =&gt; {
-    expect(response.status).to.equal(<span class="hljs-number">200</span>);
-    expect(response.headers[<span class="hljs-string">'content-type'</span>]).to.contain(<span class="hljs-string">'application/json'</span>);
-    <span class="hljs-keyword">const</span> data = response.data;
-    expect(data).to.be.an.instanceof(<span class="hljs-built_in">Array</span>);
-    <span class="hljs-built_in">console</span>.log(data);
+    expect(response.status).to.equal(200);
+    expect(response.headers['content-type']).to.contain('application/json');
+    const data = response.data;
+    expect(data).to.be.an.instanceof(Array);
+    console.log(data);
   })
 );
 </code></pre>
 <p>Our server code accepts two query parameters, <code>fields</code> and <code>search</code>.  The first is expected to contain a comma-separated list of field names such as <code>?fields=name,pid</code> but what if it doesn't? In the code above we cheated the server and injected an extra SQL statement for the server to execute.  When that request is executed, the server code <a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-03/server/projects.js#L41-L47">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> will produce the following SQL statement:</p>
-<pre><code class="language-sql"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> sqlite_master;<span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> projects
+<pre><code class="language-sql">select * from sqlite_master;select * from projects
 </code></pre>
 <p>Many database engines can return the result of two queries at once or will return one or the other.  In this case, SQLite returns the first and ignores the second. The table <code>sqlite_master</code> is an internal table within SQLite that actually contains the information about all the other elements in the database.</p>
-<pre><code class="language-js">[ { type: <span class="hljs-string">'table'</span>,
-    name: <span class="hljs-string">'projects'</span>,
-    tbl_name: <span class="hljs-string">'projects'</span>,
-    rootpage: <span class="hljs-number">2</span>,
-    sql: <span class="hljs-string">'CREATE TABLE projects (\n  pid INTEGER PRIMARY KEY,\n  name TEXT,\n  descr TEXT\n)'</span> },
-  { type: <span class="hljs-string">'table'</span>,
-    name: <span class="hljs-string">'tasks'</span>,
-    tbl_name: <span class="hljs-string">'tasks'</span>,
-    rootpage: <span class="hljs-number">3</span>,
-    sql: <span class="hljs-string">'CREATE TABLE tasks (\n  tid INTEGER PRIMARY KEY,\n  pid INTEGER,\n  descr TEXT,\n  completed TINYINT\n)'</span> } ]
+<pre><code class="language-js">[ { type: 'table',
+    name: 'projects',
+    tbl_name: 'projects',
+    rootpage: 2,
+    sql: 'CREATE TABLE projects (\n  pid INTEGER PRIMARY KEY,\n  name TEXT,\n  descr TEXT\n)' },
+  { type: 'table',
+    name: 'tasks',
+    tbl_name: 'tasks',
+    rootpage: 3,
+    sql: 'CREATE TABLE tasks (\n  tid INTEGER PRIMARY KEY,\n  pid INTEGER,\n  descr TEXT,\n  completed TINYINT\n)' } ]
 </code></pre>
 <p>It lists the only two elements we have created, the two tables <code>projects</code> and <code>tasks</code> and the SQL statements used for the creation of each, listing the fields and constraints for each.</p>
 <p>Once we know the tables available in the server, we could then issue a HTTP GET request to  <code>'/projects?fields=* from projects;select *'</code> or any other table we had and steal whatever information is within reach.</p>
@@ -1942,11 +1964,11 @@ db.all(sql, cb);</code></pre></div>
     <div class="from">From: 41</div>
     <div class="to">To: 48</div>
   </div>
-  <pre><code class="language-js">if (req.query.fields && !/^\s*\w+\s*(,\s*\w+\s*)*$/.test(req.query.fields)) {
+  <pre><code class="language-js">if (req.query.fields &amp;&amp; !/^\s*\w+\s*(,\s*\w+\s*)*$/.test(req.query.fields)) {
   res.status(400).send('Bad request');
   return;
 }
-if (req.query.search && !/^\s*\w+\s*=\s*\w[\w\s]*$/.test(req.query.search)) {
+if (req.query.search &amp;&amp; !/^\s*\w+\s*=\s*\w[\w\s]*$/.test(req.query.search)) {
   res.status(400).send('Bad request');
   return;
 }</code></pre></div>
@@ -1958,23 +1980,873 @@ if (req.query.search && !/^\s*\w+\s*=\s*\w[\w\s]*$/.test(req.query.search)) {
     <div class="from">From: 145</div>
     <div class="to">To: 155</div>
   </div>
-  <pre><code class="language-js">it('SQL injection ', function () {
-  return http.get('/?fields=* from sqlite_master;select *')
-  .then(
-    (response) => {
-      throw new Error('Should not have let it go');
-    },
-    (response) => {
-      expect(response.status).to.equal(400);
-    }
-  );
-});</code></pre></div>
+  <pre><code class="language-js">it('SQL injection ', () =&gt;
+  http.get('/?fields=* from sqlite_master;select *')
+    .then(
+      (response) =&gt; {
+        throw new Error('Should not have let it go');
+      },
+      (response) =&gt; {
+        expect(response.status).to.equal(400);
+      }
+    )
+);</code></pre></div>
 <p>We should never trust the information coming from a remote source.  It might not actually be a user on a browser.</p>
 <h2><a class="self-ref" id="chapter08-summary" href="#chapter08-summary"># </a>Summary</h2>
 <p>We have successfully migrated our server from using in-memory data to an external SQL database.</p>
 <p>In doing so we have found that our original definition of our REST API had some expensive features. This required us to change the agreed interface causing a compatibility issue.  We indicated that by incrementing our version number of our code in <code>package.json</code>.</p>
 <p>It was our tests that allowed us to discover this issue.  We should always write tests.</p>
 <p>We have also shown how SQL injection can be done and how to prevent it by validating the requests.  And, of course, we tested for it.</p>
+<h1><a class="self-ref" id="chapter09-separating-concerns" href="#chapter09-separating-concerns"># </a>Separating Concerns</h1>
+<p>Our <code>projects.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-04/server/projects.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> file is a real mess.  It was useful so far because it allowed us to see in just one glimpse how a request could be handled but it mixed two separate concerns, those of handling the HTTP and the database connections.  As more complexity was added to the routes in some of the examples, they became really difficult to follow.</p>
+<p>We fix this mess by separating the concerns.  To start with, it seems our server software will only deal with projects.  This is probably shortsighted, we would eventually have to tackle other concerns, such as user login, which will also require us to manage users.</p>
+<p>Our server has already hard-coded a root route to deal with projects:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-04/server/index.js#L15-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-08-04</div>
+    <div class="filename">File: server/index.js</div>
+    <div class="from">From: 15</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">const projectsRouter = express.Router();
+app.use('/data/v1/projects', projectsRouter);</code></pre></div>
+<p>For starters, we will move the code dealing with projects into its own <code>projects</code> folder under <code>/server</code> <a href="https://github.com/Satyam/book-react-redux/tree/chapter-09-01/server">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  This will further give us flexibility to separate the code dealing with projects into various files without crowding the <code>/server</code> folder.</p>
+<p>The <code>routes.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/projects/routes.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> file deals with routing the HTTP requests to appropriate handlers and <code>transactions.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/projects/transactions.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> deals with actually handling the data for those requests.</p>
+<p>Several clues indicate the split is a good thing.</p>
+<ul>
+<li><code>routes.js</code>
+<ul>
+<li>no longer uses <code>db</code>, the global variable holding the database connection.</li>
+<li>validates all incoming arguments and issues a <code>400 Bad request</code> HTTP Error.  The 4xx error codes are client-side errors and sending improper values is its concern.</li>
+<li>converts incoming text values into proper internal data types (numbers and booleans)</li>
+<li>sends <code>500 Internal Server Error</code> when an error comes from <code>transactions.js</code>.  The 5xx error codes are for server-side errors and whatever the specific error might be, from an HTTP standpoint, it is a 5xx error.</li>
+</ul>
+</li>
+<li><code>transactions.js</code>
+<ul>
+<li>it assumes that the data from the request is present and validated</li>
+<li>it is the only one accessing the database</li>
+<li>knows nothing about HTTP error codes</li>
+<li>knows nothing about where the data is located within the request</li>
+</ul>
+</li>
+</ul>
+<p>All the database functionality is contained within an object which is the only export of <code>transactions.js</code>.  Each property in that object is a function. An <code>init</code> function sets everything up, basically, pre-compiling the SQL prepared statements, followed by several functions handling each possible CRUD operation.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/projects/transactions.js#L1-L32"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-01</div>
+    <div class="filename">File: server/projects/transactions.js</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 32</div>
+  </div>
+  <pre><code class="language-js">const prepared = {};
+
+module.exports = {
+  init: (done) =&gt; {
+    prepared.selectAllProjects = db.prepare('select * from projects', (err) =&gt; {
+      if (err) return done(err);
+    });
+    prepared.selectProjectByPid = db.prepare('select * from projects where pid = $pid', (err) =&gt; {
+      if (err) return done(err);
+    });
+    prepared.selectTasksByPid = db.prepare('select tid, descr, completed from tasks where pid = $pid', (err) =&gt; {
+      if (err) return done(err);
+    });
+    prepared.selectTaskByTid = db.prepare('select * from tasks where tid = $tid', (err) =&gt; {
+      if (err) return done(err);
+    });
+    prepared.createProject = db.prepare('insert into projects (name, descr) values ($name, $descr)', (err) =&gt; {
+      if (err) return done(err);
+    });
+    prepared.createTask = db.prepare('insert into tasks (pid, descr, completed) values ($pid, $descr, $completed)', (err) =&gt; {
+      if (err) return done(err);
+    });
+    prepared.deleteProject = db.prepare('delete from projects where pid = $pid', (err) =&gt; {
+      if (err) return done(err);
+    });
+    prepared.deleteTask = db.prepare('delete from tasks where pid = $pid and tid = $tid', (err) =&gt; {
+      if (err) return done(err);
+    });
+    done();
+  },
+
+  getAllProjects: (keys, data, options, done) =&gt; {</code></pre></div>
+<p>All the functions are asynchronous receiving a <code>done</code> callback function as their last or only argument.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/projects/transactions.js#L49"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-01</div>
+    <div class="filename">File: server/projects/transactions.js</div>
+    <div class="from">From: 49</div>
+    <div class="to">To: 49</div>
+  </div>
+  <pre><code class="language-js">getProjectById: (keys, data, options, done) =&gt; {</code></pre></div>
+<p>All data handling functions, such as the two shown above expect the following arguments:</p>
+<ul>
+<li><code>keys</code>: Object containing the key or index to locate the item to operate upon.  They are usually <code>pid</code> and/or <code>tid</code>.</li>
+<li><code>data</code>: Object containing data associated to the request. They can be <code>name</code> and <code>descr</code> for projects, <code>descr</code> and <code>complete</code> for tasks.</li>
+<li><code>options</code>: Object containing request options such as
+<ul>
+<li><code>fields</code>: list of fields to return</li>
+<li><code>search</code>: name of field and value to look for in that field.</li>
+</ul>
+</li>
+<li><code>done</code>: callback function.</li>
+</ul>
+<p>They all produce the same type of reply through the combination of the two arguments of the <code>done</code> callback function.</p>
+<ul>
+<li><code>done(null, data)</code>: success.  Requested data is returned.</li>
+<li><code>done(err)</code>: error. The database handler produced some sort of error.  The second argument is irrelevant.</li>
+<li><code>done(null, null)</code>: not found. The keys provided failed to locate any items.  This is usually an error and <code>routes.js</code> reports it as a <code>404 not found</code> HTTP error.  This is different from a request for a list of items that returns no items because that returns <code>done(null, [])</code> and it is not necessarily an error.</li>
+</ul>
+<p>Extracting the arguments for each data processing function and processing the replies is mostly handled by the <code>processPrj</code>  function:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/projects/routes.js#L4-L10"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-01</div>
+    <div class="filename">File: server/projects/routes.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 10</div>
+  </div>
+  <pre><code class="language-js">const processPrj = (op, res, keys, data, options) =&gt; {
+  transactions[op](keys, data, options, (err, data) =&gt; {
+    if (err) return void res.status(500).send(err);
+    if (data === null) return void res.status(404).send('Item(s) not found');
+    res.json(data);
+  });
+};</code></pre></div>
+<p>It receives the name of the method within <code>transactions.js</code> that should handle the operation, the <code>res</code> response object from Express and the <code>keys</code>, <code>data</code> and <code>options</code> object for each request, as described above. It calls the given method on the <code>transactions</code> objects which is the result of requiring <code>transactions.js</code></p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/projects/routes.js#L2"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-01</div>
+    <div class="filename">File: server/projects/routes.js</div>
+    <div class="from">From: 2</div>
+    <div class="to">To: 2</div>
+  </div>
+  <pre><code class="language-js">const transactions = require('./transactions.js');</code></pre></div>
+<p>On receiving the callback call, it checks for errors and sends a 500 error if one is found.  If <code>err</code> is <code>null</code> it then checks whether <code>data</code> is <code>null</code> and if so it sends a 404 error and otherwise just sends the data.</p>
+<p>A typical database operation turns out to be quite simple:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/projects/transactions.js#L67-L74"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-01</div>
+    <div class="filename">File: server/projects/transactions.js</div>
+    <div class="from">From: 67</div>
+    <div class="to">To: 74</div>
+  </div>
+  <pre><code class="language-js">getTaskByTid: (keys, data, options, done) =&gt; {
+  prepared.selectTaskByTid.get({$tid: keys.tid}, (err, task) =&gt; {
+    if (err) return done(err);
+    if (!task || task.pid !== keys.pid) return done(null, null);
+    task.completed = !!task.completed;
+    done(null, task);
+  });
+},</code></pre></div>
+<p>All operations receive the very same 4 arguments though depending on the operation, some will be empty.  Here, <code>getTaskByTid</code> calls the SQL prepared statement <code>selectTaskByTid</code> providing it with the object that will fill its placeholders, in this case only one <code>$tid</code> for the task Id.  On callback, it checks for errors and return immediately if any is found, it then checks whether a task item was actually returned and if so whether the <code>pid</code> on it matches the <code>pid</code> requested and in either case, it returns both null indicating that no record matched the requested keys.  Finally, it does a data type conversion on the <code>completed</code> field because SQLite does not have an actual  Boolean type but represents it as numbers 0 or not zero.  Just as the <code>routes.js</code> module dealt with type conversion on the data received in the HTTP request, it is the responsibility of the module dealing with the database to do the data type conversion of the values received from it to native JavaScript data types. Finally, it calls <code>done</code> with the data retrieved.</p>
+<p>It is always a good rule that the first module receiving the information from an external source (http client, database handler, etc.) is responsible for validating and converting the values to native data types.</p>
+<p>We will off-load dealing with specific data routes from our core web server code.  Instead of setting up a sub-router for the whole <code>/data/v1/projects</code> route <a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-04/server/index.js#L15-L18">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, we will only deal with <code>/data/v1</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/index.js#L15-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-01</div>
+    <div class="filename">File: server/index.js</div>
+    <div class="from">From: 15</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">const dataRouter = express.Router();
+app.use('/data/v1', dataRouter);</code></pre></div>
+<p>However, it is not a good idea to let every data server plug itself into whichever route it pleases.  It is best to have some centralized place responsible to tell each module which branch off the main <code>/data/v1</code> route it should respond to.  Thus, we tell the module  where it should go when initializing itself:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/index.js#L28-L29"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-01</div>
+    <div class="filename">File: server/index.js</div>
+    <div class="from">From: 28</div>
+    <div class="to">To: 29</div>
+  </div>
+  <pre><code class="language-js">const projectsRoutes = require('./projects/routes.js');
+projectsRoutes(dataRouter, '/projects', (err) =&gt; {</code></pre></div>
+<p>The projects router will receive the <code>dataRouter</code> and the <code>branch</code> it should respond to.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-01/server/projects/routes.js#L17-L21"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-01</div>
+    <div class="filename">File: server/projects/routes.js</div>
+    <div class="from">From: 17</div>
+    <div class="to">To: 21</div>
+  </div>
+  <pre><code class="language-js">module.exports = (dataRouter, branch, done) =&gt; {
+  const projectsRouter = express.Router();
+  dataRouter.use(branch, projectsRouter);
+
+  projectsRouter.get('/', (req, res) =&gt; {</code></pre></div>
+<p>Each module might choose to generate a new sub-router, as we did here by creating a new <code>projectsRouter</code>, or it might use the <code>dataRouter</code> and concatenate the <code>branch</code> into each of the paths:</p>
+<pre><code class="language-js">// With sub-router
+projectsRouter.get('/:pid', (req, res) =&gt; {
+
+// Concatenating the branch into the path
+dataRouter.get(`${branch}/:pid`, (req, res) =&gt; {
+</code></pre>
+<p>Within each router, Express checks the routes sequentially in the order they were defined.  By creating sub-routes we turn this sequential list into a tree, which is faster to traverse.  It also allows us to plug any group of routes anywhere else in the tree with little effort should we ever need it.  Besides, we write less.</p>
+<p>It might well be noted that in our database handlers, the arguments <code>keys</code>, <code>data</code> and <code>options</code> copy values from <code>req.params</code>, <code>req.body</code> and <code>req.query</code> respectively.  It might seem that we are coupling our data-handling functions with the REST API, just changing the name of things. This is not so.</p>
+<p>As we mentioned <a href="#chapter08-handling-url-query-parameters">earlier</a>, each part of the URL has a specific purpose. The path, such as <code>/data/v1/projects/25</code> is meant to identify a resource, the <code>25</code> in this case being the <code>pid</code>, thus, it matches the concept of a <code>key</code> in an indexed database or any other data-retrieval mechanism.  The data associated with that resource should go elsewhere, <code>req.body</code> in the request or the <code>data</code> argument in each data handling function.  Finally, it is equally fitting that the <code>options</code> come in the form of query parameters in <code>req.query</code>.</p>
+<p>Thus, it is far from coincidence.  However, this is in no way enforced by Express or any of the other library modules we have been using. It is just our own convention.</p>
+<h2><a class="self-ref" id="chapter09-simplifying-validation-with-middleware" href="#chapter09-simplifying-validation-with-middleware"># </a>Simplifying validation with middleware</h2>
+<p>We have already seen how flexible Express can be in the way we can match routes.  We have transformed a large sequential list of routes to a tree quite easily. Routes also allows us to use variable parts in routes and extract them as parameters.</p>
+<p>Express is also flexible in the way we handle that route once it has been matched.  So far, we have used the pattern:</p>
+<pre><code class="language-js">router.method('route pattern', (req, res) =&gt; {
+  // ...
+});
+</code></pre>
+<p>However, Express allows any number of handlers to be chained after each route pattern.</p>
+<pre><code class="language-js">router.method('route pattern', handler1, handler2, /* .... */ (req, res) =&gt; {
+  // ...
+});
+</code></pre>
+<p>This can be very useful in validating the data received.  It is obvious from our <code>routes.js</code> file how we keep repeating the very same validation code over and over again.  We can simplify this by using chained handlers which is basically what middleware does.</p>
+<p>All route handlers have three arguments, <code>req</code> and <code>res</code> which we have been using so far and <code>next</code> which we haven't even mentioned yet.</p>
+<p>The third, <code>next</code>, argument is a function that, when called, tells Express to call the next handler in the chain and, if there are no further handlers for that route, to go back to route matching.</p>
+<p>Handlers can add information to both <code>req</code> and <code>res</code> and each successive handler in the chain will see the changes the previous one has made on those objects.  That is what, for example, <code>body-parser</code> does.  It reads and parses the information received in the request body and places it in <code>req.body</code>. Then, it calls <code>next()</code> so Express continues matching routes.</p>
+<p>We have moved our validators to a separate <code>validators.js</code> file. This is our <code>pid</code> validator:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-02/server/projects/validators.js#L12-L19"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-02</div>
+    <div class="filename">File: server/projects/validators.js</div>
+    <div class="from">From: 12</div>
+    <div class="to">To: 19</div>
+  </div>
+  <pre><code class="language-js">validatePid: (req, res, next) =&gt; {
+  const pid = Number(req.params.pid);
+  if (Number.isNaN(pid)) return send400(res);
+  req.$valid.keys = {
+    pid
+  };
+  next();
+},</code></pre></div>
+<p>It converts the <code>:pid</code> parameter from string to number.  If it is <code>NaN</code> it means the conversion failed and sends back a 400 HTTP error. Otherwise, we store the converted <code>pid</code> into <code>req</code> in an object of our own called <code>$valid</code> under <code>keys</code>.  Finally, it calls <code>next</code> to chain into the next validator or the final handler.</p>
+<p>The <code>send400</code> function sends our default response to invalid request data:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-02/server/projects/validators.js#L1"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-02</div>
+    <div class="filename">File: server/projects/validators.js</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 1</div>
+  </div>
+  <pre><code class="language-js">const send400 = (res) =&gt; void res.status(400).send('Bad request');</code></pre></div>
+<p>When we return from sending the 400 response, we are not calling <code>next</code> because there is no point in continuing further down the chain, a response has already been sent. We only call <code>next</code> on a successful validation.</p>
+<p>The choice of using a <code>req.$valid</code> object to store validated values is completely arbitrary.  It simply needs to be some property that doesn't collide with any existing property names.  Express does not use the <code>$</code> for its properties.  Traditionally, though variable names can start with an underscore <code>_</code> or a dollar sign <code>$</code>, they are somewhat reserved.  Identifiers starting with underscore are meant to signal a <em>private</em> member.  It doesn't meant they are really private in the sense of other languages that make them invisible to other modules, it just signals the intent to keep them private.  In other words, it signals that developers should not count on it.  A developer is expected to support the <em>public</em> interface of their modules.  If any public interface is broken, then you have a <em>backward compatibility</em> issue.  Developers are not expected to support their <em>private</em> interfaces and they signal those by using the underscore prefix.  If you use any private interface from a third party module, you do it at your own risk.</p>
+<p>The dollar sign usually signaled temporary or auxiliary variables whose existence is ephemeral. Then came JQuery, but that is another story. So, using <code>$valid</code> under <code>req</code> should be quite safe.</p>
+<p>Our validators all assume there is a <code>req.$valid</code> object.  To ensure that, we use another chained handler:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-02/server/projects/validators.js#L1"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-02</div>
+    <div class="filename">File: server/projects/validators.js</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 1</div>
+  </div>
+  <pre><code class="language-js">const send400 = (res) =&gt; void res.status(400).send('Bad request');</code></pre></div>
+<p>We have to put this chained handler before any validators and we already have the perfect place to do so.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-02/server/projects/routes.js#L14-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-02</div>
+    <div class="filename">File: server/projects/routes.js</div>
+    <div class="from">From: 14</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">module.exports = (dataRouter, branch, done) =&gt; {
+  const projectsRouter = express.Router();
+  dataRouter.use(branch, validators.add$valid, projectsRouter);</code></pre></div>
+<p>Our <code>projectsRouter</code> sub-route handler is just another piece of middleware and any number of such handlers can be chained even when defining a new sub-route.  So, we add our <code>add$valid</code> middleware right in front of the sub-route handler to ensure <code>req.$valid</code> will already be available for any handler below.</p>
+<p>This makes all our routes quite simple, even boringly so:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-02/server/projects/routes.js#L50-L54"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-02</div>
+    <div class="filename">File: server/projects/routes.js</div>
+    <div class="from">From: 50</div>
+    <div class="to">To: 54</div>
+  </div>
+  <pre><code class="language-js">projectsRouter.put('/:pid/:tid',
+  validators.validateTid,
+  validators.validateTaskData,
+  (req, res) =&gt; processPrj('updateTask', req, res)
+);</code></pre></div>
+<p>To PUT (change) a task, we need to validate both the <code>tid</code> (which includes validating the <code>pid</code>) and the data to change.  If each of these validators succeeds, each will call <code>next</code> until the chain falls into our own handler which calls <code>processPrj</code> with the name of the method to execute.  Note that the last handler in the chain does not call <code>next</code> because it will take care of the request itself and no further handlers need to be concerned with it.  If it did call <code>next</code>, Express would continue the route matching process and with no further handlers matching this particular route, it would go all the way until the end and then send a <code>404 not found</code> reply, which is not good, mostly because of the time wasted since the valid reply would have already been sent long before.</p>
+<p>The <code>processPrj</code> function has not changed that much from the previous version.  Instead of expecting the <code>keys</code>, <code>data</code> and <code>options</code> arguments, it expects to find those same arguments within <code>req.$valid</code> so it uses those.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-02/server/projects/routes.js#L5-L12"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-02</div>
+    <div class="filename">File: server/projects/routes.js</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 12</div>
+  </div>
+  <pre><code class="language-js">const processPrj = (op, req, res) =&gt; {
+  const valid = req.$valid;
+  transactions[op](valid.keys, valid.data, valid.options, (err, data) =&gt; {
+    if (err) return void res.status(500).send(err);
+    if (data === null) return void res.status(404).send('Item(s) not found');
+    res.json(data);
+  });
+};</code></pre></div>
+<p>Can we go a little further?  <code>processPrj</code> receives <code>req</code> and <code>res</code> like all handlers. Can we make it a piece of middleware?
+Sure!</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-03/server/projects/routes.js#L5-L12"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-03</div>
+    <div class="filename">File: server/projects/routes.js</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 12</div>
+  </div>
+  <pre><code class="language-js">const processPrj = (op) =&gt; (req, res) =&gt; {
+  const valid = req.$valid;
+  transactions[op](valid.keys, valid.data, valid.options, (err, data) =&gt; {
+    if (err) return void res.status(500).send(err);
+    if (data === null) return void res.status(404).send('Item(s) not found');
+    res.json(data);
+  });
+};</code></pre></div>
+<p>Lets take a look at both versions side by side.  The difference is just in the very first line:</p>
+<pre><code class="language-js">// Previous:
+const processPrj = (op, req, res) =&gt; {
+
+// Now:
+const processPrj = (op) =&gt; (req, res) =&gt; {
+</code></pre>
+<p>We turned <code>processPrj</code> from a function that receives three arguments into a function that receives the single <code>op</code> argument and returns a function that is the actual handler that will eventually receive the <code>req</code> and <code>res</code> arguments and respond with the requested data, which is what a route handler does.  In other words, <code>processPrj</code> is now a function that returns route handlers already bound to a particular <code>op</code>. The inner function will have access to <code>op</code> in the outer function via closure.  This is called <em>currying</em>.</p>
+<p>A route in our list of route handlers ends up quite succinct:</p>
+<pre><code class="language-js">projectsRouter.put('/:pid',
+  validators.validatePid,
+  validators.validatePrjData,
+  processPrj('updateProject')
+);
+</code></pre>
+<p>It is just a number of chained middleware and handlers each doing its part in the processing of the request.</p>
+<h2><a class="self-ref" id="chapter09-summary" href="#chapter09-summary"># </a>Summary</h2>
+<p>Now we have much less code repetition than we had before, all our validation is concentrated each in one simple validator. Should we later change the <code>pid</code>s or <code>tid</code>s to something else instead of plain integers, for example, UUIDs such as <code>{3F2504E0-4F89-41D3-9A0C-0305E82C3301}</code> we can change it in a few places.</p>
+<p>Our code coverage also increases.  Since there is less repetition, there are fewer repeated lines and branches that need to be separately tested with extra tests.  Now, with the same number of tests, we go through most of the code.</p>
+<p>Another interesting effect in our code coverage is that the column showing the number of times a certain line of code has been used increases since those fewer lines are used more times each.</p>
+<p>We haven't added any tests since doing SQL Injection but we certainly should, though they wouldn't add much for the purpose of this book. Please feel free to try on your own. Our validators should be thoroughly checked forcing errors and making sure they detect them. One advantage of putting our validators into a separate file is that they can be tested on their own, without having to go through Express' routing or doing actual SQL transactions.  As a general rule, there should be one set of tests for each file, as a matter of fact, the <code>/test</code> folder should reproduce the file structure of the rest of application, having one test file per application file.</p>
+<p>To top this off, we will do further chaining of the JavaScript kind.  The <code>get</code>, <code>post</code>, <code>put</code> and <code>delete</code> methods are also chainable so all our routes definitions can be reduced to the following:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-09-03/server/projects/routes.js#L18-L58"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-09-03</div>
+    <div class="filename">File: server/projects/routes.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 58</div>
+  </div>
+  <pre><code class="language-js">projectsRouter
+  .get('/',
+    validators.validateOptions,
+    processPrj('getAllProjects')
+  )
+  .get('/:pid',
+    validators.validatePid,
+    processPrj('getProjectById')
+  )
+  .get('/:pid/:tid',
+    validators.validateTid,
+    processPrj('getTaskByTid')
+  )
+  .post('/',
+    validators.validatePrjData,
+    processPrj('addProject')
+  )
+  .post('/:pid',
+    validators.validatePid,
+    validators.validateTaskData,
+    processPrj('addTaskToProject')
+  )
+  .put('/:pid',
+    validators.validatePid,
+    validators.validatePrjData,
+    processPrj('updateProject')
+  )
+  .put('/:pid/:tid',
+    validators.validateTid,
+    validators.validateTaskData,
+    processPrj('updateTask')
+  )
+  .delete('/:pid',
+    validators.validatePid,
+    processPrj('deleteProject')
+  )
+  .delete('/:pid/:tid',
+    validators.validateTid,
+    processPrj('deleteTask')
+  )
+;</code></pre></div>
+<h1><a class="self-ref" id="chapter10-client-side" href="#chapter10-client-side"># </a>Client side</h1>
+<h2><a class="self-ref" id="chapter10-the-way-not-to-do-it" href="#chapter10-the-way-not-to-do-it"># </a>The way not to do it</h2>
+<p>Perhaps the best way to learn why we do things in a certain way is to see what would happen if we did it otherwise.  This is our new <code>index.html</code> file that shows the list of projects in the database.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-01/public/index.html"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-01</div>
+    <div class="filename">File: public/index.html</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Sample Web Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="contents"&gt;&lt;/div&gt;
+    &lt;script src="/node_modules/axios/dist/axios.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+      axios.get('/data/v1/projects')
+        .then(response =&gt; {
+          document.getElementById('contents').innerHTML =
+          `&lt;h1&gt;Projects:&lt;/h1&gt;&lt;ul&gt;${
+            response.data.map(item =&gt;
+              `&lt;li&gt;&lt;a href="project.html?${item.pid}"&gt;${item.name}&lt;/a&gt;&lt;/li&gt;`
+            ).join('\n')
+          }&lt;/ul&gt;`;
+          document.title = "Projects";
+        });
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+<p>In the body we create a <code>&lt;div id=&quot;contents&quot;&gt;</code> to put our page content in.  We then load Axios, our HTTP request library, from <code>node_modules</code>. We added a new route for static content to our Express server to let it access <code>node_modules</code>.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-01/server/index.js#L18-L19"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-01</div>
+    <div class="filename">File: server/index.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 19</div>
+  </div>
+  <pre><code class="language-js">app.use('/node_modules', express.static(path.join(__dirname, '../node_modules')));
+app.use(express.static(path.join(__dirname, '../public')));</code></pre></div>
+<p>While the regular <code>use</code> of the <code>express.static</code> middleware is a catch-all for any path not already taken care for, in this new route we specifically tell it to deal with routes pointing to <code>node_modules</code>.  As such, we place it before the catch-all.  Though in this case it wouldn't have made a difference, it is always better to place the more specific routes before the more generic ones.</p>
+<p>Since the browser doesn't know about <code>package.json</code> and NodeJS's module search mechanism, we have to be very specific regarding the exact location of the file we are loading as the browser won't look for it.  As a matter of fact, our server-side NodeJS script would load the version in <code>axios/lib</code> while we load the one in <code>axios/dist</code>. They are slightly different and we will see why later.</p>
+<p>The code in this page simply sends an HTTP GET request to <code>'/data/v1/projects'</code> using Axios, just as we have already done in our Mocha tests in earlier chapters. On receiving the response, we locate the <code>&lt;div&gt;</code> by its ID and set its <code>innerHTML</code> to the string we compose using ES2015 template strings. With the ability to interpolate any sort of expressions into the template placeholders and the ability to extend to multiple lines, this looks pretty much like using PHP jumping in and out of HTML to PHP mode or, in this case, from template string to JS expression.</p>
+<p>We have done pretty much the same with project.html with a different template and a different data request.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-01/public/project.html#L1-L27"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-01</div>
+    <div class="filename">File: public/project.html</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 27</div>
+  </div>
+  <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Sample Web Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="contents"&gt;&lt;/div&gt;
+    &lt;script src="/node_modules/axios/dist/axios.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+      axios.get(`/data/v1/projects/${window.location.search.substr(1)}`)
+        .then(response =&gt; {
+          const prj = response.data;
+          document.getElementById('contents').innerHTML =
+            `&lt;h1&gt;${prj.name}&lt;/h1&gt;&lt;p&gt;${prj.descr}&lt;/p&gt;&lt;ul&gt;${
+              Object.keys(prj.tasks).map((tid) =&gt; {
+                const task = prj.tasks[tid];
+                return `&lt;li&gt;&lt;input type="checkbox" ${
+                  task.completed ? 'checked' : ''
+                } /&gt; &amp;nbsp; ${task.descr}&lt;/li&gt;`
+              }).join('\n')
+            }&lt;/ul&gt;`;
+          document.title = `Project ${prj.pid}: ${prj.name}`;
+        });
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+<p>For <code>project.html</code> we build the URL dynamically:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-01/public/project.html#L11"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-01</div>
+    <div class="filename">File: public/project.html</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 11</div>
+  </div>
+  <pre><code class="language-js">axios.get(`/data/v1/projects/${window.location.search.substr(1)}`)</code></pre></div>
+<p>To try out these pages, we start the server as usual with <code>npm start</code> and then navigate to <code>http://localhost:8080</code> to get the project list and, by clicking on any of the projects, to each of the tasks list.</p>
+<p>Depending on which browser we have and which version it is, this app may or may not work. ECMAScript 2015 is just starting to show up in some browsers and neither template strings or fat arrow functions might work. These are changes to the language itself and a pre-ES2015 browser will not even understand the script. It certainly will not work for most of our potential users.</p>
+<h2><a class="self-ref" id="chapter10-polyfills" href="#chapter10-polyfills"># </a>Polyfills</h2>
+<p>Older browsers will also lack Promises which Axios uses extensively. This is a different kind of error because this can be patched, it is a missing global object which can be added. It can also be a property within an existing object, such as <code>Object.keys</code> which can also be added. These are called <em>polyfills</em> and, if we check, for example, Mozilla's documentation, we <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys#Polyfill">will see</a> such polyfills listed for each method recently added.</p>
+<p>Thus, we can change our code to make it available to more browsers.  It doesn't take long, we just need to add a couple of external scripts and change something.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-02/public/index.html#L10"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-02</div>
+    <div class="filename">File: public/index.html</div>
+    <div class="from">From: 10</div>
+    <div class="to">To: 10</div>
+  </div>
+  <pre><code class="language-html">&lt;script src="//cdn.polyfill.io/v1/polyfill.min.js?features=Promise" defer async&gt;&lt;/script&gt;</code></pre></div>
+<p>We simply added two extra external scripts.  The first one, from <code>polyfill.io</code> is from <a href="http://cdn.polyfill.io/v1/docs/">FT Labs</a>, the web development team at the Financial Times newspaper. It reads the <code>user-agent</code> header from the HTTP request which identifies which browser is making the request, for example, in the one I'm using right now, it shows:</p>
+<pre><code>User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36
+</code></pre>
+<p>In this case, this strings identifies the browser as Google Chrome major version 48.  It then goes to its own <a href="http://cdn.polyfill.io/v1/docs/features/">features table</a> and decides it doesn't need almost anything and returns less than 1k of polyfills.  On the other hand, if I go to my old laptop with IE9 the polyfills add up to almost 5k. In this case, the base URL has <code>?features=Promise</code> added because developers might not be using Promises at all or might have already been using their own polyfill for that so FT Labs polyfill service doesn't include it by default and you have to request it explicitly. Once again, in modern browsers it wouldn't bother to load it at all since it is already there, but would load it for older browsers.</p>
+<h2><a class="self-ref" id="chapter10-transpiling" href="#chapter10-transpiling"># </a>Transpiling</h2>
+<p>As for the language issue, it is somewhat more complex because it is a change to the language itself, not just to a part of its built-in library.  To deal with that, we need a <em>transpiler</em>, a sort of compiler that instead of generating native machine code, it simply translates source code from one version of a language to a different version of the very same language.</p>
+<p>Here we are using <a href="http://babeljs.io/">Babel</a> which has become the standard.  We are loading the browser version of Babel to let it transpile on the client-side.  To let Babel know what it is expected to transpile, we have changed the <code>&lt;script&gt;</code> tag enclosing our code to signal it as of <code>type=&quot;text/babel&quot;</code>.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-02/public/index.html#L11-L12"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-02</div>
+    <div class="filename">File: public/index.html</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 12</div>
+  </div>
+  <pre><code class="language-html">&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"&gt;&lt;/script&gt;
+&lt;script type="text/babel"&gt;</code></pre></div>
+<p>By default the type of <code>&lt;script&gt;</code> tags is <code>text/javascript</code> which will make the browser execute the code within.  However, if the <code>type</code> given is any other, the browser will ignore it.  That gives Babel a chance to do something about that code before the browser attempts to understand it.  Babel searches for all <code>&lt;script type=&quot;text/babel&quot;&gt;</code>, transpiles them and executes the resulting code.</p>
+<p>This is what Babel ends up with for the code in in IE9 (Babel skips transpiling features that the browser supports natively so in my latest Chrome, Babel does nothing):</p>
+<pre><code class="language-js">function anonymous() {
+  'use strict';
+
+  axios.get('/data/v1/projects/' + window.location.search.substr(1)).then(function (response) {
+    var prj = response.data;
+    document.getElementById('contents').innerHTML = '&lt;h1&gt;' + prj.name + '&lt;/h1&gt;&lt;p&gt;' + prj.descr + '&lt;/p&gt;&lt;ul&gt;' + Object.keys(prj.tasks).map(function (tid) {
+      var task = prj.tasks[tid];
+      return '&lt;li&gt;&lt;input type=&quot;checkbox&quot; ' + (task.completed ? 'checked' : '') + ' /&gt; &amp;nbsp; ' + task.descr + '&lt;/li&gt;';
+    }).join('\n') + '&lt;/ul&gt;';
+    document.title = 'Project ' + prj.pid + ': ' + prj.name;
+  });
+}
+</code></pre>
+<p>All the fat arrow functions have been changed to regular functions, the <code>const</code>s turned into <code>var</code>s and the template string replaced by a simple concatenation of small segments of string. If <code>this</code> had been used at any point within the fat arrow function, Babel would have provided a copy of the context of the enclosing function for the inner function to use. It is smart enough to know when it is not needed at all so in more modern browsers, it doesn't change the code at all.</p>
+<p>When running this version of our client-code, there is a noticeable delay until the page shows up.  This is not just because all of the Babel transpiler had to load but it also has to run and transpile the code.  With a modern browser, it would probably figure out it doesn't really need to do anything at all, but it first has to check it all out.</p>
+<p>So, even if not used, Babel is a hefty load. It doesn't make sense to force such a big download and heavy processing to the client.  To any and all clients, some powerful, some not so much, some with good and fast connections, some on a tablet on a 3G cell-phone network.</p>
+<p>That is why the above mechanism has been deprecated by the developers of Babel. We are loading the 5.x version of Babel because there is no 6.x version of this particular browser-side transpiler.  I doubt that it has ever been used on a production environment at all. Instead, we will transpile off-line as part of the development process.</p>
+<p>To do that, we will install the command-line version of Babel:</p>
+<pre><code>npm install --save-dev babel-cli babel-preset-es2015
+</code></pre>
+<p>This installs Babel and the presets to transpile EcmaScript 2015 and also saves the dependencies to <code>package.json</code>. As shown above, NPM can install more than one package in one go.</p>
+<p>We will also add an extra script to <code>package.json</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-03/package.json#L11"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-03</div>
+    <div class="filename">File: package.json</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 11</div>
+  </div>
+  <pre><code class="language-json">"build": "babel client --presets es2015 --out-dir public/lib"</code></pre></div>
+<p>This will allow us to transpile every script found in the <code>client</code> folder into old-style JavaScript, using the <code>es2015</code> presets into the <code>lib</code> folder under the <code>public</code> folder which we already reserved for files meant for the browser.</p>
+<p>Thus, we need to separate the in-line scripts from the html files and place them in the <code>client</code> folder.  For example, <code>client/project.js</code> looks like this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-03/client/project.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-03</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">axios.get(`/data/v1/projects/${window.location.search.substr(1)}`)
+  .then((response) =&gt; {
+    const prj = response.data;
+    document.getElementById('contents').innerHTML =
+      `&lt;h1&gt;${prj.name}&lt;/h1&gt;&lt;p&gt;${prj.descr}&lt;/p&gt;&lt;ul&gt;${
+        Object.keys(prj.tasks).map((tid) =&gt; {
+          const task = prj.tasks[tid];
+          return `&lt;li&gt;&lt;input type="checkbox" ${
+            task.completed ? 'checked' : ''
+          } /&gt; &amp;nbsp; ${task.descr}&lt;/li&gt;`;
+        }).join('\n')
+      }&lt;/ul&gt;`;
+    document.title = `Project ${prj.pid}: ${prj.name}`;
+  });</code></pre></div>
+<p>The code is the same as it was within the script tag in <code>projects.html</code>.</p>
+<p>Now, if we do:</p>
+<pre><code>npm run build
+</code></pre>
+<p>Babel will create two files in <code>/public/lib</code> for each of the original JS files.  They look just like the one shown before produced by the in-browser transpiler</p>
+<p>We now have to include it into the HTML page and drop the Babel in-line compiler:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-03/public/project.html"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-03</div>
+    <div class="filename">File: public/project.html</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Sample Web Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="contents"&gt;&lt;/div&gt;
+    &lt;script src="/node_modules/axios/dist/axios.js"&gt;&lt;/script&gt;
+    &lt;script src="//cdn.polyfill.io/v1/polyfill.min.js?features=Promise" defer async&gt;&lt;/script&gt;
+    &lt;script src="lib/project.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+<p>Finally, since the files in <code>/public/lib</code> are generated as the product of those in <code>/client</code>, we add them to <code>.gitignore</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-03/.gitignore#L29">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> so they don't get uploaded into the GitHub repository. We also add that folder to <code>.eslintignore</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-03/.eslintignore#L3">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> so they won't be linted, because they will fail.  We have also added a <code>/client/.eslintrc.json</code> to tell ESLint that the contents of that folder are meant to be run in a browser so it should expect to find well-known globals such as <code>window</code> or <code>document</code> and also tell it to expect <code>axios</code> as a global variable.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-10-03/client/.eslintrc.json"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-10-03</div>
+    <div class="filename">File: client/.eslintrc.json</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-json">{
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "axios": false
+  }
+}</code></pre></div>
+<p>When starting the server via <code>npm start</code> and then pointing the browser to <code>http://localhost:8080</code>, the pages will show up immediately.  Instead of wasting time having the browser load Babel and then letting it transpile the code for us, we did that off-line via <code>npm run build</code> so the transpiled version is immediately available.  All browsers, even modern ones supporting ES2015, will get the old-style JavaScript code which doesn't use the new features.</p>
+<h1><a class="self-ref" id="chapter11-modules-imports-and-exports" href="#chapter11-modules-imports-and-exports"># </a>Modules, Imports and Exports</h1>
+<p>Only recently, with ECMAScript-2015 has JavaScript has built-in support for modules, at least in its syntax since no platform actually knows what to do with it.  Babel helpfully transpiles <code>import x from 'myModule'</code> into <code>const x = require('myModule')</code> which NodeJS understands but no browser would.</p>
+<p>The only mechanism to load external modules into a browser is via the <code>&lt;script&gt;</code> tag which is far from perfect.  The biggest issue is that whatever gets loaded goes into the same global namespace as everything else. If we had complete control of what goes into the browser we could be careful of what gets loaded and avoid any name collisions, however, with applications getting ever more complex, this is hard. What if we are using <a href="https://lodash.com/">Lodash</a> and some widget loads <a href="http://underscorejs.org/">Underscore</a> both of which load as <code>window._</code> in the browser? The one that loads last would end up overwriting the other and, though they are more or less compatible, Lodash is a superset of Underscore and whatever incompatibility there might be in between them might ruin our application.</p>
+<p>The beauty of the way NodeJS modules load, is that when we <code>require</code> a certain module, we tell it where we want it, both in name and scope; we say <code>const axios = require('axios');</code> because we want it to be called <code>axios</code> in whichever scope that <code>axios</code> variable is being declared and, if we wanted it called something else, we could do, say, <code>const http = require('axios');</code>.  In browser-land, we don't have that option, we load Axios via <code>&lt;script&gt;</code> and it goes into <code>window.axios</code>, we have no control of name (axios) or scope (global).</p>
+<p>This prevents the development of modular applications.  In our server script, we broke our simple app into several source files which <em>require</em>d one another each keeping its internals well hidden from each other exposing only what each explicitly exported.  Over time, several mechanisms to fix this were developed and nowadays, two module packagers are at the top, <a href="http://browserify.org/">Browserify</a> and <a href="http://webpack.github.io/">WebPack</a>.</p>
+<p>Inadvertently, we have been using WebPack all along. Remember earlier on that we mentioned there were different versions of Axios, one for NodeJS (which we used for our tests) and the browser version?  Our <code>node_modules/axios</code> folder contains two different folders, <code>dist</code> for the browser version and <code>lib</code> for the NodeJS version.  Looking at the first few lines in the code for the <a href="https://github.com/mzabriskie/axios/blob/master/dist/axios.js">browser version</a> we can see it starts with <code>(function webpackUniversalModuleDefinition(root, factory) {</code> and later on we find a lot of lines preceded with <code>/******/</code>.  All those are added by WebPack. The Axios version on <code>/lib</code> is the original, non-packed version and we can see that the same code from <a href="https://github.com/mzabriskie/axios/blob/master/lib/axios.js#L1">/lib/axios.js</a>   starts about line 60 something in <a href="https://github.com/mzabriskie/axios/blob/master/dist/axios.js#L64"><code>/dist/axios.js</code></a> after all the WebPack packaging handling stuff.</p>
+<h2><a class="self-ref" id="chapter11-webpack" href="#chapter11-webpack"># </a>WebPack</h2>
+<p>To install WebPack, we do as we've been doing so far:</p>
+<pre><code>npm i --save-dev webpack
+</code></pre>
+<p>We can change our code to use <code>require</code> just as we've done in the server-side code:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-01/client/index.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-01</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">const axios = require('axios');
+axios.get('/data/v1/projects')
+  .then((response) =&gt; {
+    document.getElementById('contents').innerHTML =
+    `&lt;h1&gt;Projects:&lt;/h1&gt;&lt;ul&gt;${
+      response.data.map((item) =&gt;
+        `&lt;li&gt;&lt;a href="project.html?${item.pid}"&gt;${item.name}&lt;/a&gt;&lt;/li&gt;`
+      ).join('\n')
+    }&lt;/ul&gt;`;
+    document.title = 'Projects';
+  });</code></pre></div>
+<p>Which means we no longer need to load Axios separately in <code>index.html</code> since our web-packaged code will already contain it. The earlier <code>&lt;script src=&quot;/node_modules/axios/dist/axios.js&quot;&gt;&lt;/script&gt;</code> is now gone:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-01/public/index.html"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-01</div>
+    <div class="filename">File: public/index.html</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Sample Web Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="contents"&gt;&lt;/div&gt;
+    &lt;script src="//cdn.polyfill.io/v1/polyfill.min.js?features=Promise" defer async&gt;&lt;/script&gt;
+    &lt;script src="lib/index.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+<p>In <code>.eslintrc.json</code> we can now drop declaring <code>axios</code> as a global variable, leaving only the <em>environment</em> declaration:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-01/client/.eslintrc.json"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-01</div>
+    <div class="filename">File: client/.eslintrc.json</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-json">{
+  "env": {
+    "browser": true
+  }
+}</code></pre></div>
+<p>We can change our earlier <code>build</code> script in <code>package.json</code> to use WebPack:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-01/package.json#L11"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-01</div>
+    <div class="filename">File: package.json</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 11</div>
+  </div>
+  <pre><code class="language-json">"build": "webpack client/index.js public/lib/index.js &amp;&amp; webpack client/project.js public/lib/project.js"</code></pre></div>
+<p>So if we now do <code>npm run build</code> we will have our code packaged with Axios. If we look into the resulting files in <code>/public/lib</code> we can recognize our code right after the WebPack un-packager and then the code for Axios.</p>
+<p>We can now run this as we did before, we type <code>npm start</code> to launch our server and go to <code>http://localhost:8080</code> in our browser and the app will most likely work if we have an updated browser.  One problem now is that WebPack has packed our code, but has not transpiled it so it still has the ES2015 features.  If we try to run it in an older browser, it will fail.</p>
+<h2><a class="self-ref" id="chapter11-packaging-and-transpiling" href="#chapter11-packaging-and-transpiling"># </a>Packaging and Transpiling</h2>
+<p>WebPack can use what it calls <em>loaders</em>, utilities that process the code before it gets packed.  Babel has such a loader for WebPack, which we can use:</p>
+<pre><code>npm install --save-dev babel-loader babel-core
+</code></pre>
+<p>We already have <code>babel-preset-es2015</code> installed along <code>babel-cli</code>, otherwise, we should have installed it as well.</p>
+<p>To tell WebPack what loaders it should use, we add a configuration file which, by default, is called <code>webpack.config.js</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-02/webpack.config.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-02</div>
+    <div class="filename">File: webpack.config.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">module.exports = {
+  module: {
+    loaders: [
+      {
+        test: /\.jsx?$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: 'babel'
+      }
+    ]
+  }
+};</code></pre></div>
+<p>Here, we are telling WebPack that for files whose filename match the given regular expression (in this case, they end with <code>.js</code> or <code>.jsx</code>), unless they are under <code>node_modules</code> or <code>bower_components</code>, it should use <code>babel</code> (the <code>-loader</code> suffix is assumed). The <code>.jsx</code> extension is for React files, which we will use later on. <a href="http://bower.io/">Bower</a> is another package manager like NPM which we are not using.  We don't want Babel to waste time trying to transpile code from NPM or Bower libraries because they should already be compatible with old-style JavaScript.</p>
+<p>We also need to configure Babel. Earlier on, we did it via an option in the NPM script:</p>
+<pre><code>babel client --presets es2015 --out-dir public/lib
+</code></pre>
+<p>We can also configure Babel via a configuration file called <code>.babelrc</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-02/.babelrc"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-02</div>
+    <div class="filename">File: .babelrc</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-json">{
+  "presets": ["es2015"]
+}</code></pre></div>
+<p>After all this, if we do <code>npm run build</code>, we will get both JS files both transpiled and packed.</p>
+<p>That means we will no longer be using Babel standalone so we might as well drop <code>babel-cli</code>:</p>
+<pre><code>npm uninstall --save-dev babel-cli
+</code></pre>
+<p>Now, we should make some numbers, the resulting <code>index.js</code> is 32.2kB in size, <code>project.js</code> is 32.4kB.  Most of that is due to Axios and a little bit comes from WebPack which is exactly the same for both.  The difference is in the pre-packaged sources, <code>/client/index.js</code> which is 341 bytes long while <code>/client/project.js</code> is 594 bytes long.</p>
+<p>This might seem an extreme situation because we are doing so little in our code, but it is not that different from a real application.  We are using just two common libraries, Axios and WebPack.  In larger applications we would have more such common utilities, for example, standard UI components such as calendars, tabbed interfaces, menus and what not.</p>
+<p>We are forcing our web pages to load two scripts which are basically the same.  We can take a look at those two files side by side (using GNU <code>diff</code> or some such) and we will see there is very little difference in between them.</p>
+<h2><a class="self-ref" id="chapter11-almost-a-single-page-application" href="#chapter11-almost-a-single-page-application"># </a>Almost a Single Page Application</h2>
+<p>We can pack both our client scripts into the same bundle with Axios and WebPack and have our client do just one load. Once the script is in the browser's cache, all pages would benefit from that single download.</p>
+<p>To do that, we must first convert our two separate scripts to loadable modules and to do that we have to export something.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-03/client/index.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-03</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">const axios = require('axios');
+module.exports = function (contentEl) {
+  axios.get('/data/v1/projects')
+    .then((response) =&gt; {
+      contentEl.innerHTML =
+      `&lt;h1&gt;Projects:&lt;/h1&gt;&lt;ul&gt;${
+        response.data.map((item) =&gt;
+          `&lt;li&gt;&lt;a href="project.html?${item.pid}"&gt;${item.name}&lt;/a&gt;&lt;/li&gt;`
+        ).join('\n')
+      }&lt;/ul&gt;`;
+      document.title = 'Projects';
+    });
+};</code></pre></div>
+<p>We export a function that, when called, will execute mostly the very same code we had so far.  To avoid repetition, the function receives the DOM element that is to receive the content.  We do the same for <code>project.html</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-03/client/project.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-03</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">const axios = require('axios');
+module.exports = function (contentEl) {
+  axios.get(`/data/v1/projects/${window.location.search.substr(1)}`)
+    .then((response) =&gt; {
+      const prj = response.data;
+      contentEl.innerHTML =
+        `&lt;h1&gt;${prj.name}&lt;/h1&gt;&lt;p&gt;${prj.descr}&lt;/p&gt;&lt;ul&gt;${
+          Object.keys(prj.tasks).map((tid) =&gt; {
+            const task = prj.tasks[tid];
+            return `&lt;li&gt;&lt;input type="checkbox" ${
+              task.completed ? 'checked' : ''
+            } /&gt; &amp;nbsp; ${task.descr}&lt;/li&gt;`;
+          }).join('\n')
+        }&lt;/ul&gt;`;
+      document.title = `Project ${prj.pid}: ${prj.name}`;
+    });
+};</code></pre></div>
+<p>Now we have to glue them together which will decide, based on the URL of the page requested, which content to use. Its function is not dissimilar to that of the routers we have been using on the server side so we call it <code>router.js</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-03/client/router.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-03</div>
+    <div class="filename">File: client/router.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">const index = require('./index.js');
+const project = require('./project.js');
+const contentEl = document.getElementById('contents');
+if (/^\/(index\.html)?$/i.test(location.pathname)) {
+  index(contentEl);
+} else if (/^\/project\.html$/i.test(location.pathname)) {
+  project(contentEl);
+} else {
+  contentEl.innerHTML =
+    `Page ${location.pathname} is not available`;
+}</code></pre></div>
+<p>We require both modules then, depending on the path of the URL requested, we execute one or the other.  The path might be either '/' or <code>/index.html</code> for the default page or <code>/project.html</code>.  If it doesn't match any of the regular expressions for them, we simply show a message. The later should never happen since this script would be loaded by either of those HTML pages.</p>
+<p>Now, instead of building two separate packages, we build just one which includes both options.  We can do that by using the WebPack configuration file:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-03/webpack.config.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-03</div>
+    <div class="filename">File: webpack.config.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">module.exports = {
+  entry: './client/router.js',
+  output: {
+    path: './public/lib',
+    filename: 'bundle.js'
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.jsx?$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: 'babel'
+      }
+    ]
+  }
+};</code></pre></div>
+<p>We are telling WebPack that the entry point for our app is <code>/client/router.js</code> and our packaged file should be called <code>bundle.js</code> and will go into <code>/public/lib</code>.  WebPack loads the file that is the entry point, parses it and locates all its calls to the <code>request</code> function, then loads and parses those looking for their <code>require</code>s and so on until it packages all of the dependencies into <code>bundle.js</code>.</p>
+<p>The build script in <code>package.json</code> is now far simpler since all the information is now in the configuration file:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-03/package.json#L11"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-03</div>
+    <div class="filename">File: package.json</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 11</div>
+  </div>
+  <pre><code class="language-json">"build": "webpack"</code></pre></div>
+<p>We also need to change both <code>index.html</code> and <code>project.html</code> because instead of each loading its own separate JavaScript file, they both load <code>bundle.js</code> which, with the router and all, has grown to 33.9kB:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-03/public/index.html"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-03</div>
+    <div class="filename">File: public/index.html</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Sample Web Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="contents"&gt;&lt;/div&gt;
+    &lt;script src="//cdn.polyfill.io/v1/polyfill.min.js?features=Promise" defer async&gt;&lt;/script&gt;
+    &lt;script src="lib/bundle.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+<p>The <code>/public/lib</code> folder might still contain <code>index.js</code> and <code>project.js</code> files from previous compilations. We may delete those since they are no longer used.</p>
+<p>Not surprisingly, both HTML files are exactly the same, their content determined by the single JavaScript file <code>bundle.js</code> which decides what to show.  Unfortunately, the browser doesn't actually know the two files are alike, since each comes from a different URL it will load each HTML file separately.  We still need the two files because the user might enter either of the two URLs, unless we fix that in the router.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-04/server/index.js#L20-L23"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-11-04</div>
+    <div class="filename">File: server/index.js</div>
+    <div class="from">From: 20</div>
+    <div class="to">To: 23</div>
+  </div>
+  <pre><code class="language-js">app.use(
+  /\/((index.html)|(project.html))?/,
+  express.static(path.join(__dirname, '../public/index.html'))
+);</code></pre></div>
+<p>The routing functions of Express can take regular expressions instead of strings. We use that ability to tell Express that if the user requests <code>/</code>, <code>/index.html</code> or <code>/project.html</code>, it should return the very same <code>index.html</code> file.  We can now delete <code>/public/project.html</code>.</p>
+<p>Now it really starts to look like a Single Page Application.  We have a single <code>index.html</code> and a single <code>bundle.js</code> to serve both requests.  However, whenever the user navigates from one page to the other, those requests will still go all the way to the server.  Browsers keep copies of what they load in their caches so, most likely, it will load the cached copy, however, it will still do a quick check with the server to make sure those files are still valid.</p>
+<p>It would be good to be able to tell the browser to load it only once and avoid bothering the server with these requests.</p>
+<p>It would also be nice to have a more capable router than our improvised <code>router.js</code> is.</p>
+<p>Fortunately, there is already software to do both things, client-side routing software can handle routes pretty much as Express does and will capture navigation requests and prevent them from generating unnecessary traffic.</p>
+<h2><a class="self-ref" id="chapter11-summary" href="#chapter11-summary"># </a>Summary</h2>
+<p>We've seen how we can benefit from the same module-loading capability of NodeJS in the browser by using a bundler such as WebPack or Browserify.</p>
+<p>By using a primitive router, we have managed to put our two earlier JS files into a single bundle and by configuring our server, we can deliver our application using only one set of files.</p>
 </div>
   </body>
   <script type="text/javascript" src="index.js"></script>
