@@ -97,7 +97,7 @@ and the `node_modules` folder will contain a folder for each of those extra pack
 One of the benefits of the `package.json` files is that it records all the dependencies so that anyone can recall them.  Lets go and delete the `node_modules` folder. Now, we don't have any of the dependencies. However, we still have the `package.json` file so we can reestablish all the dependencies.  If we now do:
 
 ```bash
-node install
+npm install
 ```
 
 with no extra arguments, NPM looks into the `package.json` file and installs all the dependencies listed in it.
