@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 const data = require('./data.js');
 
 export const PrjItem = ({ pid, name }) => (
-  <li>
+  <li className="prj-item">
     <Link to={`project/${pid}`}>
       {name}
     </Link>
@@ -16,7 +16,7 @@ PrjItem.propTypes = {
 };
 
 const ProjectList = () => (
-  <div className="index">
+  <div className="project-list">
     <h1>Projects:</h1>
     <ul>{
       Object.keys(data).map(pid =>
