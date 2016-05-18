@@ -2,7 +2,7 @@ import React from 'react';
 const data = require('./data.js');
 
 const Task = ({ descr, completed }) => (
-  <li>
+  <li className="task">
     <input type="checkbox" defaultChecked={completed} /> &nbsp; {descr}
   </li>
 );
