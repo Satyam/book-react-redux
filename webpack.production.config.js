@@ -6,6 +6,11 @@ module.exports = Object.assign(require('./webpack.config.js'), {
       'process.env': {
         'NODE_ENV': JSON.stringify('production')
       }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        warnings: false
+      }
     })
   ]
 });

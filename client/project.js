@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 const data = require('./data.js');
 
-const Task = ({ descr, complete }) => (
+export const Task = ({ descr, complete }) => (
   <li>
     <input type="checkbox" defaultChecked={complete} /> &nbsp; {descr}
   </li>
 );
 
 Task.propTypes = {
-  complete: React.PropTypes.bool,
-  descr: React.PropTypes.string,
+  complete: PropTypes.bool,
+  descr: PropTypes.string,
 };
 
-const TaskList = ({ tasks }) => (
+export const TaskList = ({ tasks }) => (
   <ul className="task-list">{
     Object.keys(tasks).map(tid => (
       <Task key={tid} complete={tasks[tid].complete} descr={tasks[tid].descr} />
@@ -21,7 +21,7 @@ const TaskList = ({ tasks }) => (
 );
 
 TaskList.propTypes = {
-  tasks: React.PropTypes.object,
+  tasks: PropTypes.object,
 };
 
 const Project = ({ params: { pid } }) => {
@@ -34,8 +34,8 @@ const Project = ({ params: { pid } }) => {
 };
 
 Project.propTypes = {
-  params: React.PropTypes.shape({
-    pid: React.PropTypes.string.isRequired,
+  params: PropTypes.shape({
+    pid: PropTypes.string.isRequired,
   }),
 };
 

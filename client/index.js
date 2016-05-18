@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 const data = require('./data.js');
 
-const PrjItem = ({ pid, name }) => (
+export const PrjItem = ({ pid, name }) => (
   <li>
     <Link to={`project/${pid}`}>
       {name}
@@ -11,8 +11,8 @@ const PrjItem = ({ pid, name }) => (
 );
 
 PrjItem.propTypes = {
-  pid: React.PropTypes.string.isRequired,
-  name: React.PropTypes.string.isRequired,
+  pid: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
 };
 
 const ProjectList = () => (
