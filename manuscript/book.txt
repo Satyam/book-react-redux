@@ -10,3 +10,4 @@ chapter08.md
 chapter09.md
 chapter10.md
 chapter11.md
+chapter12.md
