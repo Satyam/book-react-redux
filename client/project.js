@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const data = require('./data.js');
 
 export const Task = ({ descr, completed }) => (
-  <li>
+  <li className="task">
     <input type="checkbox" defaultChecked={completed} /> &nbsp; {descr}
   </li>
 );
