@@ -2,25 +2,25 @@ import React from 'react';
 import { Link } from 'react-router';
 const data = require('./data.js');
 
-const PrjItem = ({ pid, name }) => (
-  <li>
+const ProjectItem = ({ pid, name }) => (
+  <li className="project-item">
     <Link to={`project/${pid}`}>
       {name}
     </Link>
   </li>
 );
 
-PrjItem.propTypes = {
+ProjectItem.propTypes = {
   pid: React.PropTypes.string.isRequired,
   name: React.PropTypes.string.isRequired,
 };
 
 const ProjectList = () => (
-  <div className="index">
+  <div className="project-list">
     <h1>Projects:</h1>
     <ul>{
       Object.keys(data).map(pid =>
-        (<PrjItem key={pid} pid={pid} name={data[pid].name} />)
+        (<ProjectItem key={pid} pid={pid} name={data[pid].name} />)
       )
     }</ul>
   </div>
