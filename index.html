@@ -94,6 +94,16 @@
 <li><a href="#chapter11-packaging-and-transpiling">Packaging and Transpiling</a></li>
 <li><a href="#chapter11-almost-a-single-page-application">Almost a Single Page Application</a></li>
 <li><a href="#chapter11-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter12-client-side-routing">Client-side Routing</a></li>
+<ul class="level-h1"><li><a href="#chapter12-react-router">React Router</a></li>
+<li><a href="#chapter12-jsx">JSX</a></li>
+<ul class="level-h2"><li><a href="#chapter12-proptypes">PropTypes</a></li>
+<li><a href="#chapter12-production-version">Production version</a></li>
+<li><a href="#chapter12-watch-for-changes">Watch for changes</a></li>
+<li><a href="#chapter12-final-touches">Final touches</a></li>
+</ul>
+<li><a href="#chapter12-summary">Summary</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded"><div class="close">&lt; close</div><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
 <p>With the rapid pace of progress in the creation of libraries and tools for web development, most information comes in brief articles and blog posts.  There are not very many comprehensive guides to all that may be needed from A to Z.</p>
@@ -482,7 +492,7 @@ npm install cookie-parser --save
 </code></pre>
 <p>and the <code>node_modules</code> folder will contain a folder for each of those extra packages.</p>
 <p>One of the benefits of the <code>package.json</code> files is that it records all the dependencies so that anyone can recall them.  Lets go and delete the <code>node_modules</code> folder. Now, we don't have any of the dependencies. However, we still have the <code>package.json</code> file so we can reestablish all the dependencies.  If we now do:</p>
-<pre><code class="language-bash">node install
+<pre><code class="language-bash">npm install
 </code></pre>
 <p>with no extra arguments, NPM looks into the <code>package.json</code> file and installs all the dependencies listed in it.</p>
 <h2><a class="self-ref" id="chapter03-installing-developer-dependencies-eslint" href="#chapter03-installing-developer-dependencies-eslint"># </a>Installing developer dependencies: ESLint</h2>
@@ -2847,6 +2857,365 @@ if (/^\/(index\.html)?$/i.test(location.pathname)) {
 <h2><a class="self-ref" id="chapter11-summary" href="#chapter11-summary"># </a>Summary</h2>
 <p>We've seen how we can benefit from the same module-loading capability of NodeJS in the browser by using a bundler such as WebPack or Browserify.</p>
 <p>By using a primitive router, we have managed to put our two earlier JS files into a single bundle and by configuring our server, we can deliver our application using only one set of files.</p>
+<h1><a class="self-ref" id="chapter12-client-side-routing" href="#chapter12-client-side-routing"># </a>Client-side Routing</h1>
+<p>In our latest version of <code>router.js</code> we used regular expressions to match the URL of the page requested to the routes we are handling so as to run either of our rendering scripts.  Basically, it is the equivalent of what we've been doing in the server thanks to Express.  There is client software to do the same on the client.  This is our routes configuration</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/client/router.js#L10-L18"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-01</div>
+    <div class="filename">File: client/router.js</div>
+    <div class="from">From: 10</div>
+    <div class="to">To: 18</div>
+  </div>
+  <pre><code class="language-js">const routeConfig = {
+  path: '/',
+  component: App,
+  indexRoute: { component: Index },
+  childRoutes: [
+    { path: 'index', component: Index },
+    { path: 'project/:pid', component: Project }
+  ]
+};</code></pre></div>
+<p>It is easy to relate the array of routes under the <code>childRoutes</code> property, they are basically the same as we had before with some minor differences. The paths  lack the <code>.html</code> ending and the <code>pid</code> parameter is part of the route path instead of a query parameter, so it follows the standard where the item should be identified by the route itself while the query parameters are meant for options.  Also, in the earlier example, it was the <code>project.js</code> module the one that read the <code>pid</code>.  Here it is more like in Express, where the router picks it up from the route itself. Likewise, route matching is sequential within an array so the order is important.</p>
+<p>Routes in the client work somewhat different than in the server. In the server routes result in running some piece of script that sends a stream of HTML code, images, JSON data or any other sequential collection of bytes with a single call to <code>res.send()</code> or its variations. There is only one stream of data going out of the server.</p>
+<p>Routes in the client are meant to affect a two-dimensional screen where each part of the route might influence a particular section of it.  For example, most web pages will have a standard look, starting with an enclosing frame with the basic color scheme, perhaps the company logo, a copyright sign and so on.  Within that frame there might be other standard sections such as a header or footer, perhaps a menu or tabbed interface and finally, there will be one or more sections that are totally dependent on the route.  For example, a mail-client program will have a main section that contains the list of folders for the <code>/</code>, a list of messages in the inbox for <code>/inbox</code> or a particular message for <code>/inbox/de305d54-75b4-431b-adb2-eb6b9e546014</code>.   Each responds to a fragment of the full URL and they all combine to build the full screen.</p>
+<p><img src="routes.png" alt="email program layout"></p>
+<p>The image above shows how the different parts of the URL bring up different sections on the screen layout for such application, with each section dealing with a little bit more of the URL and enclosing the more specific section. That is why client-side routes are hierarchical and why our routes from the previous example are <code>childRoutes</code> within the root route. Each section is handled by a <em>component</em>. A typical application will handle more levels than this simple example, nesting many more components. Our router includes two components:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/client/router.js#L5-L6"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-01</div>
+    <div class="filename">File: client/router.js</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 6</div>
+  </div>
+  <pre><code class="language-js">const Index = require('./index.js');
+const Project = require('./project.js');</code></pre></div>
+<p>Our <code>Index</code> and <code>Project</code> components will be React versions of the former <code>index.js</code> and <code>project.js</code>, as we will soon see.  For our overall frame, responding to the <code>/</code> part of the path, we have an <code>App</code> component which is quite simple indeed:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/client/router.js#L8"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-01</div>
+    <div class="filename">File: client/router.js</div>
+    <div class="from">From: 8</div>
+    <div class="to">To: 8</div>
+  </div>
+  <pre><code class="language-js">const App = (props) =&gt; props.children;</code></pre></div>
+<p>Basically, what it says is that the App frame, which will receive some <code>props</code> properties, most of them from the router and amongst them the <code>children</code> property, should just return whatever the children produce. Of course it usually is something more elaborate, some frame, logo or some such, but right now, this should suffice. We must have a single overarching frame, even if it does nothing more than enclosing any number of children because, after all, we only have one screen.</p>
+<p>With the <code>indexRoute</code> option we are also telling the router that when no route is specified, the <code>Index</code> component should be shown.  In other words, we are defaulting to showing the <code>Index</code> component whether we explicitly ask for it with <code>/index</code> or not, very much like the regular <code>index.html</code> default.</p>
+<h2><a class="self-ref" id="chapter12-react-router" href="#chapter12-react-router"># </a>React Router</h2>
+<p>We are using <a href="https://www.npmjs.com/package/react-router">React Router</a> which works along <a href="https://facebook.github.io/react/">React</a> so we first have to install those.</p>
+<pre><code class="language-bash">npm i --save react react-dom react-router history
+</code></pre>
+<p>We install these with the <code>--save</code> option, not <code>--save-dev</code> because they are part of the production code, not just development tools, and so they go into the <code>dependencies</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/package.json#L33-L43">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> section of <code>package.json</code>. Besides React and React Router, we are installing <code>react-dom</code> which contains the parts of React specific to browsers as opposed to other possible environments such as smart-phones or future platforms, and <code>history</code> which complements the router by letting it manipulate the browser history and respond to the back and forward buttons (I don't know why the highlighter put that one in a different color, sorry).</p>
+<p>We can then use those packages into our script:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/client/router.js#L1-L3"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-01</div>
+    <div class="filename">File: client/router.js</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 3</div>
+  </div>
+  <pre><code class="language-js">import React from 'react';
+import { render } from 'react-dom';
+import { Router, browserHistory  } from 'react-router';</code></pre></div>
+<p>The magic of Babel transpiling allows us to use both the new ES2015 <code>import</code> statement and the CommonJS <code>require</code> function.  The new <code>import</code> statement allows us to import whole packages such as <code>React</code> or just one or more named exports within a package such as <code>render</code> from <code>react-dom</code> or <code>Router</code> and <code>browserHistory</code> from <code>react-router</code> (actually, it is ES6 <em>destructuring</em> that lets us pick the pieces we want, more on that later).</p>
+<p>With all these pieces, we must put this <code>routeConfig</code> to work:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/client/router.js#L20-L29"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-01</div>
+    <div class="filename">File: client/router.js</div>
+    <div class="from">From: 20</div>
+    <div class="to">To: 29</div>
+  </div>
+  <pre><code class="language-js">render(
+  React.createElement(
+    Router,
+    {
+      routes: routeConfig,
+      history: browserHistory
+    }
+  ),
+  document.getElementById('contents')
+);</code></pre></div>
+<p>We are asking React to <code>render</code> a new React element provided by <code>Router</code> into the <code>&lt;div id=&quot;contents&quot;&gt;</code> we have on our <code>index.html</code> page <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/public/index.html#L8">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  The router will not be a visible DOM element itself, it is the components selected according to <code>routeConfig</code> that will produce the DOM elements we will eventually see in the web page. We provide this <code>Router</code> element with two configuration elements, the <code>routes</code> property points to the <code>routeConfig</code> we have defined and <code>history</code> pointing to <code>browserHistory</code> which is one of several history managers the router can use.</p>
+<p>History managers handle the locations the browser visits.  They listen to changes in the locations (i.e.: <code>window.location</code>), such as those seen in the address bar of the browser, and handle them on the client-side, without sending any actual request to the server. The <code>browserHistory</code> manager is the only one that is worth serious consideration in production.  It is not the default because it requires some support from the server.</p>
+<p>Instead of the complex route we had to support our earlier primitive version of router <a href="https://github.com/Satyam/book-react-redux/blob/chapter-11-04/server/index.js#L20-L23">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> we now have a simpler, catch-all route in our Express server:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/server/index.js#L18-L22"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-01</div>
+    <div class="filename">File: server/index.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 22</div>
+  </div>
+  <pre><code class="language-js">app.use(express.static(path.join(__dirname, '../public')));
+
+app.get('*', function (request, response) {
+  response.sendFile(path.join(__dirname, '../public', 'index.html'));
+});</code></pre></div>
+<p>Thanks to our client-side router, our application will be able to respond to several <em>virtual</em> URLs which don't actually exist on the server side.  At any time, the user might save one of those URLs or copy and paste them into an e-mail to pass them on to someone else.  What happens when any of those URLs are requested?  If the user had started the application from the home page, all routing would be handled by the client but if, out of the blue, the user requests one of those virtual URLs, the request will go straight to the server, but there is no actual file there to be sent back to the user. That is why we have to add this route, we are letting the client app to handle those virtual routes.  As a rule, wildcard, catch-all routes should go at the end, after all other routes have been dealt with.</p>
+<p>So far, if the URL requested was for any of the known paths such as <code>/data/v1/projects</code> there was a piece of script to handle it, otherwise it felt through and got to that <code>express.static</code> middleware which tried to find a file that mapped to the requested path.  Then, if no file was found, it would let the request fall through by calling the <code>next()</code> callback.  If that was the end of the list of routes  and route patterns (which it was) Express, having nowhere else to look for, sends a <code>404 Not Found</code> reply. If there had been any further routes or patterns, Express would try them as well before quiting.</p>
+<p>The wildcard <code>'*'</code> route we add means that for absolutely any leftover route the file <code>/public/index.html</code> will be sent.  That will load and run our application and then the client-side router will deal with that route.</p>
+<p>This also means that our client-side App must deal with the 404 Not found condition on its own because the server will never send that error on its own. We may do this by adding a wildcard route at the end of the child routes:</p>
+<pre><code class="language-js">childRoutes: [
+  { path: 'index', component: Index },
+  { path: 'project/:pid', component: Project },
+  { path: '*', component: NotFound }
+]
+</code></pre>
+<p>Since the routes are matched in sequence, the last wildcard catches any route that failed to match and it shows the <code>NotFound</code> component, which is simply declared like this:</p>
+<pre><code class="language-js">const NotFound = () =&gt; (&lt;h1&gt;Not found&lt;/h1&gt;);
+</code></pre>
+<p>That line of JavaScript doesn't look right, does it? The <code>&lt;h1&gt;Not found&lt;/h1&gt;</code> part should be quoted or something since it is not JavaScript but HTML. Any linter would signal it as an error and Babel would not be able to transpile it as we have configured it so far.   Actually, that is JSX and we will use it more extensively.</p>
+<h2><a class="self-ref" id="chapter12-jsx" href="#chapter12-jsx"># </a>JSX</h2>
+<p><a href="https://facebook.github.io/jsx/">JSX</a> is an extension to JavaScript designed by Facebook to embed HTML into plain JavaScript.  It is not a proposal for future JavaScript versions nor it is meant to be included in any browser but to be transpiled.</p>
+<blockquote>
+<p>If I may take a moment to brag about it, back towards the end of 2008 I made a proposal to embed HTML into PHP. I called it <a href="http://www.satyam.com.ar/pht/">PHT</a> which resulted from a merger of the letters in PHp and HTml.  It was an extension to the <a href="http://phpcompiler.org/">PHP Compiler</a> which could generate native code but could also serve as a transpiler.  I used is as a transpiler to create regular PHP out of PHT code.  Mechanisms to publish and make open source contributions back then were not widely available, no GitHub or any such popular sharing mechanisms, so the idea faded away.</p>
+</blockquote>
+<p>JSX is based on the fact that the less-than sign <code>&lt;</code> is a binary operator in JavaScript so it should be found in between expressions to be compared and it could not possibly be found at the start of an expression.  The JSX transpiler catches those unary <code>&lt;</code> and takes care of dealing with what follows. If we are not sure whether the transpiler would consider a <code>&lt;</code> to be a <em>less than</em> operator or JSX, we just open a parenthesis right before it, like in <code>(&lt;h1&gt; ...)</code> because that ensures the start of a new expression.</p>
+<p>None of our code lints or compiles as it is.  We need some extras to deal with JSX:</p>
+<pre><code class="language-bash">npm i --save-dev babel-preset-react eslint-config-airbnb eslint-plugin-react
+</code></pre>
+<p>We are installing a whole bunch of Babel extensions which are encompassed into a preset collection called <code>babel-preset-react</code>.  We need to tell Babel to use that preset by modifying our <code>.babelrc</code> file:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/.babelrc"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: .babelrc</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-">{
+  "presets": ["es2015", "react"]
+}</code></pre></div>
+<p>Babel assumes the <code>babel-preset-</code> prefix to the names listed in the <code>presets</code> entry.</p>
+<p>We are also loading a new ESLint plugin to handle React, which uses JSX extensively and a rules configuration file <code>eslint-config-airbnb</code>, which is the standard set of routes used by the <a href="https://www.airbnb.com/">Airbnb</a> development team.   We are making use of a nice feature of ESLint which is that we can use different preset configurations in different folders.  We will be still using the <code>eslint-config-standard</code> presets for the server-side code, as we've been doing so far, but will use the Airbnb ones for our client side code.  To do that we simply add a <code>.eslintrc.json</code> file in the <code>/client</code> folder:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/.eslintrc.json"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: client/.eslintrc.json</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-json">{
+  "extends": "airbnb",
+  "env": {
+    "browser": true
+  }
+}</code></pre></div>
+<p>The rules are extensively explained and, when not purely stylistic, thoroughly justified in their <a href="https://github.com/airbnb/javascript">GitHub repository</a>.  For the purpose of this book, it is just interesting to note that two teams, working in different environments, one in the server using native NodeJS with no transpiling, the other on the client with Babel, can use different styles and rules suited to their environment.</p>
+<p>We can use JSX far more extensively.  All our routes can be expressed in JSX:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/router.js#L11-L20"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: client/router.js</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 20</div>
+  </div>
+  <pre><code class="language-js">render((
+  &lt;Router history={browserHistory}&gt;
+    &lt;Route path="/" component={App}&gt;
+      &lt;IndexRoute component={Index} /&gt;
+      &lt;Route path="index" component={Index} /&gt;
+      &lt;Route path="project/:pid" component={Project} /&gt;
+      &lt;Route path="*" component={NotFound} /&gt;
+    &lt;/Route&gt;
+  &lt;/Router&gt;
+), document.getElementById('contents'));</code></pre></div>
+<p>We have already seen that to embed JSX we just need to start an expression with a <code>&lt;</code>.  We can also embed plain JavaScript into JSX by enclosing any expression in curly brackets.  We do that with <code>{App}</code>, <code>{Index}</code>, <code>{Project}</code>, <code>{NotFound}</code> or <code>{browserHistory}</code>, which are either <code>const</code>ants declared in JavaScript or imported modules.  Any sort of expression can thus be embedded, very much like we do in ES6 template strings by enclosing variable parts in <code>${ }</code>.</p>
+<p>The React plugin for Babel creates plain JavaScript for all that JSX, it turns them into calls to <code>React.createElement</code>, in other words, it would transpile it into something pretty much like the code we had before <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/client/router.js#L10-L29">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  Some of these elements are plain HTML others are React components.  To tell them apart, HTML elements should be all lowercase, <code>&lt;h1&gt;</code> or <code>&lt;div&gt;</code> while React components should start with uppercase <code>&lt;Router&gt;</code> or <code>&lt;IndexRoute&gt;</code>.  That is why we changed our <code>index</code> and <code>project</code> references into <code>Index</code> and <code>Project</code>.</p>
+<p>This is how our previous <code>index.js</code> might look using JSX for React:</p>
+<pre><code class="language-js">import React from 'react';
+import { Link } from 'react-router';
+const data = require('./data.js');
+
+export default () =&gt; (
+  &lt;div className=&quot;index&quot;&gt;
+    &lt;h1&gt;Projects:&lt;/h1&gt;
+    &lt;ul&gt;{
+      Object.keys(data).map(pid =&gt;
+        (&lt;li key={pid}&gt;
+          &lt;Link to={`project/${pid}`}&gt;
+            {data[pid].name}
+          &lt;/Link&gt;
+        &lt;/li&gt;)
+      )
+    }&lt;/ul&gt;
+  &lt;/div&gt;
+);
+</code></pre>
+<p>This is called a <em>stateless</em> component in React.  It is simply a <em>fat arrow</em> function that returns whatever needs to be displayed. That function is our default export. Our earlier <code>App</code> and <code>NotFound</code> components were simple stateless components.  There are <em>stateful</em> components as well, which we will see later.</p>
+<p>We are importing <code>data.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/data.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which is the same <code>data.json</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-06-01/server/data.json">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> turned into a module, so that we don't need to interact with the server. We will do that in later chapters.  Note how we can mix ES6 <code>import</code> statement with CommonJS <code>require</code> in the same module. It is safe to use <code>import</code> with those modules that were exported using ES6 <code>export</code> statement and <code>require</code> with those exported by assigning to the <code>module.exports</code> property, the other combinations are not straightforward.</p>
+<p>Besides plain HTML elements, we are using the <code>&lt;Link&gt;</code> component from <code>react-router</code>.  This component renders as a plain <code>&lt;a&gt;</code> element but it is tied internally to the router so the link will not be actually followed but caught by the router and processed so as to activate the corresponding component.</p>
+<p>There is also a <code>key</code> attribute added to each <code>&lt;li&gt;</code> element.  This is an optimization for React.  Whenever there is a repeated element such as the list elements within a <code>&lt;ul&gt;</code> it helps if we provide React with a unique id to tell them apart.  It helps it optimize the screen refresh specially when items are added or removed.</p>
+<p>We can improve on this component by separating it into the list and the items:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/index.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">import React from 'react';
+import { Link } from 'react-router';
+const data = require('./data.js');
+
+const PrjItem = ({ pid, name }) =&gt; (
+  &lt;li&gt;
+    &lt;Link to={`project/${pid}`}&gt;
+      {name}
+    &lt;/Link&gt;
+  &lt;/li&gt;
+);
+
+PrjItem.propTypes = {
+  pid: React.PropTypes.string.isRequired,
+  name: React.PropTypes.string.isRequired,
+};
+
+const ProjectList = () =&gt; (
+  &lt;div className="index"&gt;
+    &lt;h1&gt;Projects:&lt;/h1&gt;
+    &lt;ul&gt;{
+      Object.keys(data).map(pid =&gt;
+        (&lt;PrjItem key={pid} pid={pid} name={data[pid].name} /&gt;)
+      )
+    }&lt;/ul&gt;
+  &lt;/div&gt;
+);
+
+export default ProjectList;</code></pre></div>
+<p>The <code>PrjItem</code> component displays a single project item in the list.  We use it within the loop in the project list by using it as a JSX component <code>&lt;PrjItem&gt;</code> and providing it with what look like HTML attributes, <code>pid</code> and <code>name</code>.</p>
+<p>The <code>PrjItem</code> component receives a <em>properties</em> argument, usually referred to as <code>props</code>, which is an object containing all pseudo-HTML-attributes used when invoked.  Here we are using ES6 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment">destructuring</a> to explicitly assign the relevant properties within the <code>props</code> object into variables that might well be considered function arguments.  The following segments of code are equivalent:</p>
+<pre><code class="language-js">const PrjItem = ({ pid, name }) =&gt; (
+// --------------------
+const PrjItem = props =&gt; {
+  let {pid, name} = props;
+}
+// -----------------
+const PrjItem = props =&gt; {
+  let pid = props.pid;
+  let name = props.name;
+}
+</code></pre>
+<p>Destructuring is new to JavaScript in ES6, it is not JSX nor React. We have already used <em>destructuring</em> in the <code>import</code> statements.</p>
+<p>The Router component uses properties to send information to the components.  We use that in <code>project.js</code> which should read the <code>pid</code> from the route. Just as Express does on the server-side, Router also provides a <code>params</code> object with the decoded parameters which we can then retrieve from the <code>props</code> argument using, once again, <em>destructuring</em>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/project.js#L27-L34"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 27</div>
+    <div class="to">To: 34</div>
+  </div>
+  <pre><code class="language-js">const Project = ({ params: { pid } }) =&gt; {
+  const prj = data[pid];
+  return (&lt;div className="project"&gt;
+    &lt;h1&gt;{prj.name}&lt;/h1&gt;
+    &lt;p&gt;{prj.descr}&lt;/p&gt;
+    &lt;TaskList tasks={prj.tasks} /&gt;
+  &lt;/div&gt;);
+};</code></pre></div>
+<h3><a class="self-ref" id="chapter12-proptypes" href="#chapter12-proptypes"># </a>PropTypes</h3>
+<p>React provides us with a mechanism to validate the nature of properties passed to components.  We can declare the data types of those properties by adding a  <code>propTypes</code> static object to our components.  React has two modes of operation, production and development.  In development mode, the default, it will check a good number of things and issue warnings to help us pinpoint any problems ahead of time.  It will skip on this checks when running in production mode. Thus, we can add property validation at no performance cost to us.</p>
+<p>For the above <code>PrjItem</code> component we can add the following property validation:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/index.js#L13-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: 13</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">PrjItem.propTypes = {
+  pid: React.PropTypes.string.isRequired,
+  name: React.PropTypes.string.isRequired,
+};</code></pre></div>
+<p>React provides a good number of <a href="https://facebook.github.io/react/docs/reusable-components.html#prop-validation">PropTypes</a> to check the properties of any component.  We have used <code>string</code> as the data type for <code>pid</code> because object property names are always converted to strings even when they originally were numbers.  The optional <code>isRequired</code> can be added to any other data type to make it mandatory.</p>
+<h3><a class="self-ref" id="chapter12-production-version" href="#chapter12-production-version"># </a>Production version</h3>
+<p>To create the <em>production</em> version to be deployed in a real life installation we need to create a new configuration file <code>webpack.production.config.js</code> for WebPack.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/webpack.production.config.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: webpack.production.config.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">const webpack = require('webpack');
+
+module.exports = Object.assign(require('./webpack.config.js'), {
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    })
+  ]
+});</code></pre></div>
+<p>We are using the original configuration file <code>webpack.config.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/webpack.config.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> as the basis and adding one of WebPack's built-in plugins that allows us to add environment variables to the task.  To run it we add another command to our <code>package.json</code> file:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/package.json#L13"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: package.json</div>
+    <div class="from">From: 13</div>
+    <div class="to">To: 13</div>
+  </div>
+  <pre><code class="language-json">"production": "webpack -p --config webpack.production.config.js"</code></pre></div>
+<p>So, if we do <code>npm run production</code> we will run WebPack with the new configuration file and also with the <code>-p</code> or <em>production</em> option which produces a minimized version with all comments and formatting stripped off.</p>
+<p>When we run this NPM script, we will get hundreds of warning messages mostly produced by <a href="https://www.npmjs.com/package/uglify-js">Uglify</a> saying <code>Condition always false</code> or <code>Dropping unreachable code</code> in many locations.  This is because React has plenty of pieces of code to validate and verify the workings of the components we write while in development, each enclosed in a conditional such as:</p>
+<pre><code class="language-js">if (process.env.NODE_ENV !== 'production') {
+</code></pre>
+<p>Since we have set <code>NODE_ENV</code> to <code>production</code> all those pieces of code will not be included in the output, which is good. We will drop those warnings later on but it is good to see them once to appreciate how much code React has to keep us safe.</p>
+<p>Our code not only runs faster but after being minified and stripped of all unnecessary code, our <code>bundle.js</code> file has gone down from about 930kB to less than 200kB, almost a fifth in size.</p>
+<p>WebPack also has a <code>-d</code> option for development, which produces a <em>SourceMap</em> which cross-references the output code in the bundle to the original code and helps in debugging.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/package.json#L11"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: package.json</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 11</div>
+  </div>
+  <pre><code class="language-json">"build": "webpack -d",</code></pre></div>
+<h3><a class="self-ref" id="chapter12-watch-for-changes" href="#chapter12-watch-for-changes"># </a>Watch for changes</h3>
+<p>While doing all these changes, we start getting bored of typing the <code>npm run build</code> command after every single change.  We can simplify this by using WebPack's <em>watch</em> feature with the following extra NPM script command:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/package.json#L12"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-02</div>
+    <div class="filename">File: package.json</div>
+    <div class="from">From: 12</div>
+    <div class="to">To: 12</div>
+  </div>
+  <pre><code class="language-json">"watch": "webpack --watch &amp;",</code></pre></div>
+<p>Running WebPack with the <code>--watch</code> option tells it to keep an eye on all the dependencies that make up the bundle.  If any of them change, WebPack will automatically rebuild the bundle.  By adding the <code>&amp;</code> at the end, we leave it to run in the background, freeing us to do <code>npm start</code> to start the web server. We do this only for the development version since that is the one we will be changing continuously.</p>
+<h3><a class="self-ref" id="chapter12-final-touches" href="#chapter12-final-touches"># </a>Final touches</h3>
+<p>The <code>import</code> statement allows us to import both the whole module at once and specific named exports within it:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-03/client/index.js#L1"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-03</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 1</div>
+  </div>
+  <pre><code class="language-js">import React, { PropTypes } from 'react';</code></pre></div>
+<p>Here we are importing <code>React</code> wholesale as we've been doing so far but also importing <code>PropTypes</code> as a separate named import.  This makes it shorter for us when declaring the property types:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-03/client/index.js#L13-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-03</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: 13</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">PrjItem.propTypes = {
+  pid: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+};</code></pre></div>
+<p>We are also exporting <code>PrjItem</code> as a separate named export (in contrast to the default export which is <code>ProjectList</code>).</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/index.js#L5"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 5</div>
+  </div>
+  <pre><code class="language-js">export const PrjItem = ({ pid, name }) =&gt; (</code></pre></div>
+<p>Adding that named export doesn't affect our use of the main component, which is the default export, while it allows us to run separate tests on <code>PrjItem</code>.  It is a good practice to provide direct access via named exports to the subcomponents within a module for testing.</p>
+<p>Finally, we have added a configuration option to our <code>webpack.production.config.js</code>  <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-03/webpack.production.config.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> so it will not print those hundreds of warning messages when generating the production version.</p>
+<h2><a class="self-ref" id="chapter12-summary" href="#chapter12-summary"># </a>Summary</h2>
+<p>We have modified our basic application to run on React, JSX and React Router.</p>
 </div>
   </body>
   <script type="text/javascript" src="index.js"></script>
