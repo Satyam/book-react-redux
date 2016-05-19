@@ -1,26 +1,42 @@
 import React, { PropTypes } from 'react';
 const data = require('./data.js');
 
-export const Task = ({ descr, complete }) => (
-  <li>
-    <input type="checkbox" defaultChecked={complete} /> &nbsp; {descr}
-  </li>
-);
-
-Task.propTypes = {
-  complete: PropTypes.bool,
-  descr: PropTypes.string,
+export const Task = ({ descr, completed, tid, onClick }) => {
+  const handler = ev => {
+    if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
+    ev.preventDefault();
+    onClick({ tid });
+  };
+  return (<li onClick={handler} className={`task ${completed ? 'completed' : 'pending'}`}>
+    {descr}
+  </li>);
 };
 
-export const TaskList = ({ tasks }) => (
-  <ul className="task-list">{
-    Object.keys(tasks).map(tid => (
-      <Task key={tid} complete={tasks[tid].complete} descr={tasks[tid].descr} />
-    ))
-  }</ul>
-);
+Task.propTypes = {
+  completed: PropTypes.bool,
+  descr: PropTypes.string,
+  tid: PropTypes.string,
+  onClick: PropTypes.func,
+};
+
+export const TaskList = ({ pid, tasks }) => {
+  const handler = ev => console.log('click', Object.assign(ev, { pid }));
+  return (<ul className="task-list">{
+    Object.keys(tasks).map(tid => {
+      const task = tasks[tid];
+      return (<Task
+        key={tid}
+        descr={task.descr}
+        completed={task.completed}
+        tid={tid}
+        onClick={handler}
+      />);
+    })
+  }</ul>);
+};
 
 TaskList.propTypes = {
+  pid: PropTypes.string,
   tasks: PropTypes.object,
 };
 
@@ -29,7 +45,7 @@ const Project = ({ params: { pid } }) => {
   return (<div className="project">
     <h1>{prj.name}</h1>
     <p>{prj.descr}</p>
-    <TaskList tasks={prj.tasks} />
+    <TaskList pid={pid} tasks={prj.tasks} />
   </div>);
 };
 

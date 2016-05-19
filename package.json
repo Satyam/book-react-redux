@@ -9,7 +9,7 @@
     "test": "mocha",
     "coverage": "istanbul cover node_modules/.bin/_mocha",
     "build": "webpack -d",
-    "watch": "webpack --watch &",
+    "watch": "webpack -d --watch &",
     "production": "webpack -p --config webpack.production.config.js"
   },
   "myWebServer": {

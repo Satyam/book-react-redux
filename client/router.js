@@ -6,7 +6,7 @@ import Index from './index.js';
 import Project from './project.js';
 
 const App = (props) => props.children;
-const NotFound = () => (<h1>Not found</h1>);
+const NotFound = () => (<h1 className="not-found">Not found</h1>);
 
 render((
   <Router history={browserHistory}>
