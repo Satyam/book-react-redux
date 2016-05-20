@@ -1,19 +1,35 @@
-import React, { PropTypes } from 'react';
+import React, { PropTypes, Component } from 'react';
 const data = require('./data.js');
 
-export const Task = ({ descr, completed, tid, onCompletedChange }) => {
-  const handler = ev => {
+export class Task extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      completed: props.completed,
+      descr: props.descr,
+    };
+    this.onClickHandler = this.onClickHandler.bind(this);
+  }
+  onClickHandler(ev) {
     if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
     ev.preventDefault();
-    onCompletedChange({
-      tid,
-      completed: !completed,
+    this.props.onCompletedChange({
+      tid: this.props.tid,
+      completed: !this.state.completed,
     });
-  };
-  return (<li onClick={handler} className={`task ${completed ? 'completed' : 'pending'}`}>
-    {descr}
-  </li>);
-};
+    this.setState({ completed: !this.state.completed });
+  }
+  render() {
+    return (
+      <li
+        onClick={this.onClickHandler}
+        className={`task ${this.state.completed ? 'completed' : 'pending'}`}
+      >
+        {this.state.descr}
+      </li>
+    );
+  }
+}
 
 Task.propTypes = {
   completed: PropTypes.bool,
@@ -22,8 +38,8 @@ Task.propTypes = {
   onCompletedChange: PropTypes.func,
 };
 
-export const TaskList = ({ pid, tasks }) => {
-  const handler = ev => console.log('click', Object.assign(ev, { pid }));
+export const TaskList = ({ pid, tasks, onCompletedChange }) => {
+  const onCompletedChangeHandler = ev => onCompletedChange(Object.assign(ev, { pid }));
   return (<ul className="task-list">{
     Object.keys(tasks).map(tid => {
       const task = tasks[tid];
@@ -32,7 +48,7 @@ export const TaskList = ({ pid, tasks }) => {
         descr={task.descr}
         completed={task.completed}
         tid={tid}
-        onCompletedChange={handler}
+        onCompletedChange={onCompletedChangeHandler}
       />);
     })
   }</ul>);
@@ -41,14 +57,18 @@ export const TaskList = ({ pid, tasks }) => {
 TaskList.propTypes = {
   pid: PropTypes.string,
   tasks: PropTypes.object,
+  onCompletedChange: PropTypes.func,
 };
 
 const Project = ({ params: { pid } }) => {
+  const onCompletedChangeHandler = ev => {
+    data[ev.pid].tasks[ev.tid].completed = ev.completed;
+  };
   const prj = data[pid];
   return (<div className="project">
     <h1>{prj.name}</h1>
     <p>{prj.descr}</p>
-    <TaskList pid={pid} tasks={prj.tasks} />
+    <TaskList pid={pid} tasks={prj.tasks} onCompletedChange={onCompletedChangeHandler} />
   </div>);
 };
 
