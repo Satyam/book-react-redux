@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const data = require('./data.js');
 
 export const Task = ({ descr, completed, tid, onCompletedChange }) => {
-  const handler = ev => {
+  const onClickHandler = ev => {
     if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
     ev.preventDefault();
     onCompletedChange({
@@ -10,7 +10,7 @@ export const Task = ({ descr, completed, tid, onCompletedChange }) => {
       completed: !completed,
     });
   };
-  return (<li onClick={handler} className={`task ${completed ? 'completed' : 'pending'}`}>
+  return (<li onClick={onClickHandler} className={`task ${completed ? 'completed' : 'pending'}`}>
     {descr}
   </li>);
 };
@@ -23,7 +23,7 @@ Task.propTypes = {
 };
 
 export const TaskList = ({ pid, tasks }) => {
-  const handler = ev => console.log('click', Object.assign(ev, { pid }));
+  const onCompletedChangeHandler = ev => console.log('Completed Changed', Object.assign(ev, { pid }));
   return (<ul className="task-list">{
     Object.keys(tasks).map(tid => {
       const task = tasks[tid];
@@ -32,7 +32,7 @@ export const TaskList = ({ pid, tasks }) => {
         descr={task.descr}
         completed={task.completed}
         tid={tid}
-        onCompletedChange={handler}
+        onCompletedChange={onCompletedChangeHandler}
       />);
     })
   }</ul>);
