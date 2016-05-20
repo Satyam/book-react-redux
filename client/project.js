@@ -1,11 +1,14 @@
 import React, { PropTypes } from 'react';
 const data = require('./data.js');
 
-export const Task = ({ descr, completed, tid, onClick }) => {
+export const Task = ({ descr, completed, tid, onCompletedChange }) => {
   const handler = ev => {
     if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
     ev.preventDefault();
-    onClick({ tid });
+    onCompletedChange({
+      tid,
+      completed: !completed,
+    });
   };
   return (<li onClick={handler} className={`task ${completed ? 'completed' : 'pending'}`}>
     {descr}
@@ -16,7 +19,7 @@ Task.propTypes = {
   completed: PropTypes.bool,
   descr: PropTypes.string,
   tid: PropTypes.string,
-  onClick: PropTypes.func,
+  onCompletedChange: PropTypes.func,
 };
 
 export const TaskList = ({ pid, tasks }) => {
@@ -29,7 +32,7 @@ export const TaskList = ({ pid, tasks }) => {
         descr={task.descr}
         completed={task.completed}
         tid={tid}
-        onClick={handler}
+        onCompletedChange={handler}
       />);
     })
   }</ul>);
