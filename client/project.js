@@ -38,8 +38,8 @@ Task.propTypes = {
   onCompletedChange: PropTypes.func,
 };
 
-export const TaskList = ({ pid, tasks, onCompletedChange }) => {
-  const onCompletedChangeHandler = ev => onCompletedChange(Object.assign(ev, { pid }));
+export const TaskList = ({ pid, tasks, onTaskCompletedChange }) => {
+  const onCompletedChangeHandler = ev => onTaskCompletedChange(Object.assign(ev, { pid }));
   return (<ul className="task-list">{
     Object.keys(tasks).map(tid => {
       const task = tasks[tid];
@@ -57,18 +57,18 @@ export const TaskList = ({ pid, tasks, onCompletedChange }) => {
 TaskList.propTypes = {
   pid: PropTypes.string,
   tasks: PropTypes.object,
-  onCompletedChange: PropTypes.func,
+  onTaskCompletedChange: PropTypes.func,
 };
 
 const Project = ({ params: { pid } }) => {
-  const onCompletedChangeHandler = ev => {
+  const onTaskCompletedChangeHandler = ev => {
     data[ev.pid].tasks[ev.tid].completed = ev.completed;
   };
   const prj = data[pid];
   return (<div className="project">
     <h1>{prj.name}</h1>
     <p>{prj.descr}</p>
-    <TaskList pid={pid} tasks={prj.tasks} onCompletedChange={onCompletedChangeHandler} />
+    <TaskList pid={pid} tasks={prj.tasks} onTaskCompletedChange={onTaskCompletedChangeHandler} />
   </div>);
 };
 
