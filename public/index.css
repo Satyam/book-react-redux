@@ -5,3 +5,11 @@
   text-decoration: line-through;
   color: silver;
 }
+
+.app .project-list .project {
+  border-top: thin solid silver;
+}
+
+.app .project-list {
+  border-top: thin solid silver;
+}

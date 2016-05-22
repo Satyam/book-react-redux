@@ -23,7 +23,6 @@ const ProjectList = ({ children }) => (
         (<ProjectItem key={pid} pid={pid} name={data[pid].name} />)
       )
     }</ul>
-    <hr />
     {children}
   </div>
 );
