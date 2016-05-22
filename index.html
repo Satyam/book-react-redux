@@ -104,6 +104,14 @@
 <li><a href="#chapter12-final-touches">Final touches</a></li>
 </ul>
 <li><a href="#chapter12-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter13-events">Events</a></li>
+<ul class="level-h1"><li><a href="#chapter13-stateful-components">Stateful components</a></li>
+<ul class="level-h2"><li><a href="#chapter13-stateless-or-stateful">Stateless or Stateful</a></li>
+</ul>
+<li><a href="#chapter13-putting-some-order-into-our-files">Putting some order into our files</a></li>
+<li><a href="#chapter13-conditional-rendering">Conditional rendering</a></li>
+<li><a href="#chapter13-lodash">Lodash</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded"><div class="close">&lt; close</div><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
 <p>With the rapid pace of progress in the creation of libraries and tools for web development, most information comes in brief articles and blog posts.  There are not very many comprehensive guides to all that may be needed from A to Z.</p>
@@ -3026,7 +3034,7 @@ import { Link } from 'react-router';
 const data = require('./data.js');
 
 export default () =&gt; (
-  &lt;div className=&quot;index&quot;&gt;
+  &lt;div className=&quot;project-list&quot;&gt;
     &lt;h1&gt;Projects:&lt;/h1&gt;
     &lt;ul&gt;{
       Object.keys(data).map(pid =&gt;
@@ -3056,45 +3064,46 @@ export default () =&gt; (
 import { Link } from 'react-router';
 const data = require('./data.js');
 
-const PrjItem = ({ pid, name }) =&gt; (
-  &lt;li&gt;
+const ProjectItem = ({ pid, name }) =&gt; (
+  &lt;li className="project-item"&gt;
     &lt;Link to={`project/${pid}`}&gt;
       {name}
     &lt;/Link&gt;
   &lt;/li&gt;
 );
 
-PrjItem.propTypes = {
+ProjectItem.propTypes = {
   pid: React.PropTypes.string.isRequired,
   name: React.PropTypes.string.isRequired,
 };
 
 const ProjectList = () =&gt; (
-  &lt;div className="index"&gt;
+  &lt;div className="project-list"&gt;
     &lt;h1&gt;Projects:&lt;/h1&gt;
     &lt;ul&gt;{
       Object.keys(data).map(pid =&gt;
-        (&lt;PrjItem key={pid} pid={pid} name={data[pid].name} /&gt;)
+        (&lt;ProjectItem key={pid} pid={pid} name={data[pid].name} /&gt;)
       )
     }&lt;/ul&gt;
   &lt;/div&gt;
 );
 
 export default ProjectList;</code></pre></div>
-<p>The <code>PrjItem</code> component displays a single project item in the list.  We use it within the loop in the project list by using it as a JSX component <code>&lt;PrjItem&gt;</code> and providing it with what look like HTML attributes, <code>pid</code> and <code>name</code>.</p>
-<p>The <code>PrjItem</code> component receives a <em>properties</em> argument, usually referred to as <code>props</code>, which is an object containing all pseudo-HTML-attributes used when invoked.  Here we are using ES6 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment">destructuring</a> to explicitly assign the relevant properties within the <code>props</code> object into variables that might well be considered function arguments.  The following segments of code are equivalent:</p>
-<pre><code class="language-js">const PrjItem = ({ pid, name }) =&gt; (
+<p>The <code>ProjectItem</code> component displays a single project item in the list.  We use it within the loop in the project list by using it as a JSX component <code>&lt;ProjectItem&gt;</code> and providing it with what look like HTML attributes, <code>pid</code> and <code>name</code>.</p>
+<p>The <code>ProjectItem</code> component receives a <em>properties</em> argument, usually referred to as <code>props</code>, which is an object containing all pseudo-HTML-attributes used when invoked.  Here we are using ES6 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment">destructuring</a> to explicitly assign the relevant properties within the <code>props</code> object into variables that might well be considered function arguments.  The following segments of code are equivalent:</p>
+<pre><code class="language-js">const ProjectItem = ({ pid, name }) =&gt; (
 // --------------------
-const PrjItem = props =&gt; {
+const ProjectItem = props =&gt; {
   let {pid, name} = props;
 }
 // -----------------
-const PrjItem = props =&gt; {
+const ProjectItem = props =&gt; {
   let pid = props.pid;
   let name = props.name;
 }
 </code></pre>
 <p>Destructuring is new to JavaScript in ES6, it is not JSX nor React. We have already used <em>destructuring</em> in the <code>import</code> statements.</p>
+<p>As a general rule, it is customary to add a <code>className</code> attribute to the outermost element in each component, derived from the name of the component itself. Thus, for <code>ProjectItem</code> we have <code>project-item</code>, for <code>Task</code>, <code>task</code>, each following the standard naming conventions of the language. However, there is nothing but custom preventing us from using <code>ProjectItem</code> as a class name and we might as well have done so. Since <code>class</code> is a reserved word in JavaScript and JSX allows us to mix JavaScript and HTML, it is not good to use <code>class</code> as the HTML attribute name, thus, we must use <code>className</code> instead.  Likewise, in <code>&lt;label&gt;</code> elements, instead of <code>for</code> as we must use <code>htmlFor</code>.</p>
 <p>The Router component uses properties to send information to the components.  We use that in <code>project.js</code> which should read the <code>pid</code> from the route. Just as Express does on the server-side, Router also provides a <code>params</code> object with the decoded parameters which we can then retrieve from the <code>props</code> argument using, once again, <em>destructuring</em>:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/project.js#L27-L34"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -3113,7 +3122,7 @@ const PrjItem = props =&gt; {
 };</code></pre></div>
 <h3><a class="self-ref" id="chapter12-proptypes" href="#chapter12-proptypes"># </a>PropTypes</h3>
 <p>React provides us with a mechanism to validate the nature of properties passed to components.  We can declare the data types of those properties by adding a  <code>propTypes</code> static object to our components.  React has two modes of operation, production and development.  In development mode, the default, it will check a good number of things and issue warnings to help us pinpoint any problems ahead of time.  It will skip on this checks when running in production mode. Thus, we can add property validation at no performance cost to us.</p>
-<p>For the above <code>PrjItem</code> component we can add the following property validation:</p>
+<p>For the above <code>ProjectItem</code> component we can add the following property validation:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/index.js#L13-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-12-02</div>
@@ -3121,7 +3130,7 @@ const PrjItem = props =&gt; {
     <div class="from">From: 13</div>
     <div class="to">To: 16</div>
   </div>
-  <pre><code class="language-js">PrjItem.propTypes = {
+  <pre><code class="language-js">ProjectItem.propTypes = {
   pid: React.PropTypes.string.isRequired,
   name: React.PropTypes.string.isRequired,
 };</code></pre></div>
@@ -3179,7 +3188,7 @@ module.exports = Object.assign(require('./webpack.config.js'), {
     <div class="from">From: 12</div>
     <div class="to">To: 12</div>
   </div>
-  <pre><code class="language-json">"watch": "webpack --watch &amp;",</code></pre></div>
+  <pre><code class="language-json">"watch": "webpack -d --watch &amp;",</code></pre></div>
 <p>Running WebPack with the <code>--watch</code> option tells it to keep an eye on all the dependencies that make up the bundle.  If any of them change, WebPack will automatically rebuild the bundle.  By adding the <code>&amp;</code> at the end, we leave it to run in the background, freeing us to do <code>npm start</code> to start the web server. We do this only for the development version since that is the one we will be changing continuously.</p>
 <h3><a class="self-ref" id="chapter12-final-touches" href="#chapter12-final-touches"># </a>Final touches</h3>
 <p>The <code>import</code> statement allows us to import both the whole module at once and specific named exports within it:</p>
@@ -3199,23 +3208,352 @@ module.exports = Object.assign(require('./webpack.config.js'), {
     <div class="from">From: 13</div>
     <div class="to">To: 16</div>
   </div>
-  <pre><code class="language-js">PrjItem.propTypes = {
+  <pre><code class="language-js">ProjectItem.propTypes = {
   pid: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
 };</code></pre></div>
-<p>We are also exporting <code>PrjItem</code> as a separate named export (in contrast to the default export which is <code>ProjectList</code>).</p>
+<p>We are also exporting <code>ProjectItem</code> as a separate named export (in contrast to the default export which is <code>ProjectList</code>).</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/index.js#L5"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
-    <div class="branch">Branch: master</div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-03/client/index.js#L5"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-12-03</div>
     <div class="filename">File: client/index.js</div>
     <div class="from">From: 5</div>
     <div class="to">To: 5</div>
   </div>
-  <pre><code class="language-js">export const PrjItem = ({ pid, name }) =&gt; (</code></pre></div>
+  <pre><code class="language-js">export const ProjectItem = ({ pid, name }) =&gt; (</code></pre></div>
 <p>Adding that named export doesn't affect our use of the main component, which is the default export, while it allows us to run separate tests on <code>PrjItem</code>.  It is a good practice to provide direct access via named exports to the subcomponents within a module for testing.</p>
 <p>Finally, we have added a configuration option to our <code>webpack.production.config.js</code>  <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-03/webpack.production.config.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> so it will not print those hundreds of warning messages when generating the production version.</p>
 <h2><a class="self-ref" id="chapter12-summary" href="#chapter12-summary"># </a>Summary</h2>
 <p>We have modified our basic application to run on React, JSX and React Router.</p>
+<h1><a class="self-ref" id="chapter13-events" href="#chapter13-events"># </a>Events</h1>
+<p>Our simple App shows existing information but does not allow us to change it in any way.  To do that we first have to respond to events from the UI.</p>
+<p>Regular DOM events provide us with information about the DOM element involved and additional information such as which mouse button was used in a click, which key was pressed with which modifiers, the cursor coordinates and much more.  However, when we develop our own components we should define what information might be of interest to the developer who is using that component and satisfy those expectations.</p>
+<p>Take our Task component <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-03/client/project.js#L4-L8">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  Could anyone possibly care the precise [x,y] coordinates of the cursor within that component when the item is clicked? Or weather the element was clicked, touched, stared at or thought about?  It would be far more important to provide the <code>tid</code> of the task and its new completion status.  Thus, we might define our <code>onCompletedChange</code> custom event object having just a couple of properties, the <code>tid</code> and the new value for <code>completed</code>. In this way we translate a DOM event closely related to the browser environment into an abstract application-oriented event with information suitable to higher level components.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-01/client/project.js#L4-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-01</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">export const Task = ({ descr, completed, tid, onCompletedChange }) =&gt; {
+  const onClickHandler = ev =&gt; {
+    if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
+    ev.preventDefault();
+    onCompletedChange({
+      tid,
+      completed: !completed,
+    });
+  };
+  return (&lt;li onClick={onClickHandler} className={`task ${completed ? 'completed' : 'pending'}`}&gt;
+    {descr}
+  &lt;/li&gt;);
+};</code></pre></div>
+<p>We change the argument list of our <code>Task</code> component to receive extra properties, <code>tid</code> and <code>onCompletedChange</code>.  Actually, <code>Task</code> is still receiving a single argument, an object usually called <code>props</code>, short for <em>properties</em>. We are adding a couple of names of the properties we are destructuring out of that single object.</p>
+<p>First, we define an <code>onClickHandler</code> for the DOM <code>onClick</code> event. The <code>onClickHandler</code> function will receive the <code>ev</code> DOM Event object. We check if the event was triggered with any mouse button except the primary one, or modified with the shift, alt, meta or control keys.  If any of those conditions is true, we simply return and do nothing.  Otherwise, we call <code>ev.preventDefault()</code> to signal the DOM that we are taking care of that event and that the default action, whatever that might have been, does not need to be invoked. So far, all these operations are closely related to the DOM and the browser environment. Finally, we call the <code>onCompletedChange</code> callback we received as an argument providing it with an object with the <code>tid</code> of the task clicked and the new value for <code>completed</code>.  This object is the application-oriented event object, it contains no browser information.</p>
+<p>As before, the <code>Task</code> component returns the actual elements to be rendered much as we did before, except that we are adding an <code>onClick</code> DOM event handler to the <code>&lt;li&gt;</code> element.  We have also dropped the checkbox we used before to represent the completion status in favor of changing the <code>className</code> of the list item.  This is, in fact, a far more flexible alternative as it gives the graphic designer more options, even simulating a checkbox, via CSS. Consequently, we have added a CSS file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-01/public/index.css">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which we included in <code>index.html</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-01/public/index.html#L6">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>To make it work, we have to modify the <code>TaskList</code> component to provide <code>Task</code> with the new arguments.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-01/client/project.js#L25-L39"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-01</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 25</div>
+    <div class="to">To: 39</div>
+  </div>
+  <pre><code class="language-js">export const TaskList = ({ pid, tasks }) =&gt; {
+  const onCompletedChangeHandler = ev =&gt; console.log('Completed Changed', Object.assign(ev, { pid }));
+  return (&lt;ul className="task-list"&gt;{
+    Object.keys(tasks).map(tid =&gt; {
+      const task = tasks[tid];
+      return (&lt;Task
+        key={tid}
+        descr={task.descr}
+        completed={task.completed}
+        tid={tid}
+        onCompletedChange={onCompletedChangeHandler}
+      /&gt;);
+    })
+  }&lt;/ul&gt;);
+};</code></pre></div>
+<p>We define a trivial handler that simply sends to the console the event object it receives, augmented with the <code>pid</code>.  No browser-related information is handled at this point.  The <code>Task</code> component provides the <code>tid</code> because that is what it deals with, one simple task.  Components higher up may augment this with more information, such as the <code>pid</code>.</p>
+<p>Now, we must provide the <code>&lt;Task&gt;</code> component with the new <code>tid</code> and <code>onCompletedChange</code> properties. The list of pseudo-HTML-attributes has grown so large that we had to spread it into multiple lines.  The <code>propTypes</code> for <code>Task</code> has also grown:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-01/client/project.js#L18-L23"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-01</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 23</div>
+  </div>
+  <pre><code class="language-js">Task.propTypes = {
+  completed: PropTypes.bool,
+  descr: PropTypes.string,
+  tid: PropTypes.string,
+  onCompletedChange: PropTypes.func,
+};</code></pre></div>
+<p>It is important to notice that the way we use the <code>onCompletedChange</code> attribute of the <code>&lt;Task&gt;</code> component looks very much like a DOM event such as the regular <code>onClick</code> attribute on the  <code>&lt;li&gt;</code> element, we just assign a callback function that will be called when the expected event happens. Both callbacks will receive an object which will contain suitable properties.</p>
+<p>As we click on the tasks within the project, we will be able to see in the browser console the messages from our handler.  They won't show if we press any of the modifier keys or use any button but the primary one.</p>
+<p>We have responded to the UI event signaling the intent of the user to change the completion status of the task but we haven't done that yet.  It should be pretty easy just by changing the event handler in <code>TaskList</code>:</p>
+<pre><code class="language-js">const onCompletedChangeHandler = ({ tid, completed }) =&gt; {
+  tasks[tid].completed = completed;
+};
+</code></pre>
+<p>We are once again using destructuring to take the <code>tid</code> property out of the event object.  It is easy to set the completion status since <code>TaskList</code> has a reference to all the tasks in the project. Of course, we are reading and changing all this data from an in-memory copy of <code>data.js</code> so all changes are purely local and volatile, but we will get to that in a moment. Now, the problem is to refresh this new state in the UI.</p>
+<p>One way to do it would be to call <code>render</code> again as we did in <code>router.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-01/client/router.js#L11">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  It will work but it is a little too extreme!  It would be fast for a small application such as ours but it makes no sense for anything larger.</p>
+<p>React uses a <em>virtual DOM</em>. It keeps a very succinct version of the DOM in memory as it was rendered the last time. Lets call this the <em>existing</em> copy.  When it does a refresh, React produces a new version, the <em>expected</em>.  It then compares the <em>expected</em> against the <em>existing</em> version.   When it finds a difference, it only sends the minimum of commands to change the DOM to reflect the expectations.</p>
+<p>Changes to the DOM are expensive, specially if they involve a re-flow of the whole page.  Producing the <em>expected</em> version and comparing it against the <em>existing</em> is relatively cheap, however, it is not free, it does take some effort, less than re-rendering the full DOM but it still takes time.</p>
+<p>If we can tell React what has actually been changed, React can do much less work.  To do that, we need our components to remember their previous state and know when that state has changed.  So far, we have used <em>stateless</em> components, we need to go to <em>stateful</em> ones.</p>
+<h2><a class="self-ref" id="chapter13-stateful-components" href="#chapter13-stateful-components"># </a>Stateful components</h2>
+<p>Stateless components are simple functions that receive a series of properties and return whatever should be rendered.   Stateful components are classes derived from <code>React.Component</code>.  Lets convert our <code>Task</code>  stateless component into a stateful one. Just as we did with <code>PropTypes</code> we extract <code>Component</code> as a separate import from <code>React</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-02/client/project.js#L1"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-02</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 1</div>
+  </div>
+  <pre><code class="language-js">import React, { PropTypes, Component } from 'react';</code></pre></div>
+<p>Instead of a simple function, our <code>Task</code> component is now a class:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-02/client/project.js#L4-L12"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-02</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 12</div>
+  </div>
+  <pre><code class="language-js">export class Task extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      completed: props.completed,
+      descr: props.descr,
+    };
+    this.onClickHandler = this.onClickHandler.bind(this);
+  }</code></pre></div>
+<p>As all classes, it has a <code>constructor</code> which receives the <code>props</code> argument.  Before doing anything else, it is important to call the constructor of the parent class, in this case, <code>React.Component</code>.  We do this by calling <code>super(props)</code>. React.Component needs to receive those properties for its internal workings.</p>
+<p>React knows when to render a component based on its internal state.  It the state has changed, it assumes it needs re-rendering.  This doesn't mean it will completely regenerate the DOM for this component, what it will do is to create that <em>expected</em> in-memory image which, at some point, it will compare to the <em>existing</em> image and, wherever they differ, it will issue the appropriate DOM commands.</p>
+<p>One of the tasks of the constructor is to set the initial state of the component.  We do this by setting <code>this.state</code> to an object containing the relevant properties.  We only use <code>descr</code> and <code>completed</code> for the state.  The <code>tid</code> is the primary key for the task so it should not change and doesn't need to be part of the possibly changing state.  The <code>onCompletedChange</code> property shouldn't change either.</p>
+<p>Finally, we <code>bind</code> the event handler to <code>this</code>.  As with all event handlers, whether DOM or custom ones, when the handler is called, it is called in the context of the caller or with no context at all.  This means that the handler would not have access to the <code>this</code> of its own class.  We use that handler in the <code>render</code> function and we might bind it there, when it gets used but, as the <code>render</code> function may be called lots of times, it is better to bind it just once in the constructor. Repeatedly calling <code>bind</code> does not only waste time but it leaves behind a small piece of memory allocated for each bound function and those bits end up trashing the memory space and forcing more work on the garbage collector.</p>
+<p>The <code>render</code> function is very much like our earlier stateless component:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-02/client/project.js#L22-L31"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-02</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 22</div>
+    <div class="to">To: 31</div>
+  </div>
+  <pre><code class="language-js">render() {
+  return (
+    &lt;li
+      onClick={this.onClickHandler}
+      className={`task ${this.state.completed ? 'completed' : 'pending'}`}
+    &gt;
+      {this.state.descr}
+    &lt;/li&gt;
+  );
+}</code></pre></div>
+<p>The main difference is that instead of reading <code>descr</code> and <code>completed</code> from the argument list, it reads them from <code>this.state.descr</code> and <code>this.state.completed</code>.  Also, it uses <code>this.onClickHandler</code> instead of accessing <code>onClickHandler</code> via closure as it did before.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-02/client/project.js#L13-L20"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-02</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 13</div>
+    <div class="to">To: 20</div>
+  </div>
+  <pre><code class="language-js">onClickHandler(ev) {
+  if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
+  ev.preventDefault();
+  this.props.onCompletedChange({
+    tid: this.props.tid,
+    completed: !this.state.completed,
+  });
+  this.setState({ completed: !this.state.completed });</code></pre></div>
+<p>The handler itself does the same.  Instead of accessing the <code>onCompletedChange</code> callback via closure, it reads it from <code>this.props.onCompletedChange</code>.  It does the same with <code>this.props.tid</code>.  That is one of the visible effects of calling <code>super(props)</code> in the constructor, React will copy all the properties received into <code>this.props</code>.  We read <code>completed</code> from <code>this.state.completed</code> instead.  There is a copy of it in <code>this.props.completed</code> just as there are for <code>tid</code> or <code>descr</code> but these copies do not reflect possible changes in the state of the component, they will always retain their original values and won't be affected by whatever the user does.</p>
+<p>Thus, as a general rule, those properties that the user might change via some interaction with the UI, be it clicking, touching, typing or whatever, must go into <code>this.state</code> in the constructor and read from there.  The ones that don't change over the lifetime of the component, can be accessed from <code>this.props</code>.</p>
+<p>How do we change the state of the component?  Via <code>this.setState</code>.  Except in the constructor, where the state is initialized, we must never set <code>this.state</code> or anything within it directly.  We should always do it via <code>this.setState</code>. This function actually merges the values given to the existing ones.  In our case, we only set <code>completed</code> but that doesn't mean we are wiping out <code>descr</code>, we are merging the new value of <code>completed</code> into the object which also contains the value of <code>descr</code>.</p>
+<p>When React detects changes in its state, it triggers the re-rendering process. If we now run this version, we will see the task items switch color as we click on them.  However, though we have changed the state of the component, we have not changed the underlying data itself.  That is why we are still firing the <code>onCompletedChange</code> custom event to notify to whomever it might concern, that the change has been requested.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-02/client/project.js#L41-L43"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-02</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 41</div>
+    <div class="to">To: 43</div>
+  </div>
+  <pre><code class="language-js">export const TaskList = ({ pid, tasks, onTaskCompletedChange }) =&gt; {
+  const onCompletedChangeHandler = ev =&gt; onTaskCompletedChange(Object.assign(ev, { pid }));
+  return (&lt;ul className="task-list"&gt;{</code></pre></div>
+<p>The <code>TaskList</code> component itself listens to that event and its handler, adds the <code>pid</code> and fires its own <code>onTaskCompletedChange</code> event.   The <code>Project</code> component listens to this event and finally changes the actual data.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-02/client/project.js#L64-L66"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-02</div>
+    <div class="filename">File: client/project.js</div>
+    <div class="from">From: 64</div>
+    <div class="to">To: 66</div>
+  </div>
+  <pre><code class="language-js">const onTaskCompletedChangeHandler = ev =&gt; {
+  data[ev.pid].tasks[ev.tid].completed = ev.completed;
+};</code></pre></div>
+<p>Of course, it only changes the local client-side copy of <code>data.js</code>, not the shared one on the server, which we will do later on. It is easy to tell the changes have been preserved by clicking on some of the tasks to change its completion status, selecting another project and then, when going back to the original one, the changes are still there.</p>
+<h3><a class="self-ref" id="chapter13-stateless-or-stateful" href="#chapter13-stateless-or-stateful"># </a>Stateless or Stateful</h3>
+<p>Stateless components are to be preferred over stateful because, besides being cheap in resources taken, state machines are harder to test and debug.  Calling a stateless component with the same properties will always produce the same output.  In a stateful component, it all depends on the previous state, thus the chances for bugs increases and so does then need for tests.</p>
+<p>However, to let React know when a component has changed and, if so, to trigger a re-render, said component needs to know what its previous state was so it can compare it with the new one.  That is why we had to go to a stateful component, that is, a JavaScript class instead of a plain function.</p>
+<p><code>React.Component</code> also provides a whole series of methods for particular needs and what they call <a href="https://facebook.github.io/react/docs/component-specs.html">lifecycle events</a> such as <code>shouldComponentUpdate</code> which allows for a finer control on when the component might need re-rendering.</p>
+<h2><a class="self-ref" id="chapter13-putting-some-order-into-our-files" href="#chapter13-putting-some-order-into-our-files"># </a>Putting some order into our files</h2>
+<p>Our project has grown a little wild, some components are not where they should.  It is customary that components should be each in its own file, except for stateless components when they are totally subordinate to the main component in the file, like <code>ProjectItem</code> is to <code>ProjectList</code>.</p>
+<p>The <code>App</code> and <code>NotFound</code> stateless components which were within <code>router.js</code> now have their own separate files <code>app.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-03/client/app.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and <code>notFound.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-03/client/notFound.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>The <code>NotFound</code> component now informs which path is the one that has not been found.  It gets this information from the Router which provides the component with plenty of information about how it got there.</p>
+<p>The <code>App</code> component is now a true frame providing some real options, well... at the moment, just one, listing the available projects.  At this point we are using a plain <code>&lt;Link&gt;</code> component which renders as an HTML anchor <code>&lt;a&gt;</code>.  In a real project, it might be a menu or a tabbed interface.  What it still has from before is a placeholder for the children it will contain: <code>{props.children}</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-03/client/app.js#L7">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  This is important.  Whenever there is a <code>&lt;Route&gt;</code> which contains nested <code>&lt;Route&gt;</code> elements, the parent component should have a <code>{props.children}</code> placeholder to put the contents of the components in the nested routes.  Failing to provide such a placeholder will not issue an error nor warning, the children will simply not be rendered.</p>
+<p>Our earlier <code>index.js</code> file is now <code>projectList.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-03/client/projectList.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> because it actually contains a component called <code>ProjectList</code> which lists the available projects. Likewise, the component imported as <code>Index</code> in <code>router.js</code> is now <code>ProjectList</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-03/client/router.js#L5">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>. Early on, <code>index.js</code> was the entry point of our pre-React application and that is why it received the default name for an entry-point. That is no longer the case.</p>
+<p>The <code>project.js</code> file contained too many components, even a stateful one, which should have been on its own.  Now it is much smaller containing a simple stateless component <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-03/client/project.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> with the <code>TaskList</code> and <code>Task</code> components moved into their own files <code>taskList.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-03/client/taskList.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and <code>task.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-03/client/task.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>We have also changed the routes:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-03/client/router.js#L11-L20"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-03</div>
+    <div class="filename">File: client/router.js</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 20</div>
+  </div>
+  <pre><code class="language-js">render((
+  &lt;Router history={browserHistory}&gt;
+    &lt;Route path="/" component={App}&gt;
+      &lt;Route path="project" component={ProjectList}&gt;
+        &lt;Route path=":pid" component={Project} /&gt;
+      &lt;/Route&gt;
+      &lt;Route path="*" component={NotFound} /&gt;
+    &lt;/Route&gt;
+  &lt;/Router&gt;
+), document.getElementById('contents'));</code></pre></div>
+<p>We have <code>App</code> as an overall container.  It has the main menu, though at this point it has only one option, listing the projects.  This <code>App</code> menu will show if its own path or any of the subordinated paths are matched.  Since one of those paths is <code>'*'</code> which shows the <code>NotFound</code> component, <code>App</code> will always have a match, even if it is <code>NotFound</code>.  That is why we are no longer using <code>IndexRoute</code>.</p>
+<p>If the route is <code>/project</code> or <code>/project/:pid</code>, the <code>ProjectList</code> will show.  Once again, it will show with either its own path <code>/project</code> or upon matching any subordinate route <code>/project/:pid</code>.  Notice how the nested paths get concatenated in the actual URL.</p>
+<p>In our earlier version, we either had the projects list or the information about a single project.   In this version we have a hierarchy of information starting at the main menu, followed by the projects list and then, if a project is selected, information about it. The nesting of the routes reflects this.</p>
+<h2><a class="self-ref" id="chapter13-conditional-rendering" href="#chapter13-conditional-rendering"># </a>Conditional rendering</h2>
+<p>We have something that doesn't look nice.  Once a project is selected and its details shown in the bottom panel, the projects list still shows as a link, even though that project has already been selected.  It would be good to highlight the selected project and drop the link around it.</p>
+<p>We can easily do this by using the <code>params</code> property that the Router provides our components.  <code>params.pid</code> will be the actual <code>pid</code> of the selected project or <code>undefined</code> if no project has been selected yet.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-04/client/projectList.js#L21-L36"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-04</div>
+    <div class="filename">File: client/projectList.js</div>
+    <div class="from">From: 21</div>
+    <div class="to">To: 36</div>
+  </div>
+  <pre><code class="language-js">const ProjectList = ({ children, params }) =&gt; (
+  &lt;div className="project-list"&gt;
+    &lt;h1&gt;Projects:&lt;/h1&gt;
+    &lt;ul&gt;{
+      Object.keys(data).map(pid =&gt;
+        (&lt;ProjectItem
+          key={pid}
+          pid={pid}
+          name={data[pid].name}
+          active={params.pid === pid}
+        /&gt;)
+      )
+    }&lt;/ul&gt;
+    {children}
+  &lt;/div&gt;
+);</code></pre></div>
+<p>We then add an <code>active</code> property to the <code>ProjectItem</code> component.  We set it by comparing the <code>pid</code> parameter in the route to the <code>pid</code> of the project being rendered.  If they are the same, then we are rendering the active project.</p>
+<p>We use that extra <code>active</code> property in two conditional expressions within <code>ProjectItem</code>.  One of them adds a <code>className</code> to the list item and the other decides whether to show the plain name for the active project or a link to navigate to it.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-04/client/projectList.js#L5-L13"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-04</div>
+    <div class="filename">File: client/projectList.js</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 13</div>
+  </div>
+  <pre><code class="language-js">export const ProjectItem = ({ pid, name, active }) =&gt; (
+  &lt;li className={`project-item ${active ? 'selected' : ''}`}&gt;
+    {
+     active
+     ? name
+     : (&lt;Link to={`/project/${pid}`}&gt;{name}&lt;/Link&gt;)
+   }
+  &lt;/li&gt;
+);</code></pre></div>
+<p>We do something very similar in <code>App</code> since, once we have clicked on our single menu item, there is no point in keeping it as a link <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-04/client/app.js#L4-L13">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>Lets go a little further.  Why don't we add a count of pending tasks along the list of projects?  We will provide an extra numeric <code>pending</code> property to <code>ProjectItem</code> so we can show it along each of the project names. We calculate it in <code>ProjectList</code> like this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-05/client/projectList.js#L32-L36"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-05</div>
+    <div class="filename">File: client/projectList.js</div>
+    <div class="from">From: 32</div>
+    <div class="to">To: 36</div>
+  </div>
+  <pre><code class="language-js">pending={
+  Object.keys(data[pid].tasks).filter(
+    tid =&gt; !data[pid].tasks[tid].completed
+  ).length
+}</code></pre></div>
+<p>We use <code>Array.filter</code> over each of the tasks in each project to select those which are not yet completed.  Then, we count how many they ended up being.  It might not a good piece of code but it won't last long.  It is there just to show one issue.</p>
+<p>We just show that count for each of the items:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-05/client/projectList.js#L5-L13"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-05</div>
+    <div class="filename">File: client/projectList.js</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 13</div>
+  </div>
+  <pre><code class="language-js">export const ProjectItem = ({ pid, name, active, pending }) =&gt; (
+  &lt;li className={`project-item ${active ? 'selected' : ''}`}&gt;
+    {
+     active
+     ? name
+     : (&lt;Link to={`/project/${pid}`}&gt;{name}&lt;/Link&gt;)
+   } [Pending: {pending}]
+  &lt;/li&gt;
+);</code></pre></div>
+<p>As we click on the tasks for a particular project, though the marks on the checkboxes change indicating their completion status, the counts of <em>pendings</em> on the projects list don't change at all.  However, if we click on a different project, then the pending counts suddenly get updated to their correct values.</p>
+<p>The problem is that though we are updating the data and we are telling <code>TaskList</code> to re-render itself by changing its state, this does not apply to components higher in the hierarchy.  Clicking on any of the project links re-renders them and then the counts are updated.</p>
+<p>This was meant to be a simple example of a deeper issue which we will fix this in the next chapter, namely, that it is difficult to keep in sync different views of the same data.</p>
+<h2><a class="self-ref" id="chapter13-lodash" href="#chapter13-lodash"># </a>Lodash</h2>
+<p>After seeing all those calls to <code>Object.keys</code>, it is time to wonder if there is anything better.  The problem is that though Arrays have <code>.map</code>, <code>.reduce</code> and <code>.filter</code> methods, Objects don't so it is harder to loop over its items. Fortunately there are libraries of utilities to solve this.  One of the best is <a href="https://lodash.com/">Lodash</a> an improved version of <a href="http://underscorejs.org/">Underscore</a> which was named like that because it was usually named with the underscore <code>_</code> symbol.</p>
+<p>To use Lodash, we first need to download the package:</p>
+<pre><code class="language-bash">npm i --save lodash
+</code></pre>
+<p>We may load the whole package like this:</p>
+<pre><code class="language-js">const _ = require('lodash');
+</code></pre>
+<p>The examples shown in the documentation of Lodash assume we've loaded it in this way, which makes all of the dozens of functions available at once.  However, this would make WebPack include the whole library in the bundle. A better option for us is to include only the parts we need:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-06/client/projectList.js#L4-L5"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-13-06</div>
+    <div class="filename">File: client/projectList.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 5</div>
+  </div>
+  <pre><code class="language-js">const map = require('lodash/map');
+const filter = require('lodash/filter');</code></pre></div>
+<p>We can clearly see the benefits of Lodash looking at this same segment in both versions side to side:</p>
+<table><tr><th>Before  <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-05/client/projectList.js#L26-L38"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a> </th><th>After <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-06/client/projectList.js#L28-L40"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></th></tr>
+<tr><td><pre><code class="lang-js">
+Object.keys(data).map(pid =>
+   (&lt;ProjectItem
+     key={pid}
+     pid={pid}
+     name={data[pid].name}
+     active={params.pid === pid}
+     pending={
+       Object.keys(data[pid].tasks).filter(
+         tid => !data[pid].tasks[tid].completed
+       ).length
+     }
+   /&gt;)
+ )
+</code></pre></td>
+<td><pre><code class="lang-js">
+map(data, (prj, pid) =>
+  (&lt;ProjectItem
+    key={pid}
+    pid={pid}
+    name={prj.name}
+    active={params.pid === pid}
+    pending={
+      filter(prj.tasks,
+        task => !task.completed
+      ).length
+    }
+  /&gt;)
+)</code></pre></td></tr></table>
+<p>It is worth noting that <a href="https://lodash.com/docs#map"><code>map</code></a> and <a href="https://lodash.com/docs#filter"><code>filter</code></a> work indistinctly in both Array and Objects or, as they are called in Lodash, <em>Collections</em>.</p>
 </div>
   </body>
   <script type="text/javascript" src="index.js"></script>
