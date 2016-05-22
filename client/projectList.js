@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 const data = require('./data.js');
+const map = require('lodash/map');
+const filter = require('lodash/filter');
 
 export const ProjectItem = ({ pid, name, active, pending }) => (
   <li className={`project-item ${active ? 'selected' : ''}`}>
@@ -23,15 +25,15 @@ const ProjectList = ({ children, params }) => (
   <div className="project-list">
     <h1>Projects:</h1>
     <ul>{
-      Object.keys(data).map(pid =>
+      map(data, (prj, pid) =>
         (<ProjectItem
           key={pid}
           pid={pid}
-          name={data[pid].name}
+          name={prj.name}
           active={params.pid === pid}
           pending={
-            Object.keys(data[pid].tasks).filter(
-              tid => !data[pid].tasks[tid].completed
+            filter(prj.tasks,
+              task => !task.completed
             ).length
           }
         />)
