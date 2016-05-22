@@ -4,7 +4,7 @@ const data = require('./data.js');
 
 export const ProjectItem = ({ pid, name }) => (
   <li className="project-item">
-    <Link to={`project/${pid}`}>
+    <Link to={`/project/${pid}`}>
       {name}
     </Link>
   </li>
@@ -15,7 +15,7 @@ ProjectItem.propTypes = {
   name: PropTypes.string.isRequired,
 };
 
-const ProjectList = () => (
+const ProjectList = ({ children }) => (
   <div className="project-list">
     <h1>Projects:</h1>
     <ul>{
@@ -23,7 +23,13 @@ const ProjectList = () => (
         (<ProjectItem key={pid} pid={pid} name={data[pid].name} />)
       )
     }</ul>
+    <hr />
+    {children}
   </div>
 );
+
+ProjectList.propTypes = {
+  children: PropTypes.node,
+};
 
 export default ProjectList;
