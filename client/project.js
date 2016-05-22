@@ -8,15 +8,18 @@ const Project = ({ params: { pid } }) => {
     data[ev.pid].tasks[ev.tid].completed = ev.completed;
   };
   const prj = data[pid];
-  return (<div className="project">
-    <h1>{prj.name}</h1>
-    <p>{prj.descr}</p>
-    <TaskList
-      pid={pid}
-      tasks={prj.tasks}
-      onTaskCompletedChange={onTaskCompletedChangeHandler}
-    />
-  </div>);
+  return prj
+  ? (
+    <div className="project">
+      <h1>{prj.name}</h1>
+      <p>{prj.descr}</p>
+      <TaskList
+        pid={pid}
+        tasks={prj.tasks}
+        onTaskCompletedChange={onTaskCompletedChangeHandler}
+      />
+    </div>)
+  : (<p>Project {pid} not found</p>);
 };
 
 Project.propTypes = {

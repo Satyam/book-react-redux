@@ -13,3 +13,7 @@
 .app .project-list {
   border-top: thin solid silver;
 }
+
+.app .project-list .selected {
+  font-weight: bold;
+}
