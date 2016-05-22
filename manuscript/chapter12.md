@@ -118,7 +118,7 @@ import { Link } from 'react-router';
 const data = require('./data.js');
 
 export default () => (
-  <div className="index">
+  <div className="project-list">
     <h1>Projects:</h1>
     <ul>{
       Object.keys(data).map(pid =>
@@ -145,24 +145,26 @@ We can improve on this component by separating it into the list and the items:
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/index.js)
 
-The `PrjItem` component displays a single project item in the list.  We use it within the loop in the project list by using it as a JSX component `<PrjItem>` and providing it with what look like HTML attributes, `pid` and `name`.
+The `ProjectItem` component displays a single project item in the list.  We use it within the loop in the project list by using it as a JSX component `<ProjectItem>` and providing it with what look like HTML attributes, `pid` and `name`.
 
-The `PrjItem` component receives a *properties* argument, usually referred to as `props`, which is an object containing all pseudo-HTML-attributes used when invoked.  Here we are using ES6 [destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) to explicitly assign the relevant properties within the `props` object into variables that might well be considered function arguments.  The following segments of code are equivalent:
+The `ProjectItem` component receives a *properties* argument, usually referred to as `props`, which is an object containing all pseudo-HTML-attributes used when invoked.  Here we are using ES6 [destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) to explicitly assign the relevant properties within the `props` object into variables that might well be considered function arguments.  The following segments of code are equivalent:
 
 ```js
-const PrjItem = ({ pid, name }) => (
+const ProjectItem = ({ pid, name }) => (
 // --------------------
-const PrjItem = props => {
+const ProjectItem = props => {
   let {pid, name} = props;
 }
 // -----------------
-const PrjItem = props => {
+const ProjectItem = props => {
   let pid = props.pid;
   let name = props.name;
 }
 ```
 
 Destructuring is new to JavaScript in ES6, it is not JSX nor React. We have already used *destructuring* in the `import` statements.
+
+As a general rule, it is customary to add a `className` attribute to the outermost element in each component, derived from the name of the component itself. Thus, for `ProjectItem` we have `project-item`, for `Task`, `task`, each following the standard naming conventions of the language. However, there is nothing but custom preventing us from using `ProjectItem` as a class name and we might as well have done so. Since `class` is a reserved word in JavaScript and JSX allows us to mix JavaScript and HTML, it is not good to use `class` as the HTML attribute name, thus, we must use `className` instead.  Likewise, in `<label>` elements, instead of `for` as we must use `htmlFor`.
 
 The Router component uses properties to send information to the components.  We use that in `project.js` which should read the `pid` from the route. Just as Express does on the server-side, Router also provides a `params` object with the decoded parameters which we can then retrieve from the `props` argument using, once again, *destructuring*:
 
@@ -173,7 +175,7 @@ The Router component uses properties to send information to the components.  We 
 
 React provides us with a mechanism to validate the nature of properties passed to components.  We can declare the data types of those properties by adding a  `propTypes` static object to our components.  React has two modes of operation, production and development.  In development mode, the default, it will check a good number of things and issue warnings to help us pinpoint any problems ahead of time.  It will skip on this checks when running in production mode. Thus, we can add property validation at no performance cost to us.
 
-For the above `PrjItem` component we can add the following property validation:
+For the above `ProjectItem` component we can add the following property validation:
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-12-02/client/index.js#L13-L16)
 
@@ -223,9 +225,9 @@ Here we are importing `React` wholesale as we've been doing so far but also impo
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-12-03/client/index.js#L13-L16)
 
-We are also exporting `PrjItem` as a separate named export (in contrast to the default export which is `ProjectList`).  
+We are also exporting `ProjectItem` as a separate named export (in contrast to the default export which is `ProjectList`).  
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/index.js#L5)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-12-03/client/index.js#L5)
 
 Adding that named export doesn't affect our use of the main component, which is the default export, while it allows us to run separate tests on `PrjItem`.  It is a good practice to provide direct access via named exports to the subcomponents within a module for testing.
 
