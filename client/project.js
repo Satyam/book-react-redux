@@ -1,13 +1,10 @@
 import React, { PropTypes } from 'react';
-const data = require('./data.js');
+import store from './store.js';
 
 import TaskList from './taskList.js';
 
 const Project = ({ params: { pid } }) => {
-  const onTaskCompletedChangeHandler = ev => {
-    data[ev.pid].tasks[ev.tid].completed = ev.completed;
-  };
-  const prj = data[pid];
+  const prj = store.getState()[pid];
   return prj
   ? (
     <div className="project">
@@ -16,7 +13,6 @@ const Project = ({ params: { pid } }) => {
       <TaskList
         pid={pid}
         tasks={prj.tasks}
-        onTaskCompletedChange={onTaskCompletedChangeHandler}
       />
     </div>)
   : (<p>Project {pid} not found</p>);

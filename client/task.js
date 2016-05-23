@@ -1,41 +1,45 @@
 import React, { PropTypes, Component } from 'react';
+import { TASK_COMPLETED_CHANGE } from './actions.js';
+import store from './store.js';
 
 class Task extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      completed: props.completed,
-      descr: props.descr,
-    };
     this.onClickHandler = this.onClickHandler.bind(this);
+  }
+  componentDidMount() {
+    this.unsubscriber = store.subscribe(() => this.forceUpdate());
+  }
+  componentWillUnmount() {
+    this.unsubscriber();
   }
   onClickHandler(ev) {
     if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
     ev.preventDefault();
-    const completed = !this.state.completed;
-    this.props.onCompletedChange({
+    const completed = !store.getState()[this.props.pid].tasks[this.props.tid].completed;
+    store.dispatch({
+      type: TASK_COMPLETED_CHANGE,
+      pid: this.props.pid,
       tid: this.props.tid,
       completed,
     });
-    this.setState({ completed });
   }
   render() {
+    const task = store.getState()[this.props.pid].tasks[this.props.tid];
     return (
       <li
         onClick={this.onClickHandler}
-        className={`task ${this.state.completed ? 'completed' : 'pending'}`}
+        className={`task ${task.completed ? 'completed' : 'pending'}`}
       >
-        {this.state.descr}
+        {task.descr}
       </li>
     );
   }
 }
 
 Task.propTypes = {
-  completed: PropTypes.bool,
-  descr: PropTypes.string,
   tid: PropTypes.string,
-  onCompletedChange: PropTypes.func,
+  pid: PropTypes.string,
 };
 
 export default Task;
