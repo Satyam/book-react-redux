@@ -9,7 +9,7 @@ class Task extends Component {
     this.onClickHandler = this.onClickHandler.bind(this);
   }
   componentDidMount() {
-    this.unsubscriber = store.subscribe(this.update.bind(this));
+    this.unsubscriber = store.subscribe(() => this.setState(this.getTask()));
   }
   shouldComponentUpdate(nextProps, nextState) {
     const s = this.state;
@@ -30,9 +30,6 @@ class Task extends Component {
   }
   getTask() {
     return store.getState()[this.props.pid].tasks[this.props.tid];
-  }
-  update() {
-    this.setState(this.getTask());
   }
   render() {
     const task = this.state;

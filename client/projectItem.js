@@ -8,7 +8,7 @@ class ProjectItem extends Component {
     this.state = this.getProject();
   }
   componentDidMount() {
-    this.unsubscriber = store.subscribe(this.update.bind(this));
+    this.unsubscriber = store.subscribe(() => this.setState(this.getProject()));
   }
   shouldComponentUpdate(nextProps, nextState) {
     const s = this.state;
@@ -19,9 +19,6 @@ class ProjectItem extends Component {
   }
   getProject() {
     return store.getState()[this.props.pid];
-  }
-  update() {
-    this.setState(this.getProject());
   }
   render() {
     const prj = this.state;
