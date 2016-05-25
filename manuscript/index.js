@@ -34,18 +34,30 @@ const md = markdown({
 let tocArray = [];
 let prevChapter = '';
 
+var defaultHeadingRender = md.renderer.rules.heading_open || function (tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+
 md.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
   // console.log(idx, tokens[idx].tag, tokens[idx + 1].children[0].content, env);
   const tag = tokens[idx].tag;
-  const text = tokens[idx + 1].children[0].content;
-  tokens[idx + 1].children[0].content = '';
-  const link = uslug(`${env.chapter}-${text}`);
-  if (prevChapter !== env.chapter) {
-    tocArray = [];
-    prevChapter = env.chapter;
+  if (tag > 'h0' && tag < 'h4') {
+    const text = tokens[idx + 1].children.map(child => child.content).join('');
+    if (text.startsWith('Single source of truth')) debugger;
+    tokens[idx + 1].children.forEach(child => {
+      child.content = '';
+      child.tag = '';
+      child.type = 'text';
+    });
+    const link = uslug(`${env.chapter}-${text}`);
+    if (prevChapter !== env.chapter) {
+      tocArray = [];
+      prevChapter = env.chapter;
+    }
+    tocArray.push({ tag, link, text });
+    return `<${tag}><a class="self-ref" id="${link}" href="#${link}"># </a>${text}`;
   }
-  tocArray.push({ tag, link, text });
-  return `<${tag}><a class="self-ref" id="${link}" href="#${link}"># </a>${text}`;
+  return defaultHeadingRender(tokens, idx, options, env, self)
 };
 
 var defaultParagraphRender = md.renderer.rules.paragraph_open || function (tokens, idx, options, env, self) {

@@ -6,6 +6,8 @@ This book intends to fill that gap. We will go step by step gathering the tools 
 
 We will avoid dumping a whole suite of tools and sample code all at once. There are many full-stack solutions available, however, they are often quite hard to assimilate all at once. They contain too many pieces all strung together without much explanation.  We prefer to go one step at a time.  You may jump ahead and go to the end but then you wouldn't know why we did things the way we did and wouldn't know how to fix it if you disagree.
 
+We will make many mistakes in the way.  **Don't take a sample from any chapter blindly**.  The purpose of this book is to learn, not to provide recipes. We get to a working solution towards the end but we hope you would have learned enough while getting there to devise your own. Beyond using React and Redux, we are not selling a particular way of doing things, we want you to be able to decide on which one out of the many available out there.
+
 We won't cover all the alternatives -that would be impossible- but we will present a very good one. We will use Facebook's [React](https://facebook.github.io/react/index.html) coupled with [Redux](http://redux.js.org/index.html) for data handling.
 
 We will write both server and client code and keep track of its development via [GitHub](https://github.com/).  We will lint, test, check its performance and package it for faster delivery and automate all these processes.  We will turn our app isomorphic, that is, able to render fully formed pages straight from the server for faster rendering on slow devices or for SEO purposes.  We will also internationalize it.

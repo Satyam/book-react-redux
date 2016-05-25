@@ -4,6 +4,8 @@ In our latest version of `router.js` we used regular expressions to match the UR
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-12-01/client/router.js#L10-L18)
 
+> Unlike most of the successive versions of the sample application in this book, the branch `chapter-12-01` does not work, it is just an intermediate step still incomplete.
+
 It is easy to relate the array of routes under the `childRoutes` property, they are basically the same as we had before with some minor differences. The paths  lack the `.html` ending and the `pid` parameter is part of the route path instead of a query parameter, so it follows the standard where the item should be identified by the route itself while the query parameters are meant for options.  Also, in the earlier example, it was the `project.js` module the one that read the `pid`.  Here it is more like in Express, where the router picks it up from the route itself. Likewise, route matching is sequential within an array so the order is important.  
 
 Routes in the client work somewhat different than in the server. In the server routes result in running some piece of script that sends a stream of HTML code, images, JSON data or any other sequential collection of bytes with a single call to `res.send()` or its variations. There is only one stream of data going out of the server.

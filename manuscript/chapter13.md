@@ -173,7 +173,7 @@ The examples shown in the documentation of Lodash assume we've loaded it in this
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-13-06/client/projectList.js#L4-L5)
 
-We can clearly see the benefits of Lodash looking at this same segment in both versions side to side:
+We can clearly see the benefits of Lodash looking at this same segment in both versions side to side (just the width of the cells is quite telling):
 
 <table><tr><th>Before  <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-05/client/projectList.js#L26-L38">:octocat:</a> </th><th>After <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-06/client/projectList.js#L28-L40">:octocat:</a></th></tr>
 <tr><td><pre><code class="lang-js">
