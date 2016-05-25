@@ -5,10 +5,15 @@ import store from './store.js';
 class Task extends Component {
   constructor(props) {
     super(props);
+    this.state = this.getTask();
     this.onClickHandler = this.onClickHandler.bind(this);
   }
   componentDidMount() {
-    this.unsubscriber = store.subscribe(() => this.forceUpdate());
+    this.unsubscriber = store.subscribe(this.update.bind(this));
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    const s = this.state;
+    return s.descr !== nextState.descr || s.completed !== nextState.completed;
   }
   componentWillUnmount() {
     this.unsubscriber();
@@ -16,16 +21,21 @@ class Task extends Component {
   onClickHandler(ev) {
     if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
     ev.preventDefault();
-    const completed = !store.getState()[this.props.pid].tasks[this.props.tid].completed;
     store.dispatch({
       type: TASK_COMPLETED_CHANGE,
       pid: this.props.pid,
       tid: this.props.tid,
-      completed,
+      completed: !this.state.completed,
     });
   }
+  getTask() {
+    return store.getState()[this.props.pid].tasks[this.props.tid];
+  }
+  update() {
+    this.setState(this.getTask());
+  }
   render() {
-    const task = store.getState()[this.props.pid].tasks[this.props.tid];
+    const task = this.state;
     return (
       <li
         onClick={this.onClickHandler}

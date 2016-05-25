@@ -3,21 +3,34 @@ import { Link } from 'react-router';
 import store from './store.js';
 
 class ProjectItem extends Component {
+  constructor(props) {
+    super(props);
+    this.state = this.getProject();
+  }
   componentDidMount() {
-    this.unsubscriber = store.subscribe(() => this.forceUpdate());
+    this.unsubscriber = store.subscribe(this.update.bind(this));
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    const s = this.state;
+    return s.name !== nextState.name || s.pending !== nextState.pending;
   }
   componentWillUnmount() {
     this.unsubscriber();
   }
+  getProject() {
+    return store.getState()[this.props.pid];
+  }
+  update() {
+    this.setState(this.getProject());
+  }
   render() {
-    const pid = this.props.pid;
-    const prj = store.getState()[pid];
+    const prj = this.state;
     return (
       <li className={`project-item ${this.props.active ? 'selected' : ''}`}>
         {
          this.props.active
          ? prj.name
-         : (<Link to={`/project/${pid}`}>{prj.name}</Link>)
+         : (<Link to={`/project/${this.props.pid}`}>{prj.name}</Link>)
        } [Pending: {prj.pending}]
       </li>
     );
