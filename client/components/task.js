@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
-import { TASK_COMPLETED_CHANGE } from './actions.js';
-import store from './store.js';
+import { completedChanged } from '../store/actions.js';
+import { store } from '../store';
 
 class Task extends Component {
   constructor(props) {
@@ -21,15 +21,10 @@ class Task extends Component {
   onClickHandler(ev) {
     if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
     ev.preventDefault();
-    store.dispatch({
-      type: TASK_COMPLETED_CHANGE,
-      pid: this.props.pid,
-      tid: this.props.tid,
-      completed: !this.state.completed,
-    });
+    store.dispatch(completedChanged(this.props.pid, this.props.tid, !this.state.completed));
   }
   getTask() {
-    return store.getState()[this.props.pid].tasks[this.props.tid];
+    return store.getState().projects[this.props.pid].tasks[this.props.tid];
   }
   render() {
     const task = this.state;

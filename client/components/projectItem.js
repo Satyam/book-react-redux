@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { Link } from 'react-router';
-import store from './store.js';
+import { store } from '../store';
 
 class ProjectItem extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class ProjectItem extends Component {
     this.unsubscriber();
   }
   getProject() {
-    return store.getState()[this.props.pid];
+    return store.getState().projects[this.props.pid];
   }
   render() {
     const prj = this.state;

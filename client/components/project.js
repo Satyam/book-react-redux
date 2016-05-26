@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
-import store from './store.js';
+import { store } from '../store';
 
 import TaskList from './taskList.js';
 
 const Project = ({ params: { pid } }) => {
-  const prj = store.getState()[pid];
+  const prj = store.getState().projects[pid];
   return prj
   ? (
     <div className="project">

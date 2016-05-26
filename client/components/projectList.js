@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
-import store from './store.js';
+import { store } from '../store';
+
 const map = require('lodash/map');
 
 import ProjectItem from './projectItem.js';
@@ -8,7 +9,7 @@ const ProjectList = ({ children, params }) => (
   <div className="project-list">
     <h1>Projects:</h1>
     <ul>{
-      map(store.getState(), (prj, pid) =>
+      map(store.getState().projects, (prj, pid) =>
         (<ProjectItem
           key={pid}
           pid={pid}
