@@ -1,42 +1,39 @@
-import React, { PropTypes, Component } from 'react';
+import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
-import { store } from '../store';
 
-class ProjectItem extends Component {
-  constructor(props) {
-    super(props);
-    this.state = this.getProject();
-  }
-  componentDidMount() {
-    this.unsubscriber = store.subscribe(() => this.setState(this.getProject()));
-  }
-  shouldComponentUpdate(nextProps, nextState) {
-    const s = this.state;
-    return s.name !== nextState.name || s.pending !== nextState.pending;
-  }
-  componentWillUnmount() {
-    this.unsubscriber();
-  }
-  getProject() {
-    return store.getState().projects[this.props.pid];
-  }
-  render() {
-    const prj = this.state;
-    return (
-      <li className={`project-item ${this.props.active ? 'selected' : ''}`}>
-        {
-         this.props.active
-         ? prj.name
-         : (<Link to={`/project/${this.props.pid}`}>{prj.name}</Link>)
-       } [Pending: {prj.pending}]
-      </li>
-    );
-  }
-}
+export const ProjectItem = ({ pid, name, active, pending }) => (
+  <li className={active ? 'selected' : ''}>
+    {
+      active
+      ? name
+      : (
+        <Link to={`/project/${pid}`}>
+          {name}
+        </Link>
+      )
+    } [Pending: {pending}]
+  </li>
+);
 
 ProjectItem.propTypes = {
   pid: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   active: PropTypes.bool.isRequired,
+  pending: PropTypes.number.isRequired,
 };
 
-export default ProjectItem;
+import { connect } from 'react-redux';
+
+export const mapStateToProps = (state, props) => {
+  const pid = props.pid;
+  const project = state.projects[pid];
+  return {
+    pid,
+    name: project.name,
+    pending: project.pending,
+  };
+};
+
+export default connect(
+  mapStateToProps
+)(ProjectItem);

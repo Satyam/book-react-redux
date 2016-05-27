@@ -1,11 +1,10 @@
 import React, { PropTypes } from 'react';
-const map = require('lodash/map');
 
 import Task from './task.js';
 
-const TaskList = ({ pid, tasks }) => (
+export const TaskList = ({ pid, tasks }) => (
   <ul className="task-list">{
-    map(tasks, (task, tid) => (
+    Object.keys(tasks).map(tid => (
       <Task
         key={tid}
         tid={tid}
@@ -20,4 +19,12 @@ TaskList.propTypes = {
   tasks: PropTypes.object,
 };
 
-export default TaskList;
+import { connect } from 'react-redux';
+
+export const mapStateToProps = (state, props) => ({
+  tasks: state.projects[props.pid].tasks,
+});
+
+export default connect(
+  mapStateToProps
+)(TaskList);

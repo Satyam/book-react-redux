@@ -1,27 +1,37 @@
 import React, { PropTypes } from 'react';
-import { store } from '../store';
-
 import TaskList from './taskList.js';
 
-const Project = ({ params: { pid } }) => {
-  const prj = store.getState().projects[pid];
-  return prj
+export const Project = ({ pid, name, descr }) => (
+  name
   ? (
     <div className="project">
-      <h1>{prj.name}</h1>
-      <p>{prj.descr}</p>
+      <h1>{name}</h1>
+      <p>{descr}</p>
       <TaskList
         pid={pid}
-        tasks={prj.tasks}
       />
     </div>)
-  : (<p>Project {pid} not found</p>);
-};
+  : (<p>Project {pid} not found</p>)
+);
 
 Project.propTypes = {
-  params: PropTypes.shape({
-    pid: PropTypes.string.isRequired,
-  }),
+  pid: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  descr: PropTypes.string,
 };
 
-export default Project;
+import { connect } from 'react-redux';
+
+export const mapStateToProps = (state, props) => {
+  const pid = props.params.pid;
+  const project = state.projects[pid];
+  return {
+    pid,
+    name: project && project.name,
+    descr: project && project.descr,
+  };
+};
+
+export default connect(
+  mapStateToProps
+)(Project);

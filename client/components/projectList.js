@@ -1,15 +1,12 @@
 import React, { PropTypes } from 'react';
-import { store } from '../store';
-
-const map = require('lodash/map');
 
 import ProjectItem from './projectItem.js';
 
-const ProjectList = ({ children, params }) => (
+export const ProjectList = ({ children, params, projects }) => (
   <div className="project-list">
     <h1>Projects:</h1>
     <ul>{
-      map(store.getState().projects, (prj, pid) =>
+      Object.keys(projects).map(pid =>
         (<ProjectItem
           key={pid}
           pid={pid}
@@ -26,6 +23,15 @@ ProjectList.propTypes = {
   params: React.PropTypes.shape({
     pid: React.PropTypes.string,
   }),
+  projects: PropTypes.object,
 };
 
-export default ProjectList;
+import { connect } from 'react-redux';
+
+export const mapStateToProps = state => ({
+  projects: state.projects,
+});
+
+export default connect(
+  mapStateToProps
+)(ProjectList);
