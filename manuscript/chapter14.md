@@ -124,8 +124,6 @@ We apply the same strategy to `ProjectItem` [(:octocat:)](https://github.com/Sat
 
 ## Redux principles
 
-This example has been mainly focused on the basics of Redux, however, it is rarely used like this. Instead of providing all the functionality that every developer might need, Redux has concentrated in doing extremely well a minimal set of core functionality, delegating all bells and whistles to the very many extras available from NPM.
-
 Redux is based on a few very basic principles.
 
 #### Single source of truth
@@ -180,3 +178,134 @@ const reducer = function(state = someInitialState, action) {/*...*/};
 #### All reducers are pure functions
 
 Reducers should only depend on the arguments it receives, the `state` and the `action`.  They should never rely on other possible sources of state information.  These are called *pure* functions.  They are extremely easy to test since they don't have any memory of previous states which can affect their outcome.
+
+## Rearranging the files
+
+Our `/client` folder [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/chapter-14-02/client) is in a quite sorry state.  It has been handy so far to have everything under the same roof, but it has no future.
+
+How to arrange the various source files in an application is always a matter of much discussion.  This is not helped by the fact that the otherwise excellent [Redux](http://redux.js.org/index.html) documentation uses an arrangement that is clear for learning Redux but is not useful for a production environment.  Developers start with that structure and soon get stuck, even though the Redux FAQ [clearly states](http://redux.js.org/docs/FAQ.html#structure-file-structure) that Redux "... has no direct opinion on how your project should be structured" and refers to several such discussions. The following is just one of those alternatives.
+
+### The `components` folder
+
+We will create a `components` folder to put all React components together [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/chapter-14-03/client/components).  Since all our components deal with the same data, we just leave them all together.  In a more general case, the `app.js` and `notFound.js` files might remain there while the rest would be moved under a `client/components/projects` folder while other folders under `client/components` would contain views related to other parts of the application.  The `App` component in `app.js` would then contain other menu items to access these other parts of the application.  For the time being, it just has a single `Projects` item to choose from.
+
+### The `store` folder
+
+We also create a `store` folder to put all the Redux-related code. We will create a further `store/projects` folder for the actions and reducers related to our projects which, for the time being, are the only ones we have.  We will call these *sub-stores*.
+
+#### Actions
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/projects/actions.js)
+
+The `actions.js` file has changed a little bit.  First of all, in order to ensure unique action-type strings, we prefix the string with the name of the folder it is under.  We don't need to add a prefix to the identifier for that action because actions end up all collected together and the name collision would be detected when building the package.
+
+We have also added an *action creator*.  The `completedChanged` function makes it easier to assemble the data into the action object.  It doesn't seem a big gain at this point but some actions are a little more complex so it is better to use action creators [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/task.js#L24) instead of simply use the action type and assemble the action object in the component itself as we had before [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-02/client/task.js#L24-L29).
+
+#### Reducer
+
+Most of our earlier `store.js` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-02/client/store.js) is now in `reducer.js` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/projects/reducer.js).
+
+In Redux, there is a single store which can be made out of many sub-stores, each with its own reducer. Reducers can be defined for specific parts of the application, but there can only be one store.  That is why we are separating the reducer for the projects, which goes into `projects/reducer.js` and the creation of the store, which goes elsewhere, as we will see shortly.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/projects/reducer.js#L6-L14)
+
+The `data.js` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/projects/data.js) only contains data for projects so it should go into the `projects` folder as well.  Instead of initializing the whole store with its data, we initialize it via the reducer. If a reducer is called with an `undefined` state, it should return the initial state. We use ES6's *default parameter value* feature to set the value for `state` if it is `undefined`.  When Redux initializes, it goes through all its reducers with an empty state to ensure they are all initialized.  
+
+#### The `index.js` file
+
+We create a `projects/index.js` file to consolidate this sub-store into a single export:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/projects/index.js)
+
+On the one hand we re-export all our named action-type constants and action creator functions and export the reducer as our default export.
+
+In a small sub-store such as this, we might put everything in a single `index.js` instead of re-exporting the bits and pieces from other files. Either way, the rule should always be:
+
+* Each folder should have an `index.js` file which may either contain the code itself or re-export the contents of other files in the folder.
+* The *reducer* should be the default export.
+* Action type constants and action creator functions should be exported as named exports.
+
+### Consolidating the store.
+
+#### Actions
+
+The `store/actions.js` file consolidates the actions of all the sub-stores:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/actions.js)
+
+Since we have a single sub-store, it simply re-exports all it finds there. We would keep adding lines like this one for each sub-store we add.
+
+#### Creating the store
+
+As we can only have one single store, we first need to combine the reducers for each sub-store:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/createStore.js)
+
+We do that with the aptly named `combineReducers` function.  We may import any number of sub-stores just as we did with `./projects` and combine them all together into a single big reducer.  The reducer for each sub-store will deal only with its branch of data within the single overall store.
+
+When combining the reducers, we are using the [shorthand property name](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Property_definitions) feature of ES6.  In ES5 we would have written:
+
+```js
+const reducers = combineReducers({
+  projects: projects,
+});
+```
+
+The argument to `combineReducers` is an object and since the property name matches the name of the variable holding the reference to the reducer, we can use the shorthand, however, this also allows us to rename the branch the `projects` sub-store would be in:
+
+```js
+const reducers = combineReducers({
+  prjs: projects,
+});
+```
+
+Finally we export as a default a function that creates the store via `createStore` using the reducers we have just combined.
+
+Since now the data for the projects is in a sub-store, we have to change the components to access them from within the correct branch:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/projectItem.js#L20-L22)
+
+Earlier on we had:
+
+```js
+return store.getState()[this.props.pid];
+```
+
+If we had renamed the branch when combining the reducers, we should have used that name instead.  We do the same for all components using the store.
+
+#### Some left-over
+
+The `store/index.js` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/index.js) is a temporary patch for this particular version. It allows the components to reach the store quite easily, however, it will be gone shortly.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/task.js#L3)
+
+### What's left at the top
+
+We should expect that as our application grows, the possible routes to reach the different parts of it will also grow. That is why it deserves to have a separate file for itself:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/routes.js)
+
+We import the various components from wherever they are and set the routes to reach each of them.  Notice this includes only the definition of the routes, not the initialization of the router itself. We do that, along with doing the initial render and, in the future, any other initialization in `index.js`:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/index.js)
+
+Since now that is our initial entry point, we have to change it in `webpack.config.js` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/webpack.config.js#L2)
+
+### Why separate components and store
+
+If we had created a `components/projects` folder to hold all the components related to handling projects and, since we already have a `store/projects` folder, if is fair to ask whether it wouldn't make sense to put the components, actions and stores for `projects` together in a single folder as a *sub-system*.  
+
+The reason is that there is often not a one-to-one relation in between components and sub-stores.  Different pages within the application may combine different components to provide various views of the data in different sub-stores, for example:
+
+* A component, directly or through sub-components, might show bits and pieces of data from different sub-stores.
+* An action generated by a component might affect more than one sub-store.
+* A sub-store might contain data shown by several components in different parts of the application in various ways.
+
+## Summary
+
+The examples in this chapter have been mainly focused on the basics of Redux, however, Redux is rarely used like this, and we will improve on this shortly. It
+was meant as an introduction to the principles behind Redux.
+
+We have rearranged the files to allow for future growth.
+
+The code in versions 14-02 and 14-03 have a minor problem that pops up occasionally: in a certain sequence of clicks, none of the names of the projects becomes clickable. We will come to that shortly.
