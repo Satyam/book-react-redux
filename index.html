@@ -118,14 +118,31 @@
 <li><a href="#chapter14-dispatching-an-action">Dispatching an action.</a></li>
 <li><a href="#chapter14-using-shouldcomponentupdate">Using shouldComponentUpdate</a></li>
 <li><a href="#chapter14-redux-principles">Redux principles</a></li>
-<li><a href="#chapter14-rearranging-the-files">Rearranging the files</a></li>
-<ul class="level-h2"><li><a href="#chapter14-the-components-folder">The components folder</a></li>
-<li><a href="#chapter14-the-store-folder">The store folder</a></li>
-<li><a href="#chapter14-consolidating-the-store">Consolidating the store.</a></li>
-<li><a href="#chapter14-whats-left-at-the-top">What's left at the top</a></li>
-<li><a href="#chapter14-why-separate-components-and-store">Why separate components and store</a></li>
-</ul>
 <li><a href="#chapter14-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter14a-rearranging-the-files">Rearranging the files</a></li>
+<ul class="level-h1"><li><a href="#chapter14a-the-components-folder">The components folder</a></li>
+<ul class="level-h2"><li><a href="#chapter14a-dropping-the-file-extension">Dropping the file extension</a></li>
+<li><a href="#chapter14a-delegating-routes">Delegating routes</a></li>
+</ul>
+<li><a href="#chapter14a-the-store-folder">The store folder</a></li>
+<ul class="level-h2"><li><a href="#chapter14a-actions">Actions</a></li>
+<li><a href="#chapter14a-reducer">Reducer</a></li>
+<li><a href="#chapter14a-the-indexjs-file">The index.js file</a></li>
+</ul>
+<li><a href="#chapter14a-consolidating-the-store">Consolidating the store.</a></li>
+<ul class="level-h2"><li><a href="#chapter14a-actions">Actions</a></li>
+<li><a href="#chapter14a-creating-the-store">Creating the store</a></li>
+<li><a href="#chapter14a-some-left-over">Some left-over</a></li>
+</ul>
+<li><a href="#chapter14a-whats-left-at-the-top">What's left at the top</a></li>
+<li><a href="#chapter14a-why-separate-components-and-store">Why separate components and store</a></li>
+<li><a href="#chapter14a-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter15-react-and-redux">React and Redux</a></li>
+<ul class="level-h1"><li><a href="#chapter15-react-redux">React-Redux</a></li>
+<ul class="level-h2"><li><a href="#chapter15-data-containers">Data containers</a></li>
+<li><a href="#chapter15-dispatching-actions">Dispatching actions</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded"><div class="close">&lt; close</div><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
 <p>With the rapid pace of progress in the creation of libraries and tools for web development, most information comes in brief articles and blog posts.  There are not very many comprehensive guides to all that may be needed from A to Z.</p>
@@ -3815,14 +3832,113 @@ componentWillUnmount() {
 </code></pre>
 <h4>All reducers are pure functions</h4>
 <p>Reducers should only depend on the arguments it receives, the <code>state</code> and the <code>action</code>.  They should never rely on other possible sources of state information.  These are called <em>pure</em> functions.  They are extremely easy to test since they don't have any memory of previous states which can affect their outcome.</p>
-<h2><a class="self-ref" id="chapter14-rearranging-the-files" href="#chapter14-rearranging-the-files"># </a>Rearranging the files</h2>
+<h2><a class="self-ref" id="chapter14-summary" href="#chapter14-summary"># </a>Summary</h2>
+<p>The examples in this chapter have been mainly focused on the basics of Redux, however, Redux is rarely used like this, and we will improve on this shortly. It
+was meant as an introduction to the principles behind Redux.</p>
+<p>The code in version 14-02 has a minor problem that pops up occasionally: in a certain sequence of clicks, none of the names of the projects becomes clickable. We will come to that shortly.</p>
+<h1><a class="self-ref" id="chapter14a-rearranging-the-files" href="#chapter14a-rearranging-the-files"># </a>Rearranging the files</h1>
 <p>Our <code>/client</code> folder <a href="https://github.com/Satyam/book-react-redux/tree/chapter-14-02/client">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> is in a quite sorry state.  It has been handy so far to have everything under the same roof, but it has no future.</p>
 <p>How to arrange the various source files in an application is always a matter of much discussion.  This is not helped by the fact that the otherwise excellent <a href="http://redux.js.org/index.html">Redux</a> documentation uses an arrangement that is clear for learning Redux but is not useful for a production environment.  Developers start with that structure and soon get stuck, even though the Redux FAQ <a href="http://redux.js.org/docs/FAQ.html#structure-file-structure">clearly states</a> that Redux &quot;... has no direct opinion on how your project should be structured&quot; and refers to several such discussions. The following is just one of those alternatives.</p>
-<h3><a class="self-ref" id="chapter14-the-components-folder" href="#chapter14-the-components-folder"># </a>The components folder</h3>
-<p>We will create a <code>components</code> folder to put all React components together <a href="https://github.com/Satyam/book-react-redux/tree/chapter-14-03/client/components">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  Since all our components deal with the same data, we just leave them all together.  In a more general case, the <code>app.js</code> and <code>notFound.js</code> files might remain there while the rest would be moved under a <code>client/components/projects</code> folder while other folders under <code>client/components</code> would contain views related to other parts of the application.  The <code>App</code> component in <code>app.js</code> would then contain other menu items to access these other parts of the application.  For the time being, it just has a single <code>Projects</code> item to choose from.</p>
-<h3><a class="self-ref" id="chapter14-the-store-folder" href="#chapter14-the-store-folder"># </a>The store folder</h3>
-<p>We also create a <code>store</code> folder to put all the Redux-related code. We will create a further <code>store/projects</code> folder for the actions and reducers related to our projects which, for the time being, are the only ones we have.  We will call these <em>sub-stores</em>.</p>
-<h4>Actions</h4>
+<h2><a class="self-ref" id="chapter14a-the-components-folder" href="#chapter14a-the-components-folder"># </a>The components folder</h2>
+<p>We will create a <code>components</code> folder to put all React components together <a href="https://github.com/Satyam/book-react-redux/tree/chapter-14-03/client/components">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> separate from those dealing with the store.</p>
+<p>We have two groups of components, those generic ones like <code>app.js</code> and <code>notFound.js</code> that apply to the whole application, and the rest that are specific to handling projects.  The later we put in a folder <code>client/components/projects</code> <a href="https://github.com/Satyam/book-react-redux/tree/chapter-14-03/client/components/projects">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>Besides this <code>/projects</code> folder we would eventually have other folders for other branches of our application and we would surely have a folder with common or shared components that show up here and there around the whole application.</p>
+<p>When moving things around like this, import statements with relative references from one file to another become messed around. Suddenly, the <code>../whatever</code> doesn't work any longer and it should become <code>../../whatever</code>. It all becomes very hard to manage.</p>
+<p>WebPack uses a <em>resolver</em> to figure out how to solve the path given in an <code>import</code> statement or <code>require</code> call. By default it uses the same rules as NodeJS.  For locations that don't start with <code>./</code>, <code>../</code> or <code>/</code> it assumes they refer to packages in <code>node_modules</code>.  We cannot use references starting with <code>/</code> since we don't know where our developers would download or clone our package.</p>
+<p>We can set up aliases for the resolver.  That lets us put our own application files on an equal footing as those from external modules.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/webpack.config.js#L20-L25"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-14-03</div>
+    <div class="filename">File: webpack.config.js</div>
+    <div class="from">From: 20</div>
+    <div class="to">To: 25</div>
+  </div>
+  <pre><code class="language-js">resolve: {
+  alias: {
+    store: join(root, 'client/store'),
+    components: join(root, 'client/components')
+  }
+}</code></pre></div>
+<p>With these aliases, WebPack will no longer try to locate <code>components/app.js</code> in <code>node_modules/components</code> but will apply the alias and resolve it to <code>client/components/app.js</code>.</p>
+<p>By the way, we have added some constants to help us define those paths:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/webpack.config.js#L1-L3"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-14-03</div>
+    <div class="filename">File: webpack.config.js</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 3</div>
+  </div>
+  <pre><code class="language-js">const path = require('path');
+const join = path.join;
+const root = __dirname;</code></pre></div>
+<p>ESLint, though, will complain.  We set our local <code>eslintrc.json</code> configuration file to follow the <code>airbnb</code> rules. Those rules include checking out that the files mentioned in <code>import</code> statements do exist. On its own, that rule-checker does not know about WebPack resolver aliases. To fix that, we need to add another package:</p>
+<pre><code class="language-bash">npm i --save-dev eslint-import-resolver-webpack
+</code></pre>
+<p>And add a setting to our ESLint configuration file to tell it to use that import resolver:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/.eslintrc.json"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-14-03</div>
+    <div class="filename">File: client/.eslintrc.json</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-json">{
+  "extends": "airbnb",
+  "env": {
+    "browser": true
+  },
+  "settings": {
+    "import/resolver": "webpack"
+  }
+}</code></pre></div>
+<p>Now, we don't have a single relative reference to an imported file starting with <code>../</code>.</p>
+<h3><a class="self-ref" id="chapter14a-dropping-the-file-extension" href="#chapter14a-dropping-the-file-extension"># </a>Dropping the file extension</h3>
+<p>We have dropped all the <code>.js</code> extensions in our imported files.  Both NodeJS and thus WebPack already assume a <code>.js</code> extension. However, the reason is not to spare us typing time.</p>
+<p>Lets imagine we have a <code>components/bigstuff</code> branch in our application and that one of the components, <code>components/bigstuff/bigComponent.js</code> has become very big and we want to break that source file into several pieces.  Or, shall we say that the component needs some other asset and we don't want it to lay around mixed up with other components.</p>
+<p>If we import the component as:</p>
+<pre><code class="language-js">import Biggie from 'components/bigstuff/bigComponent'
+</code></pre>
+<p>by omitting the <code>.js</code> extension on the <code>import</code>, we are free to move things around.  We move <code>components/bigstuff/bigComponent.js</code> to <code>components/bigstuff/bigComponent/bigComponent.js</code> and then rename it to <code>components/bigstuff/bigComponent/index.js</code>.  Suddenly we have a whole folder to put our extra assets in, or break our bigComponent into as many pieces as we want.  All our <code>imports</code>, such as the one above, will still work just the same.  WebPack will go from loading <code>bigComponent.js</code> to loading the <code>index.js</code> file under the <code>bigComponent</code> folder and the rest of the application won't notice the switch.</p>
+<h3><a class="self-ref" id="chapter14a-delegating-routes" href="#chapter14a-delegating-routes"># </a>Delegating routes</h3>
+<p>We don't need to state all our routes in just one place, we may delegate them, specially if they are more-or-less self-contained branches of the application:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/routes.js#L7-L14"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-14-03</div>
+    <div class="filename">File: client/routes.js</div>
+    <div class="from">From: 7</div>
+    <div class="to">To: 14</div>
+  </div>
+  <pre><code class="language-js">import projects from 'components/projects/routes';
+
+export default (
+  &lt;Route path="/" component={App}&gt;
+    {projects}
+    &lt;Route path="*" component={NotFound} /&gt;
+  &lt;/Route&gt;
+);</code></pre></div>
+<p>Instead of getting the main route configuration file involved in the inner workings of that branch, we delegate it to that branch:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/projects/routes.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-14-03</div>
+    <div class="filename">File: client/components/projects/routes.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">import React from 'react';
+import { Route } from 'react-router';
+
+import ProjectList from './projectList';
+import Project from './project';
+
+export default (
+  &lt;Route path="projects" component={ProjectList}&gt;
+    &lt;Route path=":pid" component={Project} /&gt;
+  &lt;/Route&gt;
+);</code></pre></div>
+<p>Should we later add features to this branch or re-order the existing options, we don't need to go to the top level to fix it.</p>
+<h2><a class="self-ref" id="chapter14a-the-store-folder" href="#chapter14a-the-store-folder"># </a>The store folder</h2>
+<p>We also create a <code>store</code> folder to put all the Redux-related code. As seen earlier, we have already created an alias for WebPack's resolver to reference this folder <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/webpack.config.js#L22">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  We will create a further <code>store/projects</code> folder for the actions and reducers related to our projects which, for the time being, are the only ones we have.  We will call these <em>sub-stores</em>.</p>
+<h3><a class="self-ref" id="chapter14a-actions" href="#chapter14a-actions"># </a>Actions</h3>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/projects/actions.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-14-03</div>
@@ -3839,8 +3955,8 @@ export const completedChanged = (pid, tid, completed) =&gt; ({
   completed,
 });</code></pre></div>
 <p>The <code>actions.js</code> file has changed a little bit.  First of all, in order to ensure unique action-type strings, we prefix the string with the name of the folder it is under.  We don't need to add a prefix to the identifier for that action because actions end up all collected together and the name collision would be detected when building the package.</p>
-<p>We have also added an <em>action creator</em>.  The <code>completedChanged</code> function makes it easier to assemble the data into the action object.  It doesn't seem a big gain at this point but some actions are a little more complex so it is better to use action creators <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/task.js#L24">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> instead of simply use the action type and assemble the action object in the component itself as we had before <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-02/client/task.js#L24-L29">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
-<h4>Reducer</h4>
+<p>We have also added an <em>action creator</em>.  The <code>completedChanged</code> function makes it easier to assemble the data into the action object.  It doesn't seem a big gain at this point but some actions are a little more complex so it is better to use action creators <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/projects/task.js#L24">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> instead of simply use the action type and assemble the action object in the component itself as we had before <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-02/client/task.js#L24-L29">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<h3><a class="self-ref" id="chapter14a-reducer" href="#chapter14a-reducer"># </a>Reducer</h3>
 <p>Most of our earlier <code>store.js</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-02/client/store.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> is now in <code>reducer.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/projects/reducer.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
 <p>In Redux, there is a single store which can be made out of many sub-stores, each with its own reducer. Reducers can be defined for specific parts of the application, but there can only be one store.  That is why we are separating the reducer for the projects, which goes into <code>projects/reducer.js</code> and the creation of the store, which goes elsewhere, as we will see shortly.</p>
 <div class="code-insert"><div class="header">
@@ -3850,7 +3966,7 @@ export const completedChanged = (pid, tid, completed) =&gt; ({
     <div class="from">From: 6</div>
     <div class="to">To: 14</div>
   </div>
-  <pre><code class="language-js">import data from './data.js';
+  <pre><code class="language-js">import data from './data';
 
 forEach(data, prj =&gt; {
   prj.pending = filter(prj.tasks, // eslint-disable-line no-param-reassign
@@ -3860,7 +3976,7 @@ forEach(data, prj =&gt; {
 
 export default (state = data, action) =&gt; {</code></pre></div>
 <p>The <code>data.js</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/projects/data.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> only contains data for projects so it should go into the <code>projects</code> folder as well.  Instead of initializing the whole store with its data, we initialize it via the reducer. If a reducer is called with an <code>undefined</code> state, it should return the initial state. We use ES6's <em>default parameter value</em> feature to set the value for <code>state</code> if it is <code>undefined</code>.  When Redux initializes, it goes through all its reducers with an empty state to ensure they are all initialized.</p>
-<h4>The <code>index.js</code> file</h4>
+<h3><a class="self-ref" id="chapter14a-the-indexjs-file" href="#chapter14a-the-indexjs-file"># </a>The index.js file</h3>
 <p>We create a <code>projects/index.js</code> file to consolidate this sub-store into a single export:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/projects/index.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -3869,9 +3985,9 @@ export default (state = data, action) =&gt; {</code></pre></div>
     <div class="from">From: start</div>
     <div class="to">To: end</div>
   </div>
-  <pre><code class="language-js">export * from './actions.js';
+  <pre><code class="language-js">export * from './actions';
 
-import reducer from './reducer.js';
+import reducer from './reducer';
 export default reducer;</code></pre></div>
 <p>On the one hand we re-export all our named action-type constants and action creator functions and export the reducer as our default export.</p>
 <p>In a small sub-store such as this, we might put everything in a single <code>index.js</code> instead of re-exporting the bits and pieces from other files. Either way, the rule should always be:</p>
@@ -3880,8 +3996,8 @@ export default reducer;</code></pre></div>
 <li>The <em>reducer</em> should be the default export.</li>
 <li>Action type constants and action creator functions should be exported as named exports.</li>
 </ul>
-<h3><a class="self-ref" id="chapter14-consolidating-the-store" href="#chapter14-consolidating-the-store"># </a>Consolidating the store.</h3>
-<h4>Actions</h4>
+<h2><a class="self-ref" id="chapter14a-consolidating-the-store" href="#chapter14a-consolidating-the-store"># </a>Consolidating the store.</h2>
+<h3><a class="self-ref" id="chapter14a-actions" href="#chapter14a-actions"># </a>Actions</h3>
 <p>The <code>store/actions.js</code> file consolidates the actions of all the sub-stores:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/actions.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -3892,7 +4008,7 @@ export default reducer;</code></pre></div>
   </div>
   <pre><code class="language-js">export * from './projects';</code></pre></div>
 <p>Since we have a single sub-store, it simply re-exports all it finds there. We would keep adding lines like this one for each sub-store we add.</p>
-<h4>Creating the store</h4>
+<h3><a class="self-ref" id="chapter14a-creating-the-store" href="#chapter14a-creating-the-store"># </a>Creating the store</h3>
 <p>As we can only have one single store, we first need to combine the reducers for each sub-store:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/createStore.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -3926,9 +4042,9 @@ export default () =&gt; createStore(
 <p>Finally we export as a default a function that creates the store via <code>createStore</code> using the reducers we have just combined.</p>
 <p>Since now the data for the projects is in a sub-store, we have to change the components to access them from within the correct branch:</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/projectItem.js#L20-L22"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/projects/projectItem.js#L20-L22"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-14-03</div>
-    <div class="filename">File: client/components/projectItem.js</div>
+    <div class="filename">File: client/components/projects/projectItem.js</div>
     <div class="from">From: 20</div>
     <div class="to">To: 22</div>
   </div>
@@ -3939,17 +4055,17 @@ export default () =&gt; createStore(
 <pre><code class="language-js">return store.getState()[this.props.pid];
 </code></pre>
 <p>If we had renamed the branch when combining the reducers, we should have used that name instead.  We do the same for all components using the store.</p>
-<h4>Some left-over</h4>
+<h3><a class="self-ref" id="chapter14a-some-left-over" href="#chapter14a-some-left-over"># </a>Some left-over</h3>
 <p>The <code>store/index.js</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/index.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> is a temporary patch for this particular version. It allows the components to reach the store quite easily, however, it will be gone shortly.</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/task.js#L3"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/projects/task.js#L3"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-14-03</div>
-    <div class="filename">File: client/components/task.js</div>
+    <div class="filename">File: client/components/projects/task.js</div>
     <div class="from">From: 3</div>
     <div class="to">To: 3</div>
   </div>
-  <pre><code class="language-js">import { store } from '../store';</code></pre></div>
-<h3><a class="self-ref" id="chapter14-whats-left-at-the-top" href="#chapter14-whats-left-at-the-top"># </a>What's left at the top</h3>
+  <pre><code class="language-js">import { store } from 'store';</code></pre></div>
+<h2><a class="self-ref" id="chapter14a-whats-left-at-the-top" href="#chapter14a-whats-left-at-the-top"># </a>What's left at the top</h2>
 <p>We should expect that as our application grows, the possible routes to reach the different parts of it will also grow. That is why it deserves to have a separate file for itself:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/routes.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -3961,18 +4077,14 @@ export default () =&gt; createStore(
   <pre><code class="language-js">import React from 'react';
 import { Route } from 'react-router';
 
-import ProjectList from './components/projectList.js';
-import Project from './components/project.js';
+import App from 'components/app';
+import NotFound from 'components/notFound';
 
-import App from './components/app.js';
-import NotFound from './components/notFound.js';
-
+import projects from 'components/projects/routes';
 
 export default (
   &lt;Route path="/" component={App}&gt;
-    &lt;Route path="project" component={ProjectList}&gt;
-      &lt;Route path=":pid" component={Project} /&gt;
-    &lt;/Route&gt;
+    {projects}
     &lt;Route path="*" component={NotFound} /&gt;
   &lt;/Route&gt;
 );</code></pre></div>
@@ -3988,7 +4100,7 @@ export default (
 import { render } from 'react-dom';
 import { Router, browserHistory } from 'react-router';
 
-import routes from './routes.js';
+import routes from './routes';
 
 const dest = document.getElementById('contents');
 
@@ -3997,20 +4109,219 @@ export default render((
     {routes}
   &lt;/Router&gt;
 ), dest);</code></pre></div>
-<p>Since now that is our initial entry point, we have to change it in <code>webpack.config.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/webpack.config.js#L2">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
-<h3><a class="self-ref" id="chapter14-why-separate-components-and-store" href="#chapter14-why-separate-components-and-store"># </a>Why separate components and store</h3>
-<p>If we had created a <code>components/projects</code> folder to hold all the components related to handling projects and, since we already have a <code>store/projects</code> folder, if is fair to ask whether it wouldn't make sense to put the components, actions and stores for <code>projects</code> together in a single folder as a <em>sub-system</em>.</p>
+<p>Since now that is our initial entry point, we have to change it in <code>webpack.config.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/webpack.config.js#L6">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
+<h2><a class="self-ref" id="chapter14a-why-separate-components-and-store" href="#chapter14a-why-separate-components-and-store"># </a>Why separate components and store</h2>
+<p>Looking at the <code>components/projects</code> and <code>store/projects</code> folders, it is fair to ask whether it wouldn't make sense to put the components, actions and stores for <code>projects</code> together in a single folder as a <em>sub-system</em>.</p>
 <p>The reason is that there is often not a one-to-one relation in between components and sub-stores.  Different pages within the application may combine different components to provide various views of the data in different sub-stores, for example:</p>
 <ul>
 <li>A component, directly or through sub-components, might show bits and pieces of data from different sub-stores.</li>
 <li>An action generated by a component might affect more than one sub-store.</li>
 <li>A sub-store might contain data shown by several components in different parts of the application in various ways.</li>
 </ul>
-<h2><a class="self-ref" id="chapter14-summary" href="#chapter14-summary"># </a>Summary</h2>
-<p>The examples in this chapter have been mainly focused on the basics of Redux, however, Redux is rarely used like this, and we will improve on this shortly. It
-was meant as an introduction to the principles behind Redux.</p>
-<p>We have rearranged the files to allow for future growth.</p>
-<p>The code in versions 14-02 and 14-03 have a minor problem that pops up occasionally: in a certain sequence of clicks, none of the names of the projects becomes clickable. We will come to that shortly.</p>
+<h2><a class="self-ref" id="chapter14a-summary" href="#chapter14a-summary"># </a>Summary</h2>
+<p>We have restructured our files in a way that allows for growth.  We have separated our components per branch (at the moment only one, <code>projects</code>) with space for other branches elsewhere.</p>
+<p>We have broken down our single store into sub-stores and combined the reducers to make a single overall store, even though at the moment we have only one sub-store.  It is easy to add other sub-stores under this mechanism.</p>
+<p>We have learned to configure WebPack resolver to accept aliases to make it easy to refer to our source files in various locations and told ESLint to recognize those aliases as well.</p>
+<p>By dropping the <code>.js</code> extensions in the <code>import</code> statements we gain some liberty in moving our files into separate folders should they grow large or require other assets.</p>
+<h1><a class="self-ref" id="chapter15-react-and-redux" href="#chapter15-react-and-redux"># </a>React and Redux</h1>
+<p>We have used Redux in our React application but in a very basic way.  Actually, Redux is not a part of React at all and it might very well be used with other application frameworks.  It would be good if we could integrate them in a better way.</p>
+<p>From our small application, we can see that there are certain parts that are repeated over and over.  We've seen that both <code>ProjectItem</code> and <code>Task</code> which were originally simple stateless components had to be turned into stateful ones ato be able to override three lifecyle methods provided by <code>React.Component</code>, namely <code>componentDidMount</code>, <code>componentWillUnmount</code> and <code>shouldComponentUpdate</code> and use the internal <code>state</code> and in both cases in very much the same way:</p>
+<pre><code class="language-js">componentDidMount() {
+  this.unsubscriber = store.subscribe(() =&gt; this.setState(this.getXxxx()));;
+}
+shouldComponentUpdate(nextProps, nextState) {
+  const s = this.state;
+  return s.x !== nextState.x || s.y !== nextState.y;
+}
+componentWillUnmount() {
+  this.unsubscriber();
+}
+</code></pre>
+<p>In both of them we read the state from the store via <code>store.getStatus()</code>.</p>
+<p>It would be great if we could go back to our original stateless components and let some other <em>something</em> deal with the data.  Enter <a href="https://github.com/reactjs/react-redux#react-redux">React-Redux</a></p>
+<h2><a class="self-ref" id="chapter15-react-redux" href="#chapter15-react-redux"># </a>React-Redux</h2>
+<p>What if we could split those stateful components we had to write into a simple stateless component as we had before, which deals with showing the data and another one that feeds it with the properties we need, taken from the store.</p>
+<p>In Redux parlance, these two types of components are called <em>presentational</em> components or simply <em>components</em> and <em>container</em> components.</p>
+<p>Presentational components are usually simple functions, not classes, that do the rendering from the data they receive in their <code>props</code>, as our earlier components did. They don't even know Redux exists.</p>
+<p>Container components extract the data from the store and provide the contained presentational component with the props it needs.  They don't display anything. Since they are relatively predictable in what they do they just need a few configuration objects.</p>
+<p>Conversely, presentational components (since they don't know about Redux) do not dispatch actions.  They fire custom events, as our initial <code>Task</code> component did <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-06/client/task.js#L16-L19">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  The container components are the ones that provide the presentational components with the listeners to those events and then dispatch the actions to the store.</p>
+<p>To make it easier for us to write the data containers, we will use <a href="https://github.com/reactjs/react-redux#react-redux">React-Redux</a> so we first have to load it.</p>
+<pre><code class="language-bash">npm i --save react-redux
+</code></pre>
+<p>So far, all our components that needed any data from the store needed to import the store instance from the <code>store/index.js</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/index.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which we added just as a temporary solution.  We may delete it now.</p>
+<p>To make the store available to all data containers, we use the <code>&lt;Provider&gt;</code> component imported from React-Redux.  We import it from React-Redux as well as the method to create the store:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/index.js#L4-L8"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 8</div>
+  </div>
+  <pre><code class="language-js">import { Provider } from 'react-redux';
+
+import createStore from './store/createStore';
+
+export const store = createStore();</code></pre></div>
+<p>We export the created store to make it available for our test suite.  There is no need for the production code to have <code>store</code> exported, but it doesn't hurt performance in any way so, we might as well. We will do the same with several other elements within the application, just for testing purposes.</p>
+<p>We wrap all our application in this <code>&lt;Provider&gt;</code> component which takes the <code>store</code> as its single property.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/index.js#L14-L20"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: 14</div>
+    <div class="to">To: 20</div>
+  </div>
+  <pre><code class="language-js">export default render((
+  &lt;Provider store={store}&gt;
+    &lt;Router history={browserHistory}&gt;
+      {routes}
+    &lt;/Router&gt;
+  &lt;/Provider&gt;
+), dest);</code></pre></div>
+<p>In this case, we are wrapping the <code>&lt;Router&gt;</code> component which was our outermost component for the whole application.  If we didn't use Router or used some other router, we would have done the same with whichever React component that was the outermost one.</p>
+<p>Just like <code>&lt;Router&gt;</code>, <code>&lt;Provider&gt;</code> produces no visible output, it will simply provide all our <em>container</em> components with access to the <code>store</code> in a way that does not require us to explicitly import the store instance in each and every source file.</p>
+<p>Though components communicate with each other via the properties that they pass down through the hierarchy, sometimes it is good to have some information shared all across the application. That is when React's <a href="https://facebook.github.io/react/docs/context.html">context</a> feature comes handy. Information set as <em>context</em> by one component will be available under <code>this.context</code> to all its children.  This is what <code>&lt;Provider&gt;</code> does, it makes the <code>store</code> available to any possible data container component anywhere in the hierarchy as <code>this.context.store</code>.</p>
+<h3><a class="self-ref" id="chapter15-data-containers" href="#chapter15-data-containers"># </a>Data containers</h3>
+<p>A quick search for <code>store</code> through the files in the <code>components</code> folder gives us a list of files that need data containers, namely  <code>projectList.js</code>, <code>projectItem.js</code>, <code>project.js</code> and <code>task.js</code>.  Presentational components should not even be aware of Redux or its store so those that currently do import <code>store</code> in the <code>components</code> folder must be changed.</p>
+<p>We will use React-Redux <code>connect</code> method to wrap our presentational components with the Redux-aware data-container. It will help us with extracting the information the component needs and turning them into properties.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/project.js#L23-L37"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/components/projects/project.js</div>
+    <div class="from">From: 23</div>
+    <div class="to">To: 37</div>
+  </div>
+  <pre><code class="language-js">import { connect } from 'react-redux';
+
+export const mapStateToProps = (state, props) =&gt; {
+  const pid = props.params.pid;
+  const project = state.projects[pid];
+  return {
+    pid,
+    name: project &amp;&amp; project.name,
+    descr: project &amp;&amp; project.descr,
+  };
+};
+
+export default connect(
+  mapStateToProps
+)(Project);</code></pre></div>
+<p>The <code>mapStateToProps</code> function extracts the values we need from the store. It receives the current <code>state</code> of the store and the <code>props</code> just like any other React component.</p>
+<p>The function should return an object that will be merged with the properties received from the parent component.  Here, we read the <code>pid</code> property from the Router as <code>props.params.pid</code> and use it to read the <code>project</code> property from <code>state.projects[pid]</code>.  Then we return all the properties <code>Project</code> needs, <code>pid</code>, <code>name</code> and <code>descr</code>.</p>
+<p>The <code>connect</code> method uses <code>mapStateToProps</code> to produce a wrapper function which we immediately apply to the presentational <code>Project</code> component. It seems strange to go through this two-step process, why not a much simpler:</p>
+<pre><code class="language-js">export default connect(Project, mapStateToProps);
+</code></pre>
+<p>The reason is that <code>connect</code> is ready to be used as a <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.xwbj3lp0c">decorator</a>, a proposal that didn't get into ES6 though it is planned for ES7, whenever that comes out.  At that time, when declaring <code>Project</code> we would <em>decorate</em> it with <code>connect</code>.</p>
+<pre><code class="language-js">@connect(mapStateToProps)
+export default Project = ({ pid, name, descr }) =&gt; (
+  //....
+);
+</code></pre>
+<p>The new purely presentational <code>Project</code> component is now much simpler:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/project.js#L4-L15"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/components/projects/project.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 15</div>
+  </div>
+  <pre><code class="language-js">export const Project = ({ pid, name, descr }) =&gt; (
+  name
+  ? (
+    &lt;div className="project"&gt;
+      &lt;h1&gt;{name}&lt;/h1&gt;
+      &lt;p&gt;{descr}&lt;/p&gt;
+      &lt;TaskList
+        pid={pid}
+      /&gt;
+    &lt;/div&gt;)
+  : (&lt;p&gt;Project {pid} not found&lt;/p&gt;)
+);</code></pre></div>
+<p>It does no longer care at all about the <code>store</code>, it gets the <code>pid</code>, <code>name</code> and <code>descr</code> as properties from the wrapper and returns the JSX for it. It first checks if there is a <code>name</code> as a signal that a project was found. A user might save the URL for a particular project as a bookmark or send it via email to someone else.  The project might be deleted so it might not be found when that saved URL is used later on.</p>
+<p>We no longer export <code>Project</code> as a default.  We still export the component as a named export, along with <code>mapStateToProps</code> for testing purposes but now the default export is now the component wrapped by <code>connect</code>. However, components using <code>&lt;Project&gt;</code> won't notice the difference, whether <code>Project</code> reads the state from the store or uses <code>connect</code>, it really doesn't matter.</p>
+<p>It is worth mentioning that the <code>connect</code> function does actually return a React component.  If we install a tool such as <a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi">React Developer Tools</a> in Chrome and look at the component hierarchy, we would see:</p>
+<pre><code>&lt;Component(Project) .... properties .... &gt;
+   &lt;Project .... properties .... &gt;
+</code></pre>
+<p>__ use the active property in ProjectItem as an example:</p>
+<p>Actually, the component wrapper that <code>connect</code> produces merges the object that <code>mapStateToProps</code> creates with all the properties it receives, such as the properties set by the Router. This  so in Project we could have read the <code>pid</code> from <code>props.params.pid</code> as we had before since the wrapper will let it through.</p>
+<p>--- Drop the following:
+Naming the function <code>mapStateToProps</code> is purely conventional, it doesn't even need to be a separate named function, the following would have worked just as well:</p>
+<pre><code class="language-js">import { connect } from 'react-redux';
+
+export default connect(
+  (store, props) =&gt; {
+    const pid = props.params.pid;
+    return {
+      project: store.projects[pid],
+      pid,
+    };
+  }
+)(Project);
+</code></pre>
+<p>We have placed the data container wrapper within the same file because it is very tightly related to it. Some developers prefer to put them in separate files, however, we are following the usual convention of having only one component per file except for closely related purely stateless components, and now <code>Project</code> is such stateless component.</p>
+<h3><a class="self-ref" id="chapter15-dispatching-actions" href="#chapter15-dispatching-actions"># </a>Dispatching actions</h3>
+<p><code>Project</code> had no actions to dispatch.  Since actions are dispatched on the store, our data container should also deal with them. We just need another mapping function: <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/projects/taskList.js#L55-L63">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
+<pre><code class="language-js">const mapStateToProps = (store, props) =&gt; ({
+  tasks: store.projects[props.pid].tasks,
+});
+
+import { toggleCompleted } from '../actions';
+
+const mapDispatchToProps = (dispatch) =&gt; ({
+  onTaskItemClick: ({ pid, tid }) =&gt; dispatch(toggleCompleted(pid, tid)),
+});
+</code></pre>
+<p>Besides the store to properties mapper, we map the dispatches to properties.  Our React components can have pseudo-event listeners, just like regular HTML elements have.  In this case, we expect our <code>TaskList</code> component to have an <code>onTaskItemClick</code> property which we must supply with an event listener function.  Following the convention, we use the <code>on</code> prefix for its name and we also expect to receive an event object with the arguments though this is not strictly needed, might have passed the <code>pid</code> and <code>tid</code> arguments as separate value arguments.</p>
+<p>The mapping function receives the <code>dispatch</code> argument already bound to the <code>store</code> so we can immediately use it to dispatch the action.</p>
+<p>We will use both mapping functions in our <code>connect</code> wrapper: <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/projects/taskList.js#L65-L72">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
+<pre><code class="language-js">export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TaskList);
+</code></pre>
+<p>The <code>TaskList</code> component is no longer a sub-class of <code>React.Component</code> but a simple stateless function. <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/projects/taskList.js#L26-L42">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
+<pre><code class="language-js">function TaskList({ tasks, pid, onTaskItemClick }) {
+  const onTaskItemClickHandler = ({ tid }) =&gt; {
+    onTaskItemClick({ pid, tid });
+  };
+  return (
+    &lt;ul className=&quot;task-list&quot;&gt;{
+      map(tasks, (task, tid) =&gt; (
+        &lt;Task key={tid}
+          descr={task.descr}
+          complete={task.complete}
+          tid={tid}
+          onTaskClick={onTaskItemClickHandler}
+        /&gt;
+      ))
+    }&lt;/ul&gt;
+  );
+}
+</code></pre>
+<p><code>TaskList</code> receives <code>tasks</code> from the store mapping function, <code>pid</code> from <code>Project</code> because the wrapper passes through all the properties it receives and <code>onTaskItemClick</code> from the dispatches mapping function.</p>
+<p><code>TaskList</code> relays the custom <code>onTaskClick</code> event it receives from the <code>Task</code> component as <code>onTaskItemClick</code> with the addition of the <code>pid</code> property.</p>
+<p>Good as it sounds, unfortunately, this doesn't work quite as expected.  When we click on any task item, we will see the <em>pending</em> count on <code>ProjectList</code> change but the checkbox in the task item itself does not change.</p>
+<p>The problem is that React-Redux optimizes the re-rendering by avoiding it when the values of the properties it would pass to the wrapped component are the same as they were before.  Here, the <code>tasks</code> object is always the same, its contents might change, but the reference to <code>tasks</code> remains the same thus, doing a shallow compare, the properties always look the same.  We can change this behavior with the <code>options</code> argument of <code>connect</code>: <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/projects/taskList.js#L65-L72">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
+<pre><code class="language-js">export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+  null,
+  {
+    pure: false,
+  }
+)(TaskList);
+</code></pre>
+<p>We skip the third argument and then provide an <code>options</code> argument which is an object with several options. We set <code>pure</code> to false.  This means that the wrapped function is not pure in that it doesn't depend purely on the property values themselves but on something else.  The wrapper will then make no assumptions and won't prevent the re-rendering.</p>
+<p>This fix is not good.  It is a symptom of something wrong.  A better solution is to separate the <code>Task</code> component, currently a stateless function within <code>taskList.js</code> and turn it into a Redux-wrapped component.</p>
+<p>The <code>TaskList</code> component <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-3/client/components/projects/taskList.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> is much simpler than it was before as it doesn't have to deal with providing <code>Task</code> with its properties nor of handling its events. Looking at the differences in between versions <a href="https://github.com/Satyam/HowToDoATodoApp/commit/90c0a7626a8b549b54e7f3e9fc67b3e7c3307e5f#diff-e00bd86cff7cf70308f0b55dcd1f7913R3">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, we can see in red how much code has gone away.  Much of it has gone to Task but a lot has simply disappeared.</p>
+<p>Much of what is missing in TaskList has been moved to <code>Task</code> and its wrapper <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-3/client/components/projects/task.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>Worth mentioning is <code>mapStateToProps</code>: <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-3/client/components/projects/task.js#L28">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
+<pre><code class="language-js">const mapStateToProps = (state, { pid, tid }) =&gt;
+  Object.assign({}, state.projects[pid].tasks[tid]);
+</code></pre>
+<p>The mapper simply needs to return an object with <code>descr</code> and <code>complete</code> properties, which is precisely what a task has so by returning <code>state.projects[pid].tasks[tid]</code> that should serve as the map.  However, when deciding when to re-render, the wrapper would once again compare the previous object to the current one and they would be exactly the same object, though the  contents might have changed.  That is why we make a copy of it so it is not the same object, then it goes on to compare the values on the first level. At that point it would decide whether to redraw or not, which is what we wanted.</p>
+<p>All this unnecessary cloning of objects is not good for performance, not the one in our single reducer.  In the next chapter, we will see how to improve this.</p>
 </div>
   </body>
   <script type="text/javascript" src="index.js"></script>
