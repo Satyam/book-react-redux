@@ -21,9 +21,7 @@ TaskList.propTypes = {
 
 import { connect } from 'react-redux';
 
-export const mapStateToProps = (state, props) => ({
-  tasks: state.projects[props.pid].tasks,
-});
+export const mapStateToProps = (state, props) => state.projects[props.pid];
 
 export default connect(
   mapStateToProps

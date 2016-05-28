@@ -33,11 +33,7 @@ import { connect } from 'react-redux';
 export const mapStateToProps = (state, props) => {
   const pid = props.pid;
   const tid = props.tid;
-  const task = state.projects[pid].tasks[tid];
-  return {
-    descr: task.descr,
-    completed: task.completed,
-  };
+  return state.projects[pid].tasks[tid];
 };
 
 import { completedChanged } from '../store/actions.js';
