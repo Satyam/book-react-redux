@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 const map = require('lodash/map');
 
-import Task from './task.js';
+import Task from './task';
 
 const TaskList = ({ pid, tasks }) => (
   <ul className="task-list">{

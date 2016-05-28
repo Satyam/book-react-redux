@@ -4,9 +4,9 @@ import { Link } from 'react-router';
 const App = ({ children, location: { pathname } }) => (
   <div className="app">
     <p>{
-      /^\/project/.test(pathname)
+      /^\/projects/.test(pathname)
       ? 'Projects'
-      : (<Link to="/project">Projects</Link>)
+      : (<Link to="/projects">Projects</Link>)
     }</p>
     {children}
   </div>

@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
-import { completedChanged } from '../store/actions.js';
-import { store } from '../store';
+import { completedChanged } from 'store/actions';
+import { store } from 'store';
 
 class Task extends Component {
   constructor(props) {

@@ -1,18 +1,14 @@
 import React from 'react';
 import { Route } from 'react-router';
 
-import ProjectList from './components/projectList.js';
-import Project from './components/project.js';
+import App from 'components/app';
+import NotFound from 'components/notFound';
 
-import App from './components/app.js';
-import NotFound from './components/notFound.js';
-
+import projects from 'components/projects/routes';
 
 export default (
   <Route path="/" component={App}>
-    <Route path="project" component={ProjectList}>
-      <Route path=":pid" component={Project} />
-    </Route>
+    {projects}
     <Route path="*" component={NotFound} />
   </Route>
 );

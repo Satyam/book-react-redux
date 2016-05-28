@@ -1,3 +1,3 @@
-import createStore from './createStore.js';
+import createStore from './createStore';
 
 export const store = createStore();

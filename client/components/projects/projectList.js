@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
-import { store } from '../store';
+import { store } from 'store';
 
 const map = require('lodash/map');
 
-import ProjectItem from './projectItem.js';
+import ProjectItem from './projectItem';
 
 const ProjectList = ({ children, params }) => (
   <div className="project-list">
@@ -23,8 +23,8 @@ const ProjectList = ({ children, params }) => (
 
 ProjectList.propTypes = {
   children: PropTypes.node,
-  params: React.PropTypes.shape({
-    pid: React.PropTypes.string,
+  params: PropTypes.shape({
+    pid: PropTypes.string,
   }),
 };
 

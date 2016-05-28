@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { Link } from 'react-router';
-import { store } from '../store';
+import { store } from 'store';
 
 class ProjectItem extends Component {
   constructor(props) {
@@ -27,7 +27,7 @@ class ProjectItem extends Component {
         {
          this.props.active
          ? prj.name
-         : (<Link to={`/project/${this.props.pid}`}>{prj.name}</Link>)
+         : (<Link to={`/projects/${this.props.pid}`}>{prj.name}</Link>)
        } [Pending: {prj.pending}]
       </li>
     );

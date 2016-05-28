@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
-import { store } from '../store';
+import { store } from 'store';
 
-import TaskList from './taskList.js';
+import TaskList from './taskList';
 
 const Project = ({ params: { pid } }) => {
   const prj = store.getState().projects[pid];

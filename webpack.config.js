@@ -1,7 +1,11 @@
+const path = require('path');
+const join = path.join;
+const root = __dirname;
+
 module.exports = {
-  entry: './client/index.js',
+  entry: join(root, 'client/index.js'),
   output: {
-    path: './public/lib',
+    path: join(root, 'public/lib'),
     filename: 'bundle.js'
   },
   module: {
@@ -12,5 +16,11 @@ module.exports = {
         loader: 'babel'
       }
     ]
+  },
+  resolve: {
+    alias: {
+      store: join(root, 'client/store'),
+      components: join(root, 'client/components')
+    }
   }
 };

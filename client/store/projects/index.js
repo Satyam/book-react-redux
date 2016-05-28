@@ -1,4 +1,4 @@
-export * from './actions.js';
+export * from './actions';
 
-import reducer from './reducer.js';
+import reducer from './reducer';
 export default reducer;
