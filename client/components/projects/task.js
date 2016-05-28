@@ -40,7 +40,7 @@ export const mapStateToProps = (state, props) => {
   };
 };
 
-import { completedChanged } from '../store/actions.js';
+import { completedChanged } from 'store/actions';
 
 export const mapDispatchToProps = (dispatch) => ({
   onCompletedChange: ({ pid, tid, completed }) => dispatch(completedChanged(pid, tid, completed)),

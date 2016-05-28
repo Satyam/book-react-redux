@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import Task from './task.js';
+import Task from './task';
 
 export const TaskList = ({ pid, tasks }) => (
   <ul className="task-list">{

@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import TaskList from './taskList.js';
+import TaskList from './taskList';
 
 export const Project = ({ pid, name, descr }) => (
   name

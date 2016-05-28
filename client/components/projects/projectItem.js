@@ -7,7 +7,7 @@ export const ProjectItem = ({ pid, name, active, pending }) => (
       active
       ? name
       : (
-        <Link to={`/project/${pid}`}>
+        <Link to={`/projects/${pid}`}>
           {name}
         </Link>
       )
