@@ -28,7 +28,6 @@ export const mapStateToProps = (state, props) => {
   const pid = props.pid;
   const project = state.projects[pid];
   return {
-    pid,
     name: project.name,
     pending: project.pending,
   };
