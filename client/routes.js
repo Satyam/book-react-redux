@@ -1,8 +1,8 @@
 import React from 'react';
 import { Route } from 'react-router';
 
-import App from './components/app';
-import NotFound from './components/notFound';
+import App from 'components/app';
+import NotFound from 'components/notFound';
 
 import projects from 'components/projects/routes';
 
