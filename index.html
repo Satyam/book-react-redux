@@ -143,6 +143,9 @@
 <ul class="level-h1"><li><a href="#chapter15-react-redux">React-Redux</a></li>
 <ul class="level-h2"><li><a href="#chapter15-data-containers">Data containers</a></li>
 <li><a href="#chapter15-dispatching-actions">Dispatching actions</a></li>
+</ul>
+<li><a href="#chapter15-refreshing">Refreshing</a></li>
+<li><a href="#chapter15-summary">Summary</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded"><div class="close">&lt; close</div><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
 <p>With the rapid pace of progress in the creation of libraries and tools for web development, most information comes in brief articles and blog posts.  There are not very many comprehensive guides to all that may be needed from A to Z.</p>
@@ -4143,13 +4146,13 @@ componentWillUnmount() {
 <p>What if we could split those stateful components we had to write into a simple stateless component as we had before, which deals with showing the data and another one that feeds it with the properties we need, taken from the store.</p>
 <p>In Redux parlance, these two types of components are called <em>presentational</em> components or simply <em>components</em> and <em>container</em> components.</p>
 <p>Presentational components are usually simple functions, not classes, that do the rendering from the data they receive in their <code>props</code>, as our earlier components did. They don't even know Redux exists.</p>
-<p>Container components extract the data from the store and provide the contained presentational component with the props it needs.  They don't display anything. Since they are relatively predictable in what they do they just need a few configuration objects.</p>
+<p>Container components extract the data from the store and provide the contained presentational component with the props it needs.  They don't display anything. Since they are relatively predictable in what they do they just need little configuration.</p>
 <p>Conversely, presentational components (since they don't know about Redux) do not dispatch actions.  They fire custom events, as our initial <code>Task</code> component did <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-06/client/task.js#L16-L19">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  The container components are the ones that provide the presentational components with the listeners to those events and then dispatch the actions to the store.</p>
 <p>To make it easier for us to write the data containers, we will use <a href="https://github.com/reactjs/react-redux#react-redux">React-Redux</a> so we first have to load it.</p>
 <pre><code class="language-bash">npm i --save react-redux
 </code></pre>
-<p>So far, all our components that needed any data from the store needed to import the store instance from the <code>store/index.js</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/index.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which we added just as a temporary solution.  We may delete it now.</p>
-<p>To make the store available to all data containers, we use the <code>&lt;Provider&gt;</code> component imported from React-Redux.  We import it from React-Redux as well as the method to create the store:</p>
+<p>So far, all our components that needed any data from the store had to import the store instance from the <code>store/index.js</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/index.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which we added just as a temporary solution.  We may delete it now.</p>
+<p>To make the store available to all data containers, we use the <code>&lt;Provider&gt;</code> component from React-Redux.  We import it as well as the method to create the store:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/index.js#L4-L8"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-15-01</div>
@@ -4178,7 +4181,7 @@ export const store = createStore();</code></pre></div>
     &lt;/Router&gt;
   &lt;/Provider&gt;
 ), dest);</code></pre></div>
-<p>In this case, we are wrapping the <code>&lt;Router&gt;</code> component which was our outermost component for the whole application.  If we didn't use Router or used some other router, we would have done the same with whichever React component that was the outermost one.</p>
+<p>In this case, we are wrapping the <code>&lt;Router&gt;</code> component which was our outermost component for the whole application.  If we didn't use Router or used some other router, we would have done the same with whichever React component that happened to be the outermost one. To be precise, we have to wrap anything that might want to use the store, but we assume most of our application will.</p>
 <p>Just like <code>&lt;Router&gt;</code>, <code>&lt;Provider&gt;</code> produces no visible output, it will simply provide all our <em>container</em> components with access to the <code>store</code> in a way that does not require us to explicitly import the store instance in each and every source file.</p>
 <p>Though components communicate with each other via the properties that they pass down through the hierarchy, sometimes it is good to have some information shared all across the application. That is when React's <a href="https://facebook.github.io/react/docs/context.html">context</a> feature comes handy. Information set as <em>context</em> by one component will be available under <code>this.context</code> to all its children.  This is what <code>&lt;Provider&gt;</code> does, it makes the <code>store</code> available to any possible data container component anywhere in the hierarchy as <code>this.context.store</code>.</p>
 <h3><a class="self-ref" id="chapter15-data-containers" href="#chapter15-data-containers"># </a>Data containers</h3>
@@ -4208,10 +4211,11 @@ export default connect(
 )(Project);</code></pre></div>
 <p>The <code>mapStateToProps</code> function extracts the values we need from the store. It receives the current <code>state</code> of the store and the <code>props</code> just like any other React component.</p>
 <p>The function should return an object that will be merged with the properties received from the parent component.  Here, we read the <code>pid</code> property from the Router as <code>props.params.pid</code> and use it to read the <code>project</code> property from <code>state.projects[pid]</code>.  Then we return all the properties <code>Project</code> needs, <code>pid</code>, <code>name</code> and <code>descr</code>.</p>
-<p>The <code>connect</code> method uses <code>mapStateToProps</code> to produce a wrapper function which we immediately apply to the presentational <code>Project</code> component. It seems strange to go through this two-step process, why not a much simpler:</p>
+<p>The <code>connect</code> method uses <code>mapStateToProps</code> to produce a wrapper function which we immediately apply to the presentational <code>Project</code> component.</p>
+<p>It might seem strange to go through this two-step process, why not a much simpler:</p>
 <pre><code class="language-js">export default connect(Project, mapStateToProps);
 </code></pre>
-<p>The reason is that <code>connect</code> is ready to be used as a <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.xwbj3lp0c">decorator</a>, a proposal that didn't get into ES6 though it is planned for ES7, whenever that comes out.  At that time, when declaring <code>Project</code> we would <em>decorate</em> it with <code>connect</code>.</p>
+<p>The reason is that <code>connect</code> is ready to be used as a <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.xwbj3lp0c">decorator</a>, a proposal that didn't get into ES6 though it is planned for ES7, whenever that comes out.  At that time, when declaring <code>Project</code> we would <em>decorate</em> it with <code>connect</code>:</p>
 <pre><code class="language-js">@connect(mapStateToProps)
 export default Project = ({ pid, name, descr }) =&gt; (
   //....
@@ -4240,88 +4244,161 @@ export default Project = ({ pid, name, descr }) =&gt; (
 <p>It does no longer care at all about the <code>store</code>, it gets the <code>pid</code>, <code>name</code> and <code>descr</code> as properties from the wrapper and returns the JSX for it. It first checks if there is a <code>name</code> as a signal that a project was found. A user might save the URL for a particular project as a bookmark or send it via email to someone else.  The project might be deleted so it might not be found when that saved URL is used later on.</p>
 <p>We no longer export <code>Project</code> as a default.  We still export the component as a named export, along with <code>mapStateToProps</code> for testing purposes but now the default export is now the component wrapped by <code>connect</code>. However, components using <code>&lt;Project&gt;</code> won't notice the difference, whether <code>Project</code> reads the state from the store or uses <code>connect</code>, it really doesn't matter.</p>
 <p>It is worth mentioning that the <code>connect</code> function does actually return a React component.  If we install a tool such as <a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi">React Developer Tools</a> in Chrome and look at the component hierarchy, we would see:</p>
-<pre><code>&lt;Component(Project) .... properties .... &gt;
+<pre><code class="language-html">&lt;Component(Project) .... properties .... &gt;
    &lt;Project .... properties .... &gt;
 </code></pre>
-<p>__ use the active property in ProjectItem as an example:</p>
-<p>Actually, the component wrapper that <code>connect</code> produces merges the object that <code>mapStateToProps</code> creates with all the properties it receives, such as the properties set by the Router. This  so in Project we could have read the <code>pid</code> from <code>props.params.pid</code> as we had before since the wrapper will let it through.</p>
-<p>--- Drop the following:
-Naming the function <code>mapStateToProps</code> is purely conventional, it doesn't even need to be a separate named function, the following would have worked just as well:</p>
-<pre><code class="language-js">import { connect } from 'react-redux';
+<p>The component wrapper that <code>connect</code> produces merges the object that <code>mapStateToProps</code> creates with all the properties it receives, such as the properties set by the Router.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/projectItem.js#L18-L34"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/components/projects/projectItem.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 34</div>
+  </div>
+  <pre><code class="language-js">ProjectItem.propTypes = {
+  pid: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  active: PropTypes.bool.isRequired,
+  pending: PropTypes.number.isRequired,
+};
+
+import { connect } from 'react-redux';
+
+export const mapStateToProps = (state, props) =&gt; {
+  const pid = props.pid;
+  const project = state.projects[pid];
+  return {
+    name: project.name,
+    pending: project.pending,
+  };
+};</code></pre></div>
+<p>Here, <code>ProjectItem.propTypes</code> lists four properties, however, <code>mapStateToProps</code> returns only two.  The other two, <code>pid</code> and <code>active</code> come from the parent component.  As a matter of fact, <code>mapStateToProps</code> itself reads <code>props.pid</code> and uses it to fetch the <code>project</code>, however, it doesn't need to return the <code>pid</code> as it is already there.</p>
+<p>Naming the function <code>mapStateToProps</code> is purely conventional, it doesn't even need to be a separate named function, the mapper could have been provided to <code>connect</code> as an anonymous function defined on the spot.  However, giving it a separate name and, specially, exporting it as a named export makes it accessible for unit testing.</p>
+<p>We have placed the data container wrapper within the same file because it is very tightly related to it, some separate the presentational component from the data container. This seems quite pointless as one doesn't make sense without the other.  The only possible reason to do that is to enable unit testing of the presentational component without the need to provide a working store but we already export the presentational component as a named export so it is accessible to testing software.</p>
+<p>In the documentation for Redux, the author creates two folders, <code>components</code> that contains components that don't have access to the store and <code>containers</code> for those that use <code>connect</code>.  Though that separation is handy for the reader of those samples to easily find the <em>connected</em> files, there is no reason to do that in a production environment.  A <em>connected</em> component is used no differently than an <em>unconnected</em> one.  As long as its properties are well documented and are satisfied by the parent component, they just behave pretty much the same.</p>
+<h3><a class="self-ref" id="chapter15-dispatching-actions" href="#chapter15-dispatching-actions"># </a>Dispatching actions</h3>
+<p><code>connect</code> also allow us to dispatch actions.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L43-L52"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/components/projects/task.js</div>
+    <div class="from">From: 43</div>
+    <div class="to">To: 52</div>
+  </div>
+  <pre><code class="language-js">import { completedChanged } from 'store/actions';
+
+export const mapDispatchToProps = (dispatch) =&gt; ({
+  onCompletedChange: ({ pid, tid, completed }) =&gt; dispatch(completedChanged(pid, tid, completed)),
+});
 
 export default connect(
-  (store, props) =&gt; {
-    const pid = props.params.pid;
-    return {
-      project: store.projects[pid],
-      pid,
-    };
-  }
-)(Project);
-</code></pre>
-<p>We have placed the data container wrapper within the same file because it is very tightly related to it. Some developers prefer to put them in separate files, however, we are following the usual convention of having only one component per file except for closely related purely stateless components, and now <code>Project</code> is such stateless component.</p>
-<h3><a class="self-ref" id="chapter15-dispatching-actions" href="#chapter15-dispatching-actions"># </a>Dispatching actions</h3>
-<p><code>Project</code> had no actions to dispatch.  Since actions are dispatched on the store, our data container should also deal with them. We just need another mapping function: <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/projects/taskList.js#L55-L63">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
-<pre><code class="language-js">const mapStateToProps = (store, props) =&gt; ({
-  tasks: store.projects[props.pid].tasks,
-});
-
-import { toggleCompleted } from '../actions';
-
-const mapDispatchToProps = (dispatch) =&gt; ({
-  onTaskItemClick: ({ pid, tid }) =&gt; dispatch(toggleCompleted(pid, tid)),
-});
-</code></pre>
-<p>Besides the store to properties mapper, we map the dispatches to properties.  Our React components can have pseudo-event listeners, just like regular HTML elements have.  In this case, we expect our <code>TaskList</code> component to have an <code>onTaskItemClick</code> property which we must supply with an event listener function.  Following the convention, we use the <code>on</code> prefix for its name and we also expect to receive an event object with the arguments though this is not strictly needed, might have passed the <code>pid</code> and <code>tid</code> arguments as separate value arguments.</p>
-<p>The mapping function receives the <code>dispatch</code> argument already bound to the <code>store</code> so we can immediately use it to dispatch the action.</p>
-<p>We will use both mapping functions in our <code>connect</code> wrapper: <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/projects/taskList.js#L65-L72">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
-<pre><code class="language-js">export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(TaskList);
-</code></pre>
-<p>The <code>TaskList</code> component is no longer a sub-class of <code>React.Component</code> but a simple stateless function. <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/projects/taskList.js#L26-L42">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
-<pre><code class="language-js">function TaskList({ tasks, pid, onTaskItemClick }) {
-  const onTaskItemClickHandler = ({ tid }) =&gt; {
-    onTaskItemClick({ pid, tid });
+)(Task);</code></pre></div>
+<p>Besides <code>mapStateToProps</code>, connect may take an optional second argument, usually called <code>mapDispatchToProps</code> that returns an object containing a series of custom event handlers that will also be merged into the properties of the contained component.</p>
+<p>In this case we declare <code>onCompletedChange</code> which will receive a custom event object made of the <code>pid</code>, <code>tid</code> and <code>completed</code>.  Unsurprisingly, this custom event looks pretty much as the one we had several chapters back <a href="https://github.com/Satyam/book-react-redux/blob/chapter-13-01/client/project.js#L4">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, and it is used by the <code>Task</code> component in the same way:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L4-L12"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/components/projects/task.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 12</div>
+  </div>
+  <pre><code class="language-js">const onClickHandler = ev =&gt; {
+  if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
+  ev.preventDefault();
+  onCompletedChange({
+    pid,
+    tid,
+    completed: !completed,
+  });
+};</code></pre></div>
+<p>The <code>mapDispatchToProps</code> receives a reference to the <code>dispatch</code> method already bound to the store so it can be easily accessed via closure by the custom event handlers.  The handler simply has to dispatch the action produced by the <code>completedChanged</code> action creator function which it previously imported from <code>store/actions</code>.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L46"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/components/projects/task.js</div>
+    <div class="from">From: 46</div>
+    <div class="to">To: 46</div>
+  </div>
+  <pre><code class="language-js">onCompletedChange: ({ pid, tid, completed }) =&gt; dispatch(completedChanged(pid, tid, completed)),</code></pre></div>
+<p>The <code>Task</code> component passed from being a sub-class of <code>React.Component</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/projects/task.js#L5-L40">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> being a simply stateless component <a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L3-L21">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<h2><a class="self-ref" id="chapter15-refreshing" href="#chapter15-refreshing"># </a>Refreshing</h2>
+<p>We have seen earlier how to use the <code>shouldComponentUpdate</code> method of <code>React.Component</code> to tell React whether to bother to redraw the component or not.  Being able to do that offers a great performance boost.</p>
+<p>React-Redux already does that for us. It does a shallow compare of the object returned from <code>mapStateToProps</code> with the previous version which it kept from before.  It also compares the properties it receives with their previous version.  It will redraw the contained component only if there has been any changes.</p>
+<p>There are two important points to make here.  First is that the compare is a shallow compare.  <code>connect</code> will not detect changes in values deep in an object hierarchy and so the screen will fail to refresh.  That is why it is better to have <code>mapStateToProps</code> return an object containing simple values and not full objects with values nested deep inside them, as <code>connect</code> does not do an expensive deep compare.</p>
+<p>Second, the first stage of that shallow compare is to see whether the objects are the same, that is, their references are the same.  Here is where the immutability of the store can be of great benefit.  If we manage to make <code>connect</code> compare object references, instead of the values contained within those objects, we can improve performance.</p>
+<p>For example, in <code>Task</code>, we may switch from doing this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L33-L41"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/components/projects/task.js</div>
+    <div class="from">From: 33</div>
+    <div class="to">To: 41</div>
+  </div>
+  <pre><code class="language-js">export const mapStateToProps = (state, props) =&gt; {
+  const pid = props.pid;
+  const tid = props.tid;
+  const task = state.projects[pid].tasks[tid];
+  return {
+    descr: task.descr,
+    completed: task.completed,
   };
-  return (
-    &lt;ul className=&quot;task-list&quot;&gt;{
-      map(tasks, (task, tid) =&gt; (
-        &lt;Task key={tid}
-          descr={task.descr}
-          complete={task.complete}
-          tid={tid}
-          onTaskClick={onTaskItemClickHandler}
-        /&gt;
-      ))
-    }&lt;/ul&gt;
-  );
-}
+};</code></pre></div>
+<p>To this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-02/client/components/projects/task.js#L33-L37"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-02</div>
+    <div class="filename">File: client/components/projects/task.js</div>
+    <div class="from">From: 33</div>
+    <div class="to">To: 37</div>
+  </div>
+  <pre><code class="language-js">export const mapStateToProps = (state, props) =&gt; {
+  const pid = props.pid;
+  const tid = props.tid;
+  return state.projects[pid].tasks[tid];
+};</code></pre></div>
+<p>In the first case we are returning a new object made of the same properties as the original. This new object fails the first check of the shallow compare since the references are obviously not the same, thus forcing the comparer to check the values.  In the new version, if we return the reference to the object in the store if the object references are the same, being immutable, the contents have to be the same.</p>
+<p>It is not so easy to decide what to do with <code>TaskList</code>. Before we had:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/taskList.js#L24-L26"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-01</div>
+    <div class="filename">File: client/components/projects/taskList.js</div>
+    <div class="from">From: 24</div>
+    <div class="to">To: 26</div>
+  </div>
+  <pre><code class="language-js">export const mapStateToProps = (state, props) =&gt; ({
+  tasks: state.projects[props.pid].tasks,
+});</code></pre></div>
+<p>and now:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-02/client/components/projects/taskList.js#L24"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-02</div>
+    <div class="filename">File: client/components/projects/taskList.js</div>
+    <div class="from">From: 24</div>
+    <div class="to">To: 24</div>
+  </div>
+  <pre><code class="language-js">export const mapStateToProps = (state, props) =&gt; state.projects[props.pid];</code></pre></div>
+<p>In the new version we are returning a reference to the project data in the store itself.  We only need the <code>tid</code>s  of the tasks in it for <code>TaskList</code> to iterate on them.  We are also returning the other properties of the project, such as the <code>name</code>, <code>descr</code> and <code>pending</code> count.  Should any of those change, the component would be redrawn as well.  The <code>name</code> and <code>descr</code> are unlike to change very often, but the <code>pending</code> count might.  Would this have a significant impact in the performance of the application?  The only way to know is to gather performance data with both versions, there is no way to know in advance.</p>
+<p>We must definitely not do it in <code>ProjectList</code>.  We still have:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-02/client/components/projects/projectList.js#L31-L33"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-02</div>
+    <div class="filename">File: client/components/projects/projectList.js</div>
+    <div class="from">From: 31</div>
+    <div class="to">To: 33</div>
+  </div>
+  <pre><code class="language-js">export const mapStateToProps = state =&gt; ({
+  projects: state.projects,
+});</code></pre></div>
+<p>We might be tempted to simplify it to:</p>
+<pre><code class="language-js">export const mapStateToProps = state =&gt; state;
 </code></pre>
-<p><code>TaskList</code> receives <code>tasks</code> from the store mapping function, <code>pid</code> from <code>Project</code> because the wrapper passes through all the properties it receives and <code>onTaskItemClick</code> from the dispatches mapping function.</p>
-<p><code>TaskList</code> relays the custom <code>onTaskClick</code> event it receives from the <code>Task</code> component as <code>onTaskItemClick</code> with the addition of the <code>pid</code> property.</p>
-<p>Good as it sounds, unfortunately, this doesn't work quite as expected.  When we click on any task item, we will see the <em>pending</em> count on <code>ProjectList</code> change but the checkbox in the task item itself does not change.</p>
-<p>The problem is that React-Redux optimizes the re-rendering by avoiding it when the values of the properties it would pass to the wrapped component are the same as they were before.  Here, the <code>tasks</code> object is always the same, its contents might change, but the reference to <code>tasks</code> remains the same thus, doing a shallow compare, the properties always look the same.  We can change this behavior with the <code>options</code> argument of <code>connect</code>: <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/projects/taskList.js#L65-L72">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
-<pre><code class="language-js">export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-  null,
-  {
-    pure: false,
-  }
-)(TaskList);
-</code></pre>
-<p>We skip the third argument and then provide an <code>options</code> argument which is an object with several options. We set <code>pure</code> to false.  This means that the wrapped function is not pure in that it doesn't depend purely on the property values themselves but on something else.  The wrapper will then make no assumptions and won't prevent the re-rendering.</p>
-<p>This fix is not good.  It is a symptom of something wrong.  A better solution is to separate the <code>Task</code> component, currently a stateless function within <code>taskList.js</code> and turn it into a Redux-wrapped component.</p>
-<p>The <code>TaskList</code> component <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-3/client/components/projects/taskList.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> is much simpler than it was before as it doesn't have to deal with providing <code>Task</code> with its properties nor of handling its events. Looking at the differences in between versions <a href="https://github.com/Satyam/HowToDoATodoApp/commit/90c0a7626a8b549b54e7f3e9fc67b3e7c3307e5f#diff-e00bd86cff7cf70308f0b55dcd1f7913R3">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, we can see in red how much code has gone away.  Much of it has gone to Task but a lot has simply disappeared.</p>
-<p>Much of what is missing in TaskList has been moved to <code>Task</code> and its wrapper <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-3/client/components/projects/task.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
-<p>Worth mentioning is <code>mapStateToProps</code>: <a href="https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-3/client/components/projects/task.js#L28">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
-<pre><code class="language-js">const mapStateToProps = (state, { pid, tid }) =&gt;
-  Object.assign({}, state.projects[pid].tasks[tid]);
-</code></pre>
-<p>The mapper simply needs to return an object with <code>descr</code> and <code>complete</code> properties, which is precisely what a task has so by returning <code>state.projects[pid].tasks[tid]</code> that should serve as the map.  However, when deciding when to re-render, the wrapper would once again compare the previous object to the current one and they would be exactly the same object, though the  contents might have changed.  That is why we make a copy of it so it is not the same object, then it goes on to compare the values on the first level. At that point it would decide whether to redraw or not, which is what we wanted.</p>
-<p>All this unnecessary cloning of objects is not good for performance, not the one in our single reducer.  In the next chapter, we will see how to improve this.</p>
+<p>The application would still work, however, right now our store only contains data about projects but that may not be so in the future.  <code>state.projects</code> is just one sub-store within the store, but there is a good chance we will have more and, if any of those stores change, <code>ProjectList</code> would be re-rendered even if nothing within our sub-store changed.  In this case, we must avoid trying to play the shallow compare in our favor because it will hurt us in the long run.</p>
+<h2><a class="self-ref" id="chapter15-summary" href="#chapter15-summary"># </a>Summary</h2>
+<p>We have used React-Redux to simplify access to the data in our store. By letting the <code>connect</code> method to deal with the store, we have greatly simplified our components which are, once again, stateless functions.</p>
+<p>Though the main, default export for each of the source files is now the wrapped component which, for any parent component using it should be indistinguishable from the original one, we have also provided plenty of named exports to many elements within such as the original, unwrapped stateless component, <code>mapStateToProps</code> and <code>mapDispatchToProps</code>.</p>
+<p>These exports should allow us to test those parts of the separately from the whole wrapped component, which would require us to actually have a store.  To test the mappers, we only need simple stubs to stand in for the store.  If we test the unwrapped component and the mappers, we can be very certain the whole would work as the <code>connect</code> method is already thoroughly tested elsewhere.</p>
 </div>
   </body>
   <script type="text/javascript" src="index.js"></script>
