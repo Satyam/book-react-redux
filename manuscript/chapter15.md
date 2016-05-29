@@ -29,7 +29,7 @@ In Redux parlance, these two types of components are called *presentational* com
 
 Presentational components are usually simple functions, not classes, that do the rendering from the data they receive in their `props`, as our earlier components did. They don't even know Redux exists.  
 
-Container components extract the data from the store and provide the contained presentational component with the props it needs.  They don't display anything. Since they are relatively predictable in what they do they just need a few configuration objects.
+Container components extract the data from the store and provide the contained presentational component with the props it needs.  They don't display anything. Since they are relatively predictable in what they do they just need little configuration.
 
 Conversely, presentational components (since they don't know about Redux) do not dispatch actions.  They fire custom events, as our initial `Task` component did [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-13-06/client/task.js#L16-L19).  The container components are the ones that provide the presentational components with the listeners to those events and then dispatch the actions to the store.
 
@@ -39,9 +39,9 @@ To make it easier for us to write the data containers, we will use [React-Redux]
 npm i --save react-redux
 ```
 
-So far, all our components that needed any data from the store needed to import the store instance from the `store/index.js` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/index.js) which we added just as a temporary solution.  We may delete it now.
+So far, all our components that needed any data from the store had to import the store instance from the `store/index.js` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/store/index.js) which we added just as a temporary solution.  We may delete it now.
 
-To make the store available to all data containers, we use the `<Provider>` component imported from React-Redux.  We import it from React-Redux as well as the method to create the store:
+To make the store available to all data containers, we use the `<Provider>` component from React-Redux.  We import it as well as the method to create the store:
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/index.js#L4-L8)
 
@@ -51,7 +51,7 @@ We wrap all our application in this `<Provider>` component which takes the `stor
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/index.js#L14-L20)
 
-In this case, we are wrapping the `<Router>` component which was our outermost component for the whole application.  If we didn't use Router or used some other router, we would have done the same with whichever React component that was the outermost one.
+In this case, we are wrapping the `<Router>` component which was our outermost component for the whole application.  If we didn't use Router or used some other router, we would have done the same with whichever React component that happened to be the outermost one. To be precise, we have to wrap anything that might want to use the store, but we assume most of our application will.
 
 Just like `<Router>`, `<Provider>` produces no visible output, it will simply provide all our *container* components with access to the `store` in a way that does not require us to explicitly import the store instance in each and every source file.
 
@@ -63,19 +63,21 @@ A quick search for `store` through the files in the `components` folder gives us
 
 We will use React-Redux `connect` method to wrap our presentational components with the Redux-aware data-container. It will help us with extracting the information the component needs and turning them into properties.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/project.js#L23-L37)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/project.js#L23-L37)
 
 The `mapStateToProps` function extracts the values we need from the store. It receives the current `state` of the store and the `props` just like any other React component.  
 
 The function should return an object that will be merged with the properties received from the parent component.  Here, we read the `pid` property from the Router as `props.params.pid` and use it to read the `project` property from `state.projects[pid]`.  Then we return all the properties `Project` needs, `pid`, `name` and `descr`.
 
-The `connect` method uses `mapStateToProps` to produce a wrapper function which we immediately apply to the presentational `Project` component. It seems strange to go through this two-step process, why not a much simpler:
+The `connect` method uses `mapStateToProps` to produce a wrapper function which we immediately apply to the presentational `Project` component.
+
+It might seem strange to go through this two-step process, why not a much simpler:
 
 ```js
 export default connect(Project, mapStateToProps);
 ```
 
-The reason is that `connect` is ready to be used as a [decorator](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.xwbj3lp0c), a proposal that didn't get into ES6 though it is planned for ES7, whenever that comes out.  At that time, when declaring `Project` we would *decorate* it with `connect`.
+The reason is that `connect` is ready to be used as a [decorator](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.xwbj3lp0c), a proposal that didn't get into ES6 though it is planned for ES7, whenever that comes out.  At that time, when declaring `Project` we would *decorate* it with `connect`:
 
 ```js
 @connect(mapStateToProps)
@@ -87,7 +89,7 @@ export default Project = ({ pid, name, descr }) => (
 
 The new purely presentational `Project` component is now much simpler:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/project.js#L4-L15)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/project.js#L4-L15)
 
 It does no longer care at all about the `store`, it gets the `pid`, `name` and `descr` as properties from the wrapper and returns the JSX for it. It first checks if there is a `name` as a signal that a project was found. A user might save the URL for a particular project as a bookmark or send it via email to someone else.  The project might be deleted so it might not be found when that saved URL is used later on.
 
@@ -95,122 +97,87 @@ We no longer export `Project` as a default.  We still export the component as a 
 
 It is worth mentioning that the `connect` function does actually return a React component.  If we install a tool such as [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) in Chrome and look at the component hierarchy, we would see:
 
-```
+```html
 <Component(Project) .... properties .... >
    <Project .... properties .... >
 ```
 
-__ use the active property in ProjectItem as an example:
+The component wrapper that `connect` produces merges the object that `mapStateToProps` creates with all the properties it receives, such as the properties set by the Router.
 
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/projectItem.js#L18-L34)
 
-Actually, the component wrapper that `connect` produces merges the object that `mapStateToProps` creates with all the properties it receives, such as the properties set by the Router. This  so in Project we could have read the `pid` from `props.params.pid` as we had before since the wrapper will let it through.
+Here, `ProjectItem.propTypes` lists four properties, however, `mapStateToProps` returns only two.  The other two, `pid` and `active` come from the parent component.  As a matter of fact, `mapStateToProps` itself reads `props.pid` and uses it to fetch the `project`, however, it doesn't need to return the `pid` as it is already there.
 
+Naming the function `mapStateToProps` is purely conventional, it doesn't even need to be a separate named function, the mapper could have been provided to `connect` as an anonymous function defined on the spot.  However, giving it a separate name and, specially, exporting it as a named export makes it accessible for unit testing.
 
---- Drop the following:
-Naming the function `mapStateToProps` is purely conventional, it doesn't even need to be a separate named function, the following would have worked just as well:
+We have placed the data container wrapper within the same file because it is very tightly related to it, some separate the presentational component from the data container. This seems quite pointless as one doesn't make sense without the other.  The only possible reason to do that is to enable unit testing of the presentational component without the need to provide a working store but we already export the presentational component as a named export so it is accessible to testing software.
 
-```js
-import { connect } from 'react-redux';
-
-export default connect(
-  (store, props) => {
-    const pid = props.params.pid;
-    return {
-      project: store.projects[pid],
-      pid,
-    };
-  }
-)(Project);
-```
-
-We have placed the data container wrapper within the same file because it is very tightly related to it. Some developers prefer to put them in separate files, however, we are following the usual convention of having only one component per file except for closely related purely stateless components, and now `Project` is such stateless component.
+In the documentation for Redux, the author creates two folders, `components` that contains components that don't have access to the store and `containers` for those that use `connect`.  Though that separation is handy for the reader of those samples to easily find the *connected* files, there is no reason to do that in a production environment.  A *connected* component is used no differently than an *unconnected* one.  As long as its properties are well documented and are satisfied by the parent component, they just behave pretty much the same.
 
 ### Dispatching actions
 
-`Project` had no actions to dispatch.  Since actions are dispatched on the store, our data container should also deal with them. We just need another mapping function: [(:octocat:)](https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/taskList.js#L55-L63)
+`connect` also allow us to dispatch actions.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L43-L52)
+
+Besides `mapStateToProps`, connect may take an optional second argument, usually called `mapDispatchToProps` that returns an object containing a series of custom event handlers that will also be merged into the properties of the contained component.
+
+In this case we declare `onCompletedChange` which will receive a custom event object made of the `pid`, `tid` and `completed`.  Unsurprisingly, this custom event looks pretty much as the one we had several chapters back [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-13-01/client/project.js#L4), and it is used by the `Task` component in the same way:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L4-L12)
+
+The `mapDispatchToProps` receives a reference to the `dispatch` method already bound to the store so it can be easily accessed via closure by the custom event handlers.  The handler simply has to dispatch the action produced by the `completedChanged` action creator function which it previously imported from `store/actions`.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L46)
+
+The `Task` component passed from being a sub-class of `React.Component` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-14-03/client/components/projects/task.js#L5-L40) being a simply stateless component [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L3-L21).
+
+## Refreshing
+
+We have seen earlier how to use the `shouldComponentUpdate` method of `React.Component` to tell React whether to bother to redraw the component or not.  Being able to do that offers a great performance boost.
+
+React-Redux already does that for us. It does a shallow compare of the object returned from `mapStateToProps` with the previous version which it kept from before.  It also compares the properties it receives with their previous version.  It will redraw the contained component only if there has been any changes.
+
+There are two important points to make here.  First is that the compare is a shallow compare.  `connect` will not detect changes in values deep in an object hierarchy and so the screen will fail to refresh.  That is why it is better to have `mapStateToProps` return an object containing simple values and not full objects with values nested deep inside them, as `connect` does not do an expensive deep compare.
+
+Second, the first stage of that shallow compare is to see whether the objects are the same, that is, their references are the same.  Here is where the immutability of the store can be of great benefit.  If we manage to make `connect` compare object references, instead of the values contained within those objects, we can improve performance.
+
+For example, in `Task`, we may switch from doing this:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/task.js#L33-L41)
+
+To this:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-02/client/components/projects/task.js#L33-L37)
+
+In the first case we are returning a new object made of the same properties as the original. This new object fails the first check of the shallow compare since the references are obviously not the same, thus forcing the comparer to check the values.  In the new version, if we return the reference to the object in the store if the object references are the same, being immutable, the contents have to be the same.
+
+It is not so easy to decide what to do with `TaskList`. Before we had:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-01/client/components/projects/taskList.js#L24-L26)
+
+and now:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-02/client/components/projects/taskList.js#L24)
+
+In the new version we are returning a reference to the project data in the store itself.  We only need the `tid`s  of the tasks in it for `TaskList` to iterate on them.  We are also returning the other properties of the project, such as the `name`, `descr` and `pending` count.  Should any of those change, the component would be redrawn as well.  The `name` and `descr` are unlike to change very often, but the `pending` count might.  Would this have a significant impact in the performance of the application?  The only way to know is to gather performance data with both versions, there is no way to know in advance.
+
+We must definitely not do it in `ProjectList`.  We still have:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-15-02/client/components/projects/projectList.js#L31-L33)
+
+We might be tempted to simplify it to:
 
 ```js
-const mapStateToProps = (store, props) => ({
-  tasks: store.projects[props.pid].tasks,
-});
-
-import { toggleCompleted } from '../actions';
-
-const mapDispatchToProps = (dispatch) => ({
-  onTaskItemClick: ({ pid, tid }) => dispatch(toggleCompleted(pid, tid)),
-});
+export const mapStateToProps = state => state;
 ```
 
-Besides the store to properties mapper, we map the dispatches to properties.  Our React components can have pseudo-event listeners, just like regular HTML elements have.  In this case, we expect our `TaskList` component to have an `onTaskItemClick` property which we must supply with an event listener function.  Following the convention, we use the `on` prefix for its name and we also expect to receive an event object with the arguments though this is not strictly needed, might have passed the `pid` and `tid` arguments as separate value arguments.
+The application would still work, however, right now our store only contains data about projects but that may not be so in the future.  `state.projects` is just one sub-store within the store, but there is a good chance we will have more and, if any of those stores change, `ProjectList` would be re-rendered even if nothing within our sub-store changed.  In this case, we must avoid trying to play the shallow compare in our favor because it will hurt us in the long run.
 
-The mapping function receives the `dispatch` argument already bound to the `store` so we can immediately use it to dispatch the action.
+## Summary
 
-We will use both mapping functions in our `connect` wrapper: [(:octocat:)](https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/taskList.js#L65-L72)
+We have used React-Redux to simplify access to the data in our store. By letting the `connect` method to deal with the store, we have greatly simplified our components which are, once again, stateless functions.
 
-```js
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TaskList);
-```
+Though the main, default export for each of the source files is now the wrapped component which, for any parent component using it should be indistinguishable from the original one, we have also provided plenty of named exports to many elements within such as the original, unwrapped stateless component, `mapStateToProps` and `mapDispatchToProps`.  
 
-The `TaskList` component is no longer a sub-class of `React.Component` but a simple stateless function. [(:octocat:)](https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/taskList.js#L26-L42)
-
-```js
-function TaskList({ tasks, pid, onTaskItemClick }) {
-  const onTaskItemClickHandler = ({ tid }) => {
-    onTaskItemClick({ pid, tid });
-  };
-  return (
-    <ul className="task-list">{
-      map(tasks, (task, tid) => (
-        <Task key={tid}
-          descr={task.descr}
-          complete={task.complete}
-          tid={tid}
-          onTaskClick={onTaskItemClickHandler}
-        />
-      ))
-    }</ul>
-  );
-}
-```
-
-`TaskList` receives `tasks` from the store mapping function, `pid` from `Project` because the wrapper passes through all the properties it receives and `onTaskItemClick` from the dispatches mapping function.  
-
-`TaskList` relays the custom `onTaskClick` event it receives from the `Task` component as `onTaskItemClick` with the addition of the `pid` property.
-
-
-Good as it sounds, unfortunately, this doesn't work quite as expected.  When we click on any task item, we will see the *pending* count on `ProjectList` change but the checkbox in the task item itself does not change.
-
-The problem is that React-Redux optimizes the re-rendering by avoiding it when the values of the properties it would pass to the wrapped component are the same as they were before.  Here, the `tasks` object is always the same, its contents might change, but the reference to `tasks` remains the same thus, doing a shallow compare, the properties always look the same.  We can change this behavior with the `options` argument of `connect`: [(:octocat:)](https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-2/client/components/taskList.js#L65-L72)
-
-```js
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-  null,
-  {
-    pure: false,
-  }
-)(TaskList);
-```
-
-We skip the third argument and then provide an `options` argument which is an object with several options. We set `pure` to false.  This means that the wrapped function is not pure in that it doesn't depend purely on the property values themselves but on something else.  The wrapper will then make no assumptions and won't prevent the re-rendering.
-
-This fix is not good.  It is a symptom of something wrong.  A better solution is to separate the `Task` component, currently a stateless function within `taskList.js` and turn it into a Redux-wrapped component.
-
-The `TaskList` component [(:octocat:)](https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-3/client/components/taskList.js) is much simpler than it was before as it doesn't have to deal with providing `Task` with its properties nor of handling its events. Looking at the differences in between versions [(:octocat:)](https://github.com/Satyam/HowToDoATodoApp/commit/90c0a7626a8b549b54e7f3e9fc67b3e7c3307e5f#diff-e00bd86cff7cf70308f0b55dcd1f7913R3), we can see in red how much code has gone away.  Much of it has gone to Task but a lot has simply disappeared.  
-
-Much of what is missing in TaskList has been moved to `Task` and its wrapper [(:octocat:)](https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-3/client/components/task.js).
-
-Worth mentioning is `mapStateToProps`: [(:octocat:)](https://github.com/Satyam/HowToDoATodoApp/blob/chapter-15-3/client/components/task.js#L28)
-
-```js
-const mapStateToProps = (state, { pid, tid }) =>
-  Object.assign({}, state.projects[pid].tasks[tid]);
-```
-
-The mapper simply needs to return an object with `descr` and `complete` properties, which is precisely what a task has so by returning `state.projects[pid].tasks[tid]` that should serve as the map.  However, when deciding when to re-render, the wrapper would once again compare the previous object to the current one and they would be exactly the same object, though the  contents might have changed.  That is why we make a copy of it so it is not the same object, then it goes on to compare the values on the first level. At that point it would decide whether to redraw or not, which is what we wanted.
-
-All this unnecessary cloning of objects is not good for performance, not the one in our single reducer.  In the next chapter, we will see how to improve this.
+These exports should allow us to test those parts of the separately from the whole wrapped component, which would require us to actually have a store.  To test the mappers, we only need simple stubs to stand in for the store.  If we test the unwrapped component and the mappers, we can be very certain the whole would work as the `connect` method is already thoroughly tested elsewhere.
