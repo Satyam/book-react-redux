@@ -27,6 +27,14 @@ ProjectItem.propTypes = {
 import { connect } from 'react-redux';
 
 export const mapStateToProps = (state, props) => state.projects[props.pid];
+// export const mapStateToProps = (state, props) => {
+//   console.log(state, props);
+//   const project = state.projects[props.pid];
+//   return ({
+//     name: project.name,
+//     pending: project.pending,
+//   });
+// };
 
 export default withRouter(connect(
   mapStateToProps
