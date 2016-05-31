@@ -7,5 +7,8 @@ const reducers = combineReducers({
 });
 
 export default () => createStore(
-  reducers
+  reducers,
+  process.env.NODE_ENV !== 'production' && window.devToolsExtension
+  ? window.devToolsExtension()
+  : undefined
 );
