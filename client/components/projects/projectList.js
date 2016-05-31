@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 
 import ProjectItem from './projectItem';
 
-export const ProjectList = ({ children, params, projects }) => (
+export const ProjectList = ({ children, projects }) => (
   <div className="project-list">
     <h1>Projects:</h1>
     <ul>{
@@ -10,7 +10,6 @@ export const ProjectList = ({ children, params, projects }) => (
         (<ProjectItem
           key={pid}
           pid={pid}
-          active={params.pid === pid}
         />)
       )
     }</ul>
@@ -20,9 +19,6 @@ export const ProjectList = ({ children, params, projects }) => (
 
 ProjectList.propTypes = {
   children: PropTypes.node,
-  params: PropTypes.shape({
-    pid: PropTypes.string,
-  }),
   projects: PropTypes.object,
 };
 
