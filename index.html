@@ -146,6 +146,20 @@
 </ul>
 <li><a href="#chapter15-refreshing">Refreshing</a></li>
 <li><a href="#chapter15-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter16-tools-and-helpers">Tools and helpers</a></li>
+<ul class="level-h1"><li><a href="#chapter16-react-developer-tools">React Developer Tools</a></li>
+<li><a href="#chapter16-redux-dev-tools">Redux Dev Tools</a></li>
+<li><a href="#chapter16-react-performance-tools">React Performance tools</a></li>
+<li><a href="#chapter16-webpack-warnings">WebPack warnings</a></li>
+<li><a href="#chapter16-ui-components">UI components</a></li>
+<li><a href="#chapter16-flux-standard-actions">Flux Standard Actions</a></li>
+<li><a href="#chapter16-navigating">Navigating</a></li>
+<li><a href="#chapter16-class-names">Class Names</a></li>
+<li><a href="#chapter16-react-router-redux">react-router-redux</a></li>
+<li><a href="#chapter16-memoizing-caching">Memoizing (caching)</a></li>
+<li><a href="#chapter16-reducing-boilerplate">Reducing Boilerplate</a></li>
+<li><a href="#chapter16-summary">Summary</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded"><div class="close">&lt; close</div><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
 <p>With the rapid pace of progress in the creation of libraries and tools for web development, most information comes in brief articles and blog posts.  There are not very many comprehensive guides to all that may be needed from A to Z.</p>
@@ -3709,6 +3723,28 @@ export default createStore(reducer, data);</code></pre></div>
 );</code></pre></div>
 <p>The second argument to <code>update</code> is an object which describes where the changes should go.  The object is not very different from what <code>Object.assign</code> would take as a second argument when doing a merge.  Notice that when we write <code>[action.pid]:</code>, we are using a new ES6 feature called <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Computed_property_names">computed property name</a>, it is not specific to <code>update</code>.</p>
 <p>What is specific to <code>update</code> are the property names starting with <code>$</code>.  They are <a href="https://facebook.github.io/react/docs/update.html#available-commands">commands</a> telling <code>update</code> what to do.  For <code>pending</code> we are using a function to return the new value based on the previous value, which <code>$apply</code> provides as an argument.  For <code>completed</code> we are simply setting its new value with <code>$set</code>. The way we updated <code>pending</code> is not foolproof and is not mean to go into production, it was just a means to show how to use <code>$apply</code>.</p>
+<p>Consider that if we didn't have <code>update</code>, we might have been forced to write something like this:</p>
+<pre><code class="language-js">return mapValues(state, (project, pid) =&gt;
+  (
+    pid !== action.pid
+    ? project
+    : {
+      name: project.name,
+      descr: project.descr,
+      pending: project.pending + (action.completed ? - 1 : 1),
+      tasks: mapValues(project.tasks, (task, tid) =&gt;
+        tid !== action.tid
+        ? task
+        : {
+          descr: task.descr,
+          completed: action.completed,
+        }
+      ),
+    }
+  )
+);
+</code></pre>
+<p>Using Lodash <a href="http://devdocs.io/lodash~4/index#mapValues">mapValues</a> method we loop over the projects in the store. For all projects with a <code>pid</code> different from the one we are looking for, we simply copy the reference to the current <code>project</code>, not a clone of it (no <code>Object.assign</code>) but the very same one.  When the <code>pid</code> matches the one we mean to change, then we return a new object made of parts of the previous object and a recalculated <code>pending</code>. Then we loop over the tasks and repeat the same logic. We copy over the references to all the tasks we won't change and create a new object for the one we will, with the same <code>descr</code> as it had before but with the new value for <code>completed</code>.</p>
 <h2><a class="self-ref" id="chapter14-dispatching-an-action" href="#chapter14-dispatching-an-action"># </a>Dispatching an action.</h2>
 <p>To get everything started, the component needs to dispatch the action:</p>
 <div class="code-insert"><div class="header">
@@ -4399,6 +4435,298 @@ export default connect(
 <p>We have used React-Redux to simplify access to the data in our store. By letting the <code>connect</code> method to deal with the store, we have greatly simplified our components which are, once again, stateless functions.</p>
 <p>Though the main, default export for each of the source files is now the wrapped component which, for any parent component using it should be indistinguishable from the original one, we have also provided plenty of named exports to many elements within such as the original, unwrapped stateless component, <code>mapStateToProps</code> and <code>mapDispatchToProps</code>.</p>
 <p>These exports should allow us to test those parts of the separately from the whole wrapped component, which would require us to actually have a store.  To test the mappers, we only need simple stubs to stand in for the store.  If we test the unwrapped component and the mappers, we can be very certain the whole would work as the <code>connect</code> method is already thoroughly tested elsewhere.</p>
+<h1><a class="self-ref" id="chapter16-tools-and-helpers" href="#chapter16-tools-and-helpers"># </a>Tools and helpers</h1>
+<p>With abstractions such as React and Redux, it gets hard to figure out what is actually happening when something goes wrong using a regular JavaSript debugger.  That is when we most need debugging tools.  There are developer tools available for both.</p>
+<h2><a class="self-ref" id="chapter16-react-developer-tools" href="#chapter16-react-developer-tools"># </a>React Developer Tools</h2>
+<p>Available for <a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi">Google Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/react-devtools/">Firefox</a> it adds a <code>React</code> tab to the debugging pane which allows us to see the rendered components, their properties and the state of stateful components. If a component has references to DOM elements, the <a href="https://facebook.github.io/react/docs/more-about-refs.html">ref</a> pseudo-attribute, it will also list those.</p>
+<p>For the components that have declared their intent to access the context it will show it. Redux data containers access the store via the context so it will show it, however, it will not show the state, since it is not public, only the public methods, which are not helpful at all.  For that, we need the following:</p>
+<h2><a class="self-ref" id="chapter16-redux-dev-tools" href="#chapter16-redux-dev-tools"># </a>Redux Dev Tools</h2>
+<p>We can install <a href="https://www.npmjs.com/package/redux-devtools">redux-devtools</a> as usual:</p>
+<pre><code class="language-bash">npm i -save-dev redux-devtools
+</code></pre>
+<p>We then have a couple of options.  There is a set of NPM modules that we can install to create our own interface on any browser.  However, life is much simpler if we use the add-on for <a href="https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd">Google Chrome</a> which will simply add another tab to our debugging pane and requires just a very small change to our code.  When creating the store, instead of</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-02/client/store/createStore.js#L9-L11"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-02</div>
+    <div class="filename">File: client/store/createStore.js</div>
+    <div class="from">From: 9</div>
+    <div class="to">To: 11</div>
+  </div>
+  <pre><code class="language-js">export default () =&gt; createStore(
+  reducers
+);</code></pre></div>
+<p>we must do:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-01/client/store/createStore.js#L9-L14"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-16-01</div>
+    <div class="filename">File: client/store/createStore.js</div>
+    <div class="from">From: 9</div>
+    <div class="to">To: 14</div>
+  </div>
+  <pre><code class="language-js">export default () =&gt; createStore(
+  reducers,
+  process.env.NODE_ENV !== 'production' &amp;&amp; window.devToolsExtension
+  ? window.devToolsExtension()
+  : undefined
+);</code></pre>:</div>
+<p>Back in <a href="#chapter12-production-version">chapter 12</a> we defined a production configuration for WebPack, <code>webpack.production.config.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-02/webpack.production.config.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  In it, we defined a global <code>process.env.NODE_ENV</code> variable set to <code>'production'</code>.  React uses that variable to drop large pieces of its code that are great for development but only hurt performance when in production.  We are using the same trick here. By checking we are not in production mode, we only load the extension when needed and if it is available.</p>
+<p>The Redux tab will show each action as it happens along its payload and the state of the store as it changes.  It also lets us reset the store to its initial state or step back.</p>
+<p>The NPM versions requires a more involved setup but it has various loggers that offer several alternatives, such as logging just actions of a certain type or dispatching actions at will.  Here we have further reasons <strong>not</strong> to use <code>Symbol()</code> for action types.  Though Redux allows it and we would be able to see them logged, we wouldn't be able to set a filter on them or dispatch such types.</p>
+<h2><a class="self-ref" id="chapter16-react-performance-tools" href="#chapter16-react-performance-tools"># </a>React Performance tools</h2>
+<p>It is never a good idea to start thinking about performance until we have a solid application up and running, however, since we are listing debugging tools, we should mention React's own performance tool  <a href="https://facebook.github.io/react/docs/perf.html">react-addons-perf</a>.</p>
+<p>As with all packages, it has to be loaded:</p>
+<pre><code>npm i --save-dev react-addons-perf
+</code></pre>
+<p>React add-ons are still distributed along the main React package thus all the <code>react-addon-xxxx</code> modules are just stubs to reach the already existing module and it still possible to do so, plenty of articles out there still describe this, however this is discouraged since it will not be so in the future. We will do it the now standard way:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-01/client/index.js#L6-L8"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-16-01</div>
+    <div class="filename">File: client/index.js</div>
+    <div class="from">From: 6</div>
+    <div class="to">To: 8</div>
+  </div>
+  <pre><code class="language-js">if (process.env.NODE_ENV !== 'production') {
+  window.Perf = require('react-addons-perf'); // eslint-disable-line global-require
+}</code></pre></div>
+<p>Once again we check the <em>environment</em> to ensure the performance add-on will never be added in the production version.</p>
+<p>We had to add a comment for ESLint to allow the use of <code>require</code> within a conditional.  ESLint is giving us good advise. Since WebPack does a static analysis of the source code looking for <code>import</code> and <code>require</code> statements it packages everything into the bundle. WebPack cannot evaluate conditionals thus it includes everything, just in case. That is why ESLint warns us, we might believe we are doing some conditional loading but, in reality, we are bloating the bundle with all the external modules from the start. However, the above conditional compares two constants and doesn't depend on execution.  <a href="https://www.npmjs.com/package/uglify-js">Uglify-JS</a>, the JavaScript minifier, does analyze these static conditionals and will drop the code above. The loaded module, not being referenced from anywhere, will also be dropped, even after WebPack has placed it in the bundle. Thus, we can tell ESLint that it is fine to do that here.</p>
+<p>We save the <code>Perf</code> object globally in order to make it available everywhere in the application, even right from the browser's debugging console.</p>
+<p>When we want to check the performance of a part of our application, we call <code>Perf.start()</code>. We can type that command right into the debugger console.  When we reach the end of the section we wanted to test, we call <code>Perf.end()</code>.</p>
+<p>At that point, we have several commands available, all of which print right into the browser console.  The most useful of those is <a href="https://facebook.github.io/react/docs/perf.html#perf.printwastedmeasurements"><code>Perf.printWasted()</code></a>.  With luck, it will print an empty Array, otherwise, it will show a listing of those components that were called to render, but produced no changes in the DOM so they were a waste of time.</p>
+<p>All times shown in all the print commands are relative values. When in development mode, React is much slower than in production mode.  If a generic performance measurement tool is used, we would see that validating the component's <code>props</code> via the <code>propTypes</code> object takes an inordinate amount of time.  This nor the collection of performance information happens in production mode where the times are much lower.</p>
+<h2><a class="self-ref" id="chapter16-webpack-warnings" href="#chapter16-webpack-warnings"># </a>WebPack warnings</h2>
+<p>When generating the production version via <code>npm run production</code>, WebPack will produce pages and pages of warnings.  This might be interesting so we can actually see how much of React validation code is dropped in the production version. We can also see how our own load of <code>react-addons-perf</code> gets dropped in production mode.  However, it really isn't very helpful so we might want to drop it.  To do that, we need to turn warnings off by adding the following to the configuration file:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-01/webpack.production.config.js#L10-L14"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-16-01</div>
+    <div class="filename">File: webpack.production.config.js</div>
+    <div class="from">From: 10</div>
+    <div class="to">To: 14</div>
+  </div>
+  <pre><code class="language-js">new webpack.optimize.UglifyJsPlugin({
+  compressor: {
+    warnings: false
+  }
+})</code></pre></div>
+<p>The Uglify plugin is automatically added when WebPack is run with the <code>-p</code> option but to change the default options for the uglifier (that is, the minifier, which produces a small but <em>ugly</em> version of our script), we need to declare it explicitly.</p>
+<h2><a class="self-ref" id="chapter16-ui-components" href="#chapter16-ui-components"># </a>UI components</h2>
+<p>We don't really need to start the graphic design of our pages from scratch, there are a good number of UI components available. Some libraries offer single individual components, but others offer comprehensive sets of the most often used components with a consistent look and feel derived from well known UI libraries, such as Twitter's <a href="http://react-bootstrap.github.io/">Bootstrap</a>, Google's <a href="http://www.material-ui.com/#/">Material Design</a> or Thinkmill's <a href="http://elemental-ui.com/">Elemental</a>, all ported to React.</p>
+<p>All these libraries contain not only simple stateless components to produce nicely styled UI elements (though that makes a large part of it) but also complex stateful components such as dropdown menus.  We will not use any of those libraries in the example in this book to avoid confusion in between what our code does and what the imported style library does.</p>
+<h2><a class="self-ref" id="chapter16-flux-standard-actions" href="#chapter16-flux-standard-actions"># </a>Flux Standard Actions</h2>
+<p>Actions must have a <code>type</code> property but the rest is left for us to determine. We have created our actions much like standard DOM event objects, where all the information is flat at the top of the object.  However, the action object is clearly split in between the mandatory <code>type</code> and a payload, which is what the resolver acts upon.</p>
+<p>It makes sense to formalize this split and also standardize some other possible contents. That is what the <a href="https://github.com/acdlite/flux-standard-action">Flux Standard Action</a> does.  The FSA action object will always contain the mandatory <code>type</code> property and usually will contain a <code>payload</code> property which is an object with the associated data.  It may also contain <code>error</code> and <code>meta</code> properties. There are several <a href="https://github.com/acdlite/flux-standard-action#libraries">libraries</a> that help in handling FSA actions.</p>
+<p>This is particularly useful when dealing with remote servers.  It is often the case that the data associated with the action must be sent to the server. It is easier if all this data is under a single property <code>payload</code> that can be passed on verbatim rather than having to filter <code>type</code> out of the action object.  Also, by having all our data under <code>payload</code> we are free to have a piece of data called <code>type</code> without conflicting with the action <code>type</code>.</p>
+<p>Since remote operations are also subject to all sorts of potential exceptional conditions, it is also good to have a standard place to put any error information within the action object, hence the optional <code>error</code> property.</p>
+<h2><a class="self-ref" id="chapter16-navigating" href="#chapter16-navigating"># </a>Navigating</h2>
+<p>We have used the <code>&lt;Link&gt;</code> component from React-Router to let the user navigate, but what happens when we want to navigate from our code?</p>
+<p>Components which are direct descendants of a <code>&lt;Route&gt;</code> already receive as properties the <code>router</code> object which provides several <a href="https://github.com/reactjs/react-router/blob/master/docs/API.md#pushpathorloc">navigation methods</a>.  We could simply navigate to the root by doing:</p>
+<pre><code class="language-js">this.props.router.push('/')
+</code></pre>
+<p>However, those components that are further down away from <code>&lt;Route&gt;</code> have no access to these methods unless the intermediate components trouble themselves passing <code>router</code> down.   To make them available to any component, React-Router provides a Higher-order Component or <em>HoC</em> in React parlance.  We have already used a HoC, the <code>connect</code> method of React-Redux is, in fact, a HoC.</p>
+<p>We will make a contrived example to show how to use it by modifying the <code>NotFound</code> component. We won't be committing this version to GitHub.  Since <code>NotFound</code> is a direct child of a <code>&lt;Route&gt;</code>, it already has access to <code>router</code> but lets imagine it doesn't.  We will add a simple link to let the user go back to wherever it was before getting there.</p>
+<pre><code class="language-js">import React, { PropTypes } from 'react';
+import { withRouter, routerShape } from 'react-router';
+
+const NotFound = props =&gt; {
+  const onClickHandler = ev =&gt; {
+    ev.preventDefault();
+    props.router.goBack();
+  };
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Not found&lt;/h1&gt;
+      &lt;p&gt;Path: &lt;code&gt;{props.location.pathname}&lt;/code&gt;&lt;/p&gt;
+      &lt;a href=&quot;#&quot; onClick={onClickHandler}&gt;Go Back&lt;/a&gt;
+    &lt;/div&gt;
+  );
+};
+
+NotFound.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }),
+  router: routerShape,
+};
+
+export default withRouter(NotFound);
+</code></pre>
+<p>In the code line right above we are wrapping the <code>NotFound</code> component with <code>withRouter</code> right before exporting it.  We imported <code>withRouter</code> from <code>react-router</code>.  Once wrapped, <code>NotFound</code> will receive an extra property <code>router</code>.  To get it validated we must declare it in <code>NotFound.propTypes</code> using <code>routerShape</code> as its descriptor which React-Router also provides. We could have validated it as a simple <code>React.PropTypes.object</code> but it wouldn't validate its contents.</p>
+<p>We changed the stateless component to respond to an <code>onClick</code> event on an <code>&lt;a&gt;</code> element we've added.  The <code>onClickHandler</code> first prevents the default action and, instead, uses <code>props.router.goBack()</code> to navigate back.</p>
+<h2><a class="self-ref" id="chapter16-class-names" href="#chapter16-class-names"># </a>Class Names</h2>
+<p>Creating class names dynamically leads to some ugly and complicated code:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-02/client/components/projects/task.js#L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-02</div>
+    <div class="filename">File: client/components/projects/task.js</div>
+    <div class="from">From: 16</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">className={`task ${completed ? 'completed' : 'pending'}`}</code></pre></div>
+<p>The <a href="https://www.npmjs.com/package/classnames"><code>classnames</code></a> package greatly simplifies those expressions by allowing us to combine any number of class names, some of them conditional, and produce a single string.  We then could have written:</p>
+<pre><code class="language-js">className={ classnames('task', { completed, pending: !completed })) }
+</code></pre>
+<p><code>classnames</code> takes any number of arguments. If an argument is a string, it concatenates into the output string. If it is an object, it loops through it and adds the property names of those whose values evaluate to true.  Thus, in the case above, it will always include <code>'task'</code> and will add <code>'completed'</code> if <code>completed</code> is true and <code>'pending'</code> if not.</p>
+<p>React-Router also lets us play with some class names.  The <code>&lt;Link&gt;</code> component has an <code>activeClassName</code> property that can be set to any string. If the current URL of the page either starts with or matches (when <code>onlyActiveOnIndex</code> is true) the location this link is pointing to, <code>&lt;Link&gt;</code> will add the value of the <code>activeClassName</code> value to its <code>className</code> attribute.  This is meant to highlight the link when the location it points to is active, for example, in menus, to highlight the chosen option, or the active tab on a tabbed interface.  We can use it in <code>ProjectItem</code> to show the active project.  We can reduce the code from this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-15-02/client/components/projects/projectItem.js#L4-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-15-02</div>
+    <div class="filename">File: client/components/projects/projectItem.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">export const ProjectItem = ({ pid, name, active, pending }) =&gt; (
+  &lt;li className={active ? 'selected' : ''}&gt;
+    {
+      active
+      ? name
+      : (
+        &lt;Link to={`/projects/${pid}`}&gt;
+          {name}
+        &lt;/Link&gt;
+      )
+    } [Pending: {pending}]
+  &lt;/li&gt;
+);</code></pre></div>
+<p>To this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-01/client/components/projects/projectItem.js#L4-L13"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-16-01</div>
+    <div class="filename">File: client/components/projects/projectItem.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 13</div>
+  </div>
+  <pre><code class="language-js">export const ProjectItem = ({ pid, name, pending }) =&gt; (
+  &lt;li className="project-item"&gt;
+    &lt;Link
+      to={`/projects/${pid}`}
+      activeClassName="disguise-link"
+    &gt;
+      {name}
+    &lt;/Link&gt; [Pending: {pending}]
+  &lt;/li&gt;
+);</code></pre></div>
+<p>The <code>disguise-link</code> className simply hides the visual clues of the link so it doesn't show as such <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-01/public/index.css#L17-L22">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  The link would still work, though it would produce no visible effect since it is already there, but with the link disguised there is little reason for the user to click on it.</p>
+<p>We can prevent the navigation by listening to the <code>onClick</code> event and checking whether the route this link points to is the one active right now and preventing the default action if it is.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-02/client/components/projects/projectItem.js#L9-L13"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-16-02</div>
+    <div class="filename">File: client/components/projects/projectItem.js</div>
+    <div class="from">From: 9</div>
+    <div class="to">To: 13</div>
+  </div>
+  <pre><code class="language-js">onClick={ev =&gt; {
+  if (router.isActive(`/projects/${pid}`, true)) {
+    ev.preventDefault();
+  }
+}}</code></pre></div>
+<p>To use <code>router.isActive</code> we have to use the <code>withRouter</code> HoC as described in the previous section.</p>
+<p>Since the <code>active</code> property is no longer needed, we dropped both in <code>ProjectItem</code> and also in <code>ProjectList</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-02/client/components/projects/projectList.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> where it was being generated.</p>
+<p>Now comes the bad news.  Our application no longer works right.  If we run the application at this point and click on the projects to switch from one another, something funny happens.  The pane below changes to reflect the project just selected, but the link we've just clicked remains as a link.  The problem is that in the previous version, by passing the <code>pending</code> property from <code>ProjectList</code>, which changed with each route, React detected that change in properties and re-rendered <code>ProjectItem</code>.  Now, with no change in the properties, React is not aware that anything has changed.</p>
+<p>If we check on any of the tasks, suddenly, the links in the list of projects get updated.  That is because the <code>pending</code> count has changed and <code>connect</code> has detected that change and ordered a refresh.</p>
+<p>Part of the problem is that most of our components use <code>connect</code> to subscribe to changes in the store and change accordingly but the location information is not saved in the store so, when the location changes, components are not notified.</p>
+<p>There is a further problem with not saving the location information in the store, the snapshots that the <em>undo</em> and <em>redo</em> operations require would be incomplete. We would be able to update the screen to reflect the state of the store at any point, but the URL displayed in the address bar of the browser would remain unchanged, not reflecting what is being shown.</p>
+<h2><a class="self-ref" id="chapter16-react-router-redux" href="#chapter16-react-router-redux"># </a>react-router-redux</h2>
+<p>This package allows us to store the location information in the store so it can be restored from any snapshot.</p>
+<p>Setting up 'react-router-redux' is just a matter of following a series of recipes which are of little interest to us.  They would make sense if we got deep down into the technical details of it, but it is beyond the scope of this book.</p>
+<p>We can see those changes in the following comparison in between versions <a href="https://github.com/Satyam/book-react-redux/compare/chapter-16-02...chapter-16-03">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  As usual, the lines on a light green background are additions, the ones in red are deletions.</p>
+<p>Using the Redux Developer Tools we installed earlier, we can see the effect of changing location on the store.  Our store now has two sub-stores, <code>projects</code> and <code>routing</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/createStore.js#L6-L9"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-16-03</div>
+    <div class="filename">File: client/store/createStore.js</div>
+    <div class="from">From: 6</div>
+    <div class="to">To: 9</div>
+  </div>
+  <pre><code class="language-js">const reducers = combineReducers({
+  projects,
+  routing: routerReducer,
+});</code></pre></div>
+<p>When creating the store we are combining our reducer with the <code>routerReducer</code> that <code>react-router-redux</code>, which handles the <code>routing</code> sub-store.  That is what the developer tools show.</p>
+<p>They also show something else, there is a <code>@@router/LOCATION_CHANGE</code> action with is the one that produces the changes in the store.  We can dispatch those same actions from our code or, even easier, we can use the <a href="https://github.com/reactjs/react-router-redux#pushlocation-replacelocation-gonumber-goback-goforward">action creators</a> that <code>react-router-redux</code> provides.  Anywhere in our code we can include and use all or any of them:</p>
+<pre><code class="language-js">import { push, replace, go, goBack, goForward } from 'react-router-redux';
+</code></pre>
+<p>As with any action creator, we may use them with <code>store.dispatch</code> or, in a connected component within <code>mapDispatchToProps</code>.  For example, in response to a <em>Cancel</em> button, we might want to go back to the previous page:</p>
+<pre><code class="language-js">import { goBack } from 'react-router-redux';
+
+export const mapDispatchToProps = dispatch =&gt; ({
+  cancelButtonHandler: () =&gt; dispatch(goBack())
+});
+</code></pre>
+<p>To have those action creators available along the rest, we might re-export them in <code>client/store/actions.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/actions.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> along our own action creators.</p>
+<pre><code class="language-js">export * from './projects';
+export { push, replace, go, goBack, goForward } from 'react-router-redux';
+</code></pre>
+<p>We will use some of these action creators further on.</p>
+<h2><a class="self-ref" id="chapter16-memoizing-caching" href="#chapter16-memoizing-caching"># </a>Memoizing (caching)</h2>
+<p>In a component wrapped by the <code>connect</code> HoC from <code>react-redux</code>, some of the properties that <code>mapStateToProps</code> calculates might be expensive to produce.  If the values they are based upon have not changed, it is not worth repeating the process.</p>
+<p>The <a href="https://www.npmjs.com/package/reselect">reselect</a> package allows us to compare the new values the calculation depends on with their previous values and if they match, <code>reselect</code> returns the previous values, not bothering to perform the calculation.</p>
+<p>For example, we could produce the <code>pending</code> count not in the store but in <code>ProjectItem</code> itself <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/components/projects/projectItem.js#L29">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  Our current version simply returns the pre-calculated value from the store <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/reducer.js#L21-L22">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>. It is less expensive to do it in the reducer because it will only be re-calculated when an action triggers the change.</p>
+<p>If we did it in <code>mapStateToProps</code>, the value would be re-calculated more frequently, for example, whenever we switch from one project to the other, the issue we fixed a few sections earlier (when the <code>&lt;Link&gt;</code> and its <code>activeClassName</code> wasn't working).  Moreover, we would have to do the full computation as we did in the initialization:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/reducer.js#L8-L12"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-16-03</div>
+    <div class="filename">File: client/store/projects/reducer.js</div>
+    <div class="from">From: 8</div>
+    <div class="to">To: 12</div>
+  </div>
+  <pre><code class="language-js">forEach(data, prj =&gt; {
+  prj.pending = filter(prj.tasks, // eslint-disable-line no-param-reassign
+    task =&gt; !task.completed
+  ).length;
+});</code></pre></div>
+<p>This would be expensive and pointless.  In the end, <code>connect</code> might figure out that the value of <code>pending</code> hadn't changed and skip the refresh.</p>
+<p>The <code>reselect</code> package would have allowed us to check whether the tasks had changed and re-calculate only if they did.  We must remember that if we use an immutable store, as we should and did, checking whether the <code>tasks</code> object has changed means comparing the new and previous references to the <code>tasks</code> object, not looping through its contents.</p>
+<p>However, using <code>reselect</code> with multiple instances of the same component (on instance per <code>projectItem</code> in each <code>ProjectList</code>) is somewhat complicated as explained <a href="https://www.npmjs.com/package/reselect#accessing-react-props-in-selectors">in the docs</a> so we won't go into it.</p>
+<h2><a class="self-ref" id="chapter16-reducing-boilerplate" href="#chapter16-reducing-boilerplate"># </a>Reducing Boilerplate</h2>
+<p>The Redux documentation contains a section on <a href="http://redux.js.org/docs/recipes/ReducingBoilerplate.html">Reducing Boilerplate</a>.</p>
+<p>So far we only have only one action creator:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/actions.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-16-03</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">export const TASK_COMPLETED_CHANGE = 'projects/Task completed changed';
+
+export const completedChanged = (pid, tid, completed) =&gt; ({
+  type: TASK_COMPLETED_CHANGE,
+  pid,
+  tid,
+  completed,
+});</code></pre></div>
+<p>As we go ahead with our application the number of such action creators will grow.  To avoid the repetition, we might use a function such as that shown in the documentation for Redux:</p>
+<pre><code class="language-js">function makeActionCreator(type, ...argNames) {
+  return function(...args) {
+    let action = { type }
+    argNames.forEach((arg, index) =&gt; {
+      action[argNames[index]] = args[index]
+    })
+    return action
+  }
+}
+</code></pre>
+<p>If we did so, our previous action creator would be reduced to:</p>
+<pre><code class="language-js">export const TASK_COMPLETED_CHANGE = 'projects/Task completed changed';
+
+export const completedChanged = makeActionCreator(TASK_COMPLETED_CHANGE, pid, tid, completed);
+</code></pre>
+<p>Redux does not provide such a function natively because should we decide to use the <a href="https://github.com/acdlite/flux-standard-action">Flux Standard Action</a> format or any other, our <code>makeActionCreator</code> function would have to change.  Just as with all of Redux excellent documentation, that is a chapter worth reading.</p>
+<h2><a class="self-ref" id="chapter16-summary" href="#chapter16-summary"># </a>Summary</h2>
+<p>We have checked on various tools, utilities and tricks that can help us in developing an application:</p>
+<ul>
+<li>React Development Tools</li>
+<li>Redux Development Tools</li>
+<li>React Performance Tools</li>
+<li>Disabling WebPack warnings when generating the production version</li>
+<li>UI Component libraries we might use</li>
+<li>Alternative formats for Redux actions, such as FSA</li>
+<li>How to handle navigation with <code>redux-router</code> using <code>withRouter</code></li>
+<li>How to simplify assembling classNames with <code>classnames</code></li>
+<li>How to save the location into the store with <code>react-router-redux</code></li>
+<li>How to cache calculated values with <code>reselect</code></li>
+<li>Tips on reducing boilerplate</li>
+</ul>
 </div>
   </body>
   <script type="text/javascript" src="index.js"></script>
