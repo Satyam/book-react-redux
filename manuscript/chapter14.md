@@ -72,6 +72,32 @@ The second argument to `update` is an object which describes where the changes s
 
 What is specific to `update` are the property names starting with `$`.  They are [commands](https://facebook.github.io/react/docs/update.html#available-commands) telling `update` what to do.  For `pending` we are using a function to return the new value based on the previous value, which `$apply` provides as an argument.  For `completed` we are simply setting its new value with `$set`. The way we updated `pending` is not foolproof and is not mean to go into production, it was just a means to show how to use `$apply`.
 
+Consider that if we didn't have `update`, we might have been forced to write something like this:
+
+```js
+return mapValues(state, (project, pid) =>
+  (
+    pid !== action.pid
+    ? project
+    : {
+      name: project.name,
+      descr: project.descr,
+      pending: project.pending + (action.completed ? - 1 : 1),
+      tasks: mapValues(project.tasks, (task, tid) =>
+        tid !== action.tid
+        ? task
+        : {
+          descr: task.descr,
+          completed: action.completed,
+        }
+      ),
+    }
+  )
+);
+```
+
+Using Lodash [mapValues](http://devdocs.io/lodash~4/index#mapValues) method we loop over the projects in the store. For all projects with a `pid` different from the one we are looking for, we simply copy the reference to the current `project`, not a clone of it (no `Object.assign`) but the very same one.  When the `pid` matches the one we mean to change, then we return a new object made of parts of the previous object and a recalculated `pending`. Then we loop over the tasks and repeat the same logic. We copy over the references to all the tasks we won't change and create a new object for the one we will, with the same `descr` as it had before but with the new value for `completed`.
+
 ## Dispatching an action.
 
 To get everything started, the component needs to dispatch the action:
