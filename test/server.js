@@ -163,8 +163,22 @@ describe('Server testing', () => {
           const data = response.data;
           expect(data.name).to.equal('Writing a Book on Web Dev Tools');
           expect(data.descr).to.equal('Tasks required to write a book on the tools required to develop a web application');
-          expect(data.tids).to.be.an.array;
-          expect(data.tids).to.eql(['1', '2', '3']);
+          const tasks = data.tasks;
+          expect(tasks).to.be.an.array;
+          expect(tasks).to.have.lengthOf(3);
+          expect(tasks).to.eql([
+            {
+              tid: 1,
+              descr: 'Figure out what kind of application to develop',
+              completed: true
+            },
+            { tid: 2, descr: 'Decide what tools to use', completed: false },
+            {
+              tid: 3,
+              descr: 'Create repositories for text and samples',
+              completed: false
+            }
+          ]);
         })
     );
 

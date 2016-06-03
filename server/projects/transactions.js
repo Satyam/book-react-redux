@@ -8,7 +8,7 @@ module.exports = {
     prepared.selectProjectByPid = db.prepare('select * from projects where pid = $pid', (err) => {
       if (err) return done(err);
     });
-    prepared.selectTasksByPid = db.prepare('select tid from tasks where pid = $pid', (err) => {
+    prepared.selectTasksByPid = db.prepare('select tid, descr, completed from tasks where pid = $pid', (err) => {
       if (err) return done(err);
     });
     prepared.selectTaskByTid = db.prepare('select * from tasks where tid = $tid', (err) => {
@@ -50,9 +50,13 @@ module.exports = {
     prepared.selectProjectByPid.get({$pid: keys.pid}, (err, prj) => {
       if (err) return done(err);
       if (!prj) return done(null, null);
-      prepared.selectTasksByPid.all({$pid: keys.pid}, (err, tids) => {
+      prepared.selectTasksByPid.all({$pid: keys.pid}, (err, tasks) => {
         if (err) return done(err);
-        prj.tids = tids.map(entry => String(entry.tid));
+        prj.tasks = tasks.map(task => ({
+          tid: task.tid,
+          descr: task.descr,
+          completed: !!task.completed
+        }));
         done(null, prj);
       });
     });
