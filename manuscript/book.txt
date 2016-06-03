@@ -16,3 +16,4 @@ chapter14.md
 chapter14a.md
 chapter15.md
 chapter16.md
+chapter17.md
