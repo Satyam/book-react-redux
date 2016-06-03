@@ -160,6 +160,15 @@
 <li><a href="#chapter16-memoizing-caching">Memoizing (caching)</a></li>
 <li><a href="#chapter16-reducing-boilerplate">Reducing Boilerplate</a></li>
 <li><a href="#chapter16-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter17-data-normalization">Data Normalization</a></li>
+<ul class="level-h1"><li><a href="#chapter17-data">Data</a></li>
+<li><a href="#chapter17-reducers">Reducers</a></li>
+<li><a href="#chapter17-components">Components</a></li>
+<li><a href="#chapter17-server-side">Server side</a></li>
+<ul class="level-h2"><li><a href="#chapter17-reducing-the-number-of-requests">Reducing the number of requests</a></li>
+</ul>
+<li><a href="#chapter17-summary">Summary</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded"><div class="close">&lt; close</div><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
 <p>With the rapid pace of progress in the creation of libraries and tools for web development, most information comes in brief articles and blog posts.  There are not very many comprehensive guides to all that may be needed from A to Z.</p>
@@ -4675,8 +4684,9 @@ export { push, replace, go, goBack, goForward } from 'react-router-redux';
   ).length;
 });</code></pre></div>
 <p>This would be expensive and pointless.  In the end, <code>connect</code> might figure out that the value of <code>pending</code> hadn't changed and skip the refresh.</p>
-<p>The <code>reselect</code> package would have allowed us to check whether the tasks had changed and re-calculate only if they did.  We must remember that if we use an immutable store, as we should and did, checking whether the <code>tasks</code> object has changed means comparing the new and previous references to the <code>tasks</code> object, not looping through its contents.</p>
-<p>However, using <code>reselect</code> with multiple instances of the same component (on instance per <code>projectItem</code> in each <code>ProjectList</code>) is somewhat complicated as explained <a href="https://www.npmjs.com/package/reselect#accessing-react-props-in-selectors">in the docs</a> so we won't go into it.</p>
+<p>The <code>reselect</code> package would have allowed us to check whether the tasks had changed and re-calculate only if they did.  We must remember that if we use an immutable store, as we should and did, checking whether the <code>tasks</code> object has changed means comparing the new and previous references to the <code>tasks</code> object, which is fast, not looping through its contents which would be just as bad as doing the calculation itself.</p>
+<p>However, using <code>reselect</code> with multiple instances of the same component is somewhat complicated as explained <a href="https://www.npmjs.com/package/reselect#accessing-react-props-in-selectors">in the docs</a> so we won't do it.</p>
+<p>Each selector that <code>createSelector</code> creates stores a copy of the values to be checked for changes.  If we use <code>createSelector</code> in <code>ProjectItem</code> to create one selector, that selector would store the values for the first project in the list.  When the second project is shown, the selector would correctly find out that it is not the same and redo the calculation instead of using its cached value and it would keep doing so for each project.  If the list of projects is refreshed again, the selector would re-calculate each and everyone since the values it has stored are those for the last project in the list.  To solve this we would need to create a selector for each project, possibly a hash of selectors indexed by <code>pid</code>.</p>
 <h2><a class="self-ref" id="chapter16-reducing-boilerplate" href="#chapter16-reducing-boilerplate"># </a>Reducing Boilerplate</h2>
 <p>The Redux documentation contains a section on <a href="http://redux.js.org/docs/recipes/ReducingBoilerplate.html">Reducing Boilerplate</a>.</p>
 <p>So far we only have only one action creator:</p>
@@ -4727,6 +4737,234 @@ export const completedChanged = makeActionCreator(TASK_COMPLETED_CHANGE, pid, ti
 <li>How to cache calculated values with <code>reselect</code></li>
 <li>Tips on reducing boilerplate</li>
 </ul>
+<h1><a class="self-ref" id="chapter17-data-normalization" href="#chapter17-data-normalization"># </a>Data Normalization</h1>
+<p>Our data is structured as a hierarchy of <em>projects</em> containing <em>tasks</em>.  This kind of structure has become more frequent with the popularity of No-SQL databases.  Deep hierarchical collections of data are found all too frequently.  The data stored in such databases is often not normalized.  Data normalization is an important concept in data management, we can even learn from <a href="https://en.wikipedia.org/wiki/Database_normalization">Wikipedia</a>.</p>
+<p>The problem with databases which are not normalized can be seen, for example, in our projects reducer <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/reducer.js#L16-L32">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  It's complexity is, to a certain point, the consequence of it being too deep.  Instead of having just one collection of data as we had up to now <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/data.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> with a collection of projects each containing a collection of tasks, we may have two separate tables, one for projects and another for tasks <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/data.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<h2><a class="self-ref" id="chapter17-data" href="#chapter17-data"># </a>Data</h2>
+<p>Our new <code>data.js</code> contains a collection of <code>projects</code> whose first entry is this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/data.js#L1-L7"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-01</div>
+    <div class="filename">File: client/store/projects/data.js</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 7</div>
+  </div>
+  <pre><code class="language-js">module.exports = {
+  projects: {
+    25: {
+      name: 'Writing a Book on Web Dev Tools',
+      descr: 'Tasks required to write a book on the tools required to develop a web application',
+      tids: ['1', '2', '3'],
+    },</code></pre></div>
+<p>Here, project <code>25</code> does not contain any task data.  What it has instead is an array of <code>tids</code>, references to task-ids.  Then we have the collection of <code>tasks</code> such as these first two entries:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/data.js#L14-L22"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-01</div>
+    <div class="filename">File: client/store/projects/data.js</div>
+    <div class="from">From: 14</div>
+    <div class="to">To: 22</div>
+  </div>
+  <pre><code class="language-js">tasks: {
+  1: {
+    descr: 'Figure out what kind of application to develop',
+    completed: true,
+  },
+  2: {
+    descr: 'Decide what tools to use',
+    completed: false,
+  },</code></pre></div>
+<p>This allows us to access one set of data independently of the other.  When we have to deal with tasks, we just go for them, we don't need to reach them via the project they belong to, we don't need to traverse a deep hierarchy.  Obviously here the depth was just two, but in the real world, this kind of hierarchical data can go many layers deep, making matters really tough.</p>
+<p>There is another advantage to normalization.  Lets imagine we cannot write a book while hungry.  Thus, if we mean to have a Spanish tortilla for lunch, its tasks become a pre-requisite for writing a book.  In our nested hierarchy, task 4: <code>Peel and dice the potatoes</code> could not become a task for project 25: <code>Write a Book on Web Dev Tools</code> unless it is repeated in each branch. Updating it then becomes troublesome because when we get the potatoes peeled, we would need to search for occurrences in all of the branches to check it as completed.</p>
+<p>With a normalized database, since projects only keep references to tasks via their <code>tid</code>s, we may add the <code>tid</code> of any task to any number of projects. Peeling potatoes can be a task in both projets at the same time.</p>
+<h2><a class="self-ref" id="chapter17-reducers" href="#chapter17-reducers"># </a>Reducers</h2>
+<p>A Redux store is mostly defined by its reducers so, once our <code>data.js</code> file is fixed <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/data.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> we have to fix our old reducer <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/reducer.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> splitting it in two, <code>tasksReducer</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/tasksReducer.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and <code>projectsReducer</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/projectsReducer.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>Unlike the previous single reducer, this one is initialized with just part of the data in <code>data.js</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/tasksReducer.js#L4-L8"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-01</div>
+    <div class="filename">File: client/store/projects/tasksReducer.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 8</div>
+  </div>
+  <pre><code class="language-js">import data from './data';
+
+export default (state = data.tasks, action) =&gt; {
+  switch (action.type) {
+    case TASK_COMPLETED_CHANGE: {</code></pre></div>
+<p>The <code>state</code> argument is set to default to <code>data.tasks</code> instead of the whole <code>data</code> file.  The reducer still has the same structure as all reducers, with a switch statement branching off depending on <code>action.type</code>.  For the <code>TASK_COMPLETED_CHANGE</code>, our <code>update</code> call is much simpler:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/tasksReducer.js#L9-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-01</div>
+    <div class="filename">File: client/store/projects/tasksReducer.js</div>
+    <div class="from">From: 9</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">return update(
+  state,
+  {
+    [action.tid]: {
+      completed: { $set: action.completed },
+    },
+  }
+);</code></pre></div>
+<p>Now it doesn't need to use the <code>action.pid</code> property since it can access the task directly by its <code>tid</code>.</p>
+<p>The change in the completion status of a task also affects the pending count for the project so the <code>projectsReducer</code> also has to deal with that:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/projectsReducer.js#L15-L32"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-01</div>
+    <div class="filename">File: client/store/projects/projectsReducer.js</div>
+    <div class="from">From: 15</div>
+    <div class="to">To: 32</div>
+  </div>
+  <pre><code class="language-js">export default (state = data.projects, action) =&gt; {
+  switch (action.type) {
+    case TASK_COMPLETED_CHANGE: {
+      return update(
+        state,
+        {
+          [action.pid]: {
+            pending: {
+              $apply: pending =&gt; (action.completed ? pending - 1 : pending + 1),
+            },
+          },
+        }
+      );
+    }
+    default:
+      return state;
+  }
+};</code></pre></div>
+<p>As with the <code>tasksReducer</code>, the <code>projectsReducer</code> is initialized out of one branch of the data: <code>data.projects</code>.</p>
+<p>This shows us an important feature of Redux.  An action is broadcast to all reducers and each might decide to handle it or not.  If we didn't keep a <code>pending</code> count, the <code>switch</code> statement in <code>projectsReducer</code> would only have the <code>default:</code> label with no <em>cases:</em>.</p>
+<p>The <code>projects</code> folder now has two reducers, thus we cannot just export it as the <em>default</em> as we did before <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/index.js#L3-L4">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, instead, we make two separate named exports:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/index.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-01</div>
+    <div class="filename">File: client/store/projects/index.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">export * from './actions';
+
+export { default as projects } from './projectsReducer';
+export { default as tasks } from './tasksReducer';</code></pre></div>
+<p>We export the <code>default</code> from <code>projectsReducer</code> as <code>projects</code> and the <code>default</code> from <code>tasksReducer</code> as <code>tasks</code>.</p>
+<p>We then import those two named exports from <code>./projects</code> and combine it into our single Redux store:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/createStore.js#L4-L10"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-01</div>
+    <div class="filename">File: client/store/createStore.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 10</div>
+  </div>
+  <pre><code class="language-js">import { projects, tasks } from './projects';
+
+const reducers = combineReducers({
+  projects,
+  tasks,
+  routing: routerReducer,
+});</code></pre></div>
+<p>We might have done it in different ways.  We might have combined them earlier in <code>store/projects/index.js</code>  <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/index.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> by doing:</p>
+<pre><code class="language-js">import { combineReducers } from 'redux';
+
+import projects from './projectsReducer';
+import tasks  from './tasksReducer';
+
+export default combineReducers({
+  projects,
+  tasks,
+});
+</code></pre>
+<p>And then combining that with the rest of the reducers for the other (future) sub-stores in <code>store/createStore.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/createStore.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.   The problem with this alternative is that each use of <code>combineReducers</code> adds one level to the store.  Thus, with the first alternative a project name could be read from the store as <code>state.projects[pid].name</code> while by this alternative, it would have been <code>state.projects.projects[pid].name</code>, an extra <code>projects</code> level added by the second <code>combineReducers</code>.</p>
+<p>We might have also take the <code>tasks</code> part out of the <code>store/projects</code> folder and create a separate <code>store/tasks</code> folder.</p>
+<p>The point is Redux gives us quite some freedom in the ways to structure our store and sub-stores by combining the reducers in several ways.</p>
+<h2><a class="self-ref" id="chapter17-components" href="#chapter17-components"># </a>Components</h2>
+<p>The <code>Task</code> component has much easier access to its data, instead of having:</p>
+<pre><code class="language-js">export const mapStateToProps = (state, props) =&gt; state.projects[props.pid].tasks[props.tid];
+</code></pre>
+<p>It becomes:</p>
+<pre><code class="language-js">+export const mapStateToProps = (state, props) =&gt; state.tasks[props.tid];
+</code></pre>
+<p>And in <code>TaskList</code>, instead of looping through the keys in the <code>tasks</code> object:</p>
+<pre><code class="language-js">Object.keys(tasks).map(tid =&gt; (
+</code></pre>
+<p>We loop through the array of <code>tids</code> that each project contains:</p>
+<pre><code class="language-js">tids.map(tid =&gt; (
+
+</code></pre>
+<p>Incidentally, we get an extra advantage.  An array always preserves the order of the elements in it, an object doesn't.  So, having the <code>tid</code>s in an array means that we can make certain that we don't <em>fry the potatoes</em> before having them <em>peeled and diced</em>.</p>
+<h2><a class="self-ref" id="chapter17-server-side" href="#chapter17-server-side"># </a>Server side</h2>
+<p>Though we haven't been using it in the last few chapters, our server still responds to the REST API requests as it did before.  Since we used an SQL database, the tables themselves are already normalized since that is standard practice with SQL.  We still have to change the API because our API returns a deep hierarchy of tasks within projects instead of just returning the <code>tid</code>s of the tasks in that project.</p>
+<p>One design consideration in SQL databases is the <em>cardinality</em> of the relation in between the tables, that is, how many elements may be on each side.  We currently have a <em>one-to-many</em> relation, that is, one project may have many tasks.  There is also a <em>one-to-one</em> relation which is trivial and, if found, it means the two related pieces of data can actually be merged into a single table.</p>
+<p>If the same task can appear in more than one project, then we would have a <em>many-to-many</em> relation.  One project can have many tasks and a task can show up in many projects.</p>
+<p>A simple rule of thumb says that for a <em>one-to-one</em> relation, we don't actually need two tables, one is enough.  For a <em>one-to-many</em> relation, we need two tables, which is exactly what we have.  For a <em>many-to-many</em> relation, we need three tables, one for the projects, one for the tasks and a third one matching <code>pid</code>s with <code>tid</code>s.</p>
+<p>Of course, there could be other combinations.  A project might contain other projects as sub-projects, not just share its tasks.  That would require extra information to signal whether the reference is a <code>tid</code> pointing to another task or a <code>pid</code> pointing to a sub-project.</p>
+<p>For the purpose of this book, we will stick with the <em>one-to-many</em> relation and keep our two tables.  We must change one of the APIs, the one for the <code>/:pid</code> route <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/server/projects/routes.js#L23-L25">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which uses <code>getProjectById</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/server/projects/transactions.js#L49-L65">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  Currently, it returns the project requested along with its tasks, in a hierachy very much like we had in our earlier <code>data.js</code>.  Now, we must change it so that it returns the project properties plus an array of <code>tid</code>s.</p>
+<p>Since we are changing the API interface, we change the version number from <code>v1</code> to <code>v2</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-02/server/index.js#L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-02</div>
+    <div class="filename">File: server/index.js</div>
+    <div class="from">From: 16</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">app.use('/data/v2', dataRouter);</code></pre></div>
+<p>In a real-life situation, if the application had been already made public, we would have the management issue of keeping both versions 1 and 2 active at once so we would have to add a route for <code>v2</code> instead of replacing that for <code>v1</code>.   That is a management issue we will ignore at the moment.</p>
+<p>The major change is the <code>getProjectById</code> which instead of returning a <code>tasks</code> object returns a <code>tids</code> array:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-02/server/projects/transactions.js#L49-L59"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-02</div>
+    <div class="filename">File: server/projects/transactions.js</div>
+    <div class="from">From: 49</div>
+    <div class="to">To: 59</div>
+  </div>
+  <pre><code class="language-js">getProjectById: (keys, data, options, done) =&gt; {
+  prepared.selectProjectByPid.get({$pid: keys.pid}, (err, prj) =&gt; {
+    if (err) return done(err);
+    if (!prj) return done(null, null);
+    prepared.selectTasksByPid.all({$pid: keys.pid}, (err, tids) =&gt; {
+      if (err) return done(err);
+      prj.tids = tids.map(entry =&gt; String(entry.tid));
+      done(null, prj);
+    });
+  });
+},</code></pre></div>
+<p>We also change the <code>selectTasksByPid</code> prepared SQL statement which instead of returning the <code>tid</code>, <code>descr</code> and <code>completed</code> fields, just needs to return the <code>tid</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-02/server/projects/transactions.js#L11-L13"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-02</div>
+    <div class="filename">File: server/projects/transactions.js</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 13</div>
+  </div>
+  <pre><code class="language-js">prepared.selectTasksByPid = db.prepare('select tid from tasks where pid = $pid', (err) =&gt; {
+  if (err) return done(err);
+});</code></pre></div>
+<p>Finally, we also change the tests.  Besides changing the URL to point to the <code>v2</code> API <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-02/test/server.js#L56-L60">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, we change the test for the result of a <code>GET</code> on <code>/25</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-02/test/server.js#L164-L167"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-17-02</div>
+    <div class="filename">File: test/server.js</div>
+    <div class="from">From: 164</div>
+    <div class="to">To: 167</div>
+  </div>
+  <pre><code class="language-js">expect(data.name).to.equal('Writing a Book on Web Dev Tools');
+expect(data.descr).to.equal('Tasks required to write a book on the tools required to develop a web application');
+expect(data.tids).to.be.an.array;
+expect(data.tids).to.eql(['1', '2', '3']);</code></pre></div>
+<p>Besides checking the <code>name</code> and <code>descr</code> values, we now check that the <code>tids</code> field is an array and that it contains the <code>tid</code>s of its tasks, instead of the whole description and completion status for each.</p>
+<h3><a class="self-ref" id="chapter17-reducing-the-number-of-requests" href="#chapter17-reducing-the-number-of-requests"># </a>Reducing the number of requests</h3>
+<p>We have a problem with this mechanism. Any request for a project would only get the references to the tasks in that project, just the <code>tid</code>s.  It would require many follow up requests to get the task data itself. This would generate unnecessary traffic and significantly slow down the application as the user would see the list of tasks growing slowly.</p>
+<p>With a limited number of tasks per project, as is our case, it makes more sense to return the tasks all at once, as we were doing so far.</p>
+<p>If the number of tasks (or any other subordinated set of data) is very large it might be better to send the tasks separately and reduce the number of requests by batching the requests into separate sets.   Once the response for the project arrives, we might break the array of <code>tid</code>s into chunks of 10, 50 or some reasonable number of tasks on each batch and request each set separately.  As the responses for each of the sets arrive, we may refresh the screen so the user sees the data as it comes.</p>
+<p>React along Redux makes this a very easy mechanism to implement. Each arrival of data would trigger an action which would update the store with the newly arrived data (via the corresponding reducer).  The store would notify all subscribers of the change and the components would update the screen to include the updated data.</p>
+<p>Finally, if we had a <em>many-to-many</em> relation in between projects and tasks, we would need to keep the requests separate since, before requesting a particular task, we would have to check whether that task has already been loaded due to some other project that also contains it.  The missing ones might be batched, as described above.</p>
+<p>As it stands right now, we are in the first situation, a <em>one-to-not-so-many</em> relation so our <code>v1</code> REST API would be better for us.  We will do only one minor change.</p>
+<p>We will return the <code>tasks</code> but as an array, not an indexed object <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/server/projects/transactions.js#L49-L63">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>. We will deal with indexes later on.  We also changed the tests to reflect this <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/test/server.js#L166-L181">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<h2><a class="self-ref" id="chapter17-summary" href="#chapter17-summary"># </a>Summary</h2>
+<p>We have taken the data for the tasks as a separate collection within our <code>data.js</code> file.  This is called database normalization and is common practice.  Our application has been simplified as a result.  Though it might not be immediately obvious right now, this simplification will make our lives easier as the application grows.</p>
+<p>We have seen how a reducer can be split and later combined in a couple of ways.</p>
+<p>We have also applied the same normalization principles to our REST API.  We have discussed a few alternatives on how to respond to requests for hierarchical data.  For our particular set of data, with a <em>one-to-many</em> relation and not so many on the <em>many</em> side, we decided to send all the tasks along the project they belong two.  We simply changed the format of the returned data.</p>
 </div>
   </body>
   <script type="text/javascript" src="index.js"></script>
