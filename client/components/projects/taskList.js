@@ -1,10 +1,9 @@
 import React, { PropTypes } from 'react';
-
 import Task from './task';
 
-export const TaskList = ({ pid, tasks }) => (
+export const TaskList = ({ pid, tids }) => (
   <ul className="task-list">{
-    Object.keys(tasks).map(tid => (
+    tids.map(tid => (
       <Task
         key={tid}
         tid={tid}
@@ -16,7 +15,7 @@ export const TaskList = ({ pid, tasks }) => (
 
 TaskList.propTypes = {
   pid: PropTypes.string,
-  tasks: PropTypes.object,
+  tids: PropTypes.arrayOf(PropTypes.string),
 };
 
 import { connect } from 'react-redux';

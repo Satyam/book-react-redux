@@ -1,10 +1,11 @@
 import { combineReducers, createStore, applyMiddleware, compose } from 'redux';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 
-import projects from './projects';
+import { projects, tasks } from './projects';
 
 const reducers = combineReducers({
   projects,
+  tasks,
   routing: routerReducer,
 });
 

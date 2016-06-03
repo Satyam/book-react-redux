@@ -1,4 +1,4 @@
 export * from './actions';
 
-import reducer from './reducer';
-export default reducer;
+export { default as projects } from './projectReducer';
+export { default as tasks } from './tasksReducer';

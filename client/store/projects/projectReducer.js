@@ -5,13 +5,14 @@ const forEach = require('lodash/forEach');
 
 import data from './data';
 
-forEach(data, prj => {
-  prj.pending = filter(prj.tasks, // eslint-disable-line no-param-reassign
-    task => !task.completed
+const tasks = data.tasks;
+forEach(data.projects, project => {
+  project.pending = filter(project.tids, // eslint-disable-line no-param-reassign
+    tid => !tasks[tid].completed
   ).length;
 });
 
-export default (state = data, action) => {
+export default (state = data.projects, action) => {
   switch (action.type) {
     case TASK_COMPLETED_CHANGE: {
       return update(
@@ -20,11 +21,6 @@ export default (state = data, action) => {
           [action.pid]: {
             pending: {
               $apply: pending => (action.completed ? pending - 1 : pending + 1),
-            },
-            tasks: {
-              [action.tid]: {
-                completed: { $set: action.completed },
-              },
             },
           },
         }
