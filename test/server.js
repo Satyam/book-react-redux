@@ -51,23 +51,11 @@ describe('Server testing', () => {
           expect(response.data).to.contain('<title>Sample Web Page</title>');
         })
     );
-
-    it('Get /xyz should return a "page not found" error', () =>
-      http.get('/xyz')
-        .then(
-          (response) => {
-            throw new Error('Should not have found it');
-          },
-          (response) => {
-            expect(response.status).to.equal(404);
-          }
-        )
-    );
   });
 
-  describe('/data/v1 REST API test', () => {
+  describe('/data/v2 REST API test', () => {
     const http = axios.create({
-      baseURL: `${HOST}:${PORT}/data/v1/projects`,
+      baseURL: `${HOST}:${PORT}/data/v2/projects`,
       responseType: 'json'
     });
 
@@ -175,12 +163,8 @@ describe('Server testing', () => {
           const data = response.data;
           expect(data.name).to.equal('Writing a Book on Web Dev Tools');
           expect(data.descr).to.equal('Tasks required to write a book on the tools required to develop a web application');
-          expect(data.tasks).to.be.an.object;
-          const tasks = data.tasks;
-          expect(tasks).to.have.all.keys('1', '2', '3');
-          expect(tasks[1]).to.be.an.object;
-          expect(tasks[1].descr).to.equal('Figure out what kind of application to develop');
-          expect(tasks[1].completed).to.be.true;
+          expect(data.tids).to.be.an.array;
+          expect(data.tids).to.eql(['1', '2', '3']);
         })
     );
 

@@ -13,7 +13,7 @@ const PORT = process.env.npm_package_myServerApp_port || 8080;
 app.use('/data', bodyParser.json());
 
 const dataRouter = express.Router();
-app.use('/data/v1', dataRouter);
+app.use('/data/v2', dataRouter);
 
 app.use(express.static(path.join(__dirname, '../public')));
 
