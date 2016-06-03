@@ -53,7 +53,7 @@ module.exports = {
       prepared.selectTasksByPid.all({$pid: keys.pid}, (err, tasks) => {
         if (err) return done(err);
         prj.tasks = tasks.map(task => ({
-          tid: task.tid,
+          tid: String(task.tid),
           descr: task.descr,
           completed: !!task.completed
         }));

@@ -168,13 +168,13 @@ describe('Server testing', () => {
           expect(tasks).to.have.lengthOf(3);
           expect(tasks).to.eql([
             {
-              tid: 1,
+              tid: '1',
               descr: 'Figure out what kind of application to develop',
               completed: true
             },
-            { tid: 2, descr: 'Decide what tools to use', completed: false },
+            { tid: '2', descr: 'Decide what tools to use', completed: false },
             {
-              tid: 3,
+              tid: '3',
               descr: 'Create repositories for text and samples',
               completed: false
             }
