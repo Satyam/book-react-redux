@@ -35,10 +35,10 @@ export const mapStateToProps = (state, props) => {
 import initialDispatcher from 'utils/initialDispatcher.js';
 import { getProjectById } from 'store/actions';
 
-const initialDispatch = (dispatch, nextProps, currentProps, state) => {
+export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
   const pid = nextProps.params.pid;
-  const prj = pid && state.projects && state.projects[pid];
-  if (!prj || !prj.tasks) {
+  const prj = pid && state.projects[pid];
+  if (!prj || !prj.tids) {
     dispatch(getProjectById(pid));
   }
 };

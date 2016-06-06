@@ -26,7 +26,7 @@ import initialDispatcher from 'utils/initialDispatcher.js';
 import { getAllProjects } from 'store/actions';
 import isEmpty from 'lodash/isEmpty';
 
-const initialDispatch = (dispatch, nextProps, currentProps, state) => {
+export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
   if (isEmpty(state.projects)) {
     dispatch(getAllProjects());
   }

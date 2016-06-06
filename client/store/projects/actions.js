@@ -9,7 +9,7 @@ export const completedChanged = (pid, tid, completed) => ({
 
 import restAPI from 'utils/restAPI.js';
 
-const api = restAPI('data/v2');
+const api = restAPI('data/v2/projects');
 
 const fail = (dispatch, type) => response => {
   dispatch({
@@ -28,7 +28,7 @@ export function getAllProjects() {
     dispatch({
       type: ALL_PROJECTS_REQUEST,
     });
-    return api.read('/projects?fields=pid,name,pending')
+    return api.read('?fields=pid,name,pending')
       .then(
         response => dispatch({
           type: ALL_PROJECTS_SUCCESS,
@@ -49,7 +49,7 @@ export function getProjectById(pid) {
       type: PROJECT_BY_ID_REQUEST,
       pid,
     });
-    return api.read(`/projects/${pid}`)
+    return api.read(pid)
       .then(
         response => dispatch({
           type: PROJECT_BY_ID_SUCCESS,
