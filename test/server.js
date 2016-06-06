@@ -96,7 +96,7 @@ describe('Server testing', () => {
           expect(data).to.be.an.instanceof(Array);
           expect(data).to.have.length(1);
           const prj = data[0];
-          expect(prj.pid).to.equal(34);
+          expect(prj.pid).to.equal('34');
           expect(prj.name).to.contain('Spanish omelette');
           expect(prj.descr).to.contain('Spanish omelette');
         })
@@ -137,7 +137,7 @@ describe('Server testing', () => {
           expect(data).to.be.an.instanceof(Array);
           expect(data).to.have.length(1);
           const prj = data[0];
-          expect(prj.pid).to.equal(34);
+          expect(prj.pid).to.equal('34');
           expect(prj.name).to.be.undefined;
           expect(prj.descr).to.be.undefined;
         })

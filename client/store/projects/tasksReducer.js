@@ -1,4 +1,7 @@
-import { TASK_COMPLETED_CHANGE } from './actions';
+import {
+  TASK_COMPLETED_CHANGE,
+  PROJECT_BY_ID_SUCCESS,
+} from './actions';
 const update = require('react-addons-update');
 
 export default (state = {}, action) => {
@@ -11,6 +14,15 @@ export default (state = {}, action) => {
             completed: { $set: action.completed },
           },
         }
+      );
+    }
+    case PROJECT_BY_ID_SUCCESS: {
+      return action.data.tasks.reduce(
+        (tasks, task) => (tasks[task.pid]
+          ? tasks
+          : update(tasks, { $merge: { [task.tid]: task } })
+        ),
+        state
       );
     }
     default:

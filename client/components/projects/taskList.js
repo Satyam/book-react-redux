@@ -3,13 +3,15 @@ import Task from './task';
 
 export const TaskList = ({ pid, tids }) => (
   <ul className="task-list">{
-    tids.map(tid => (
+    tids
+    ? tids.map(tid => (
       <Task
         key={tid}
         tid={tid}
         pid={pid}
       />)
     )
+    : null
   }</ul>
 );
 

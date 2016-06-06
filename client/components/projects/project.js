@@ -32,6 +32,17 @@ export const mapStateToProps = (state, props) => {
   };
 };
 
-export default connect(
+import initialDispatcher from 'utils/initialDispatcher.js';
+import { getProjectById } from 'store/actions';
+
+const initialDispatch = (dispatch, nextProps, currentProps, state) => {
+  const pid = nextProps.params.pid;
+  const prj = pid && state.projects && state.projects[pid];
+  if (!prj || !prj.tasks) {
+    dispatch(getProjectById(pid));
+  }
+};
+
+export default initialDispatcher(initialDispatch)(connect(
   mapStateToProps
-)(Project);
+)(Project));

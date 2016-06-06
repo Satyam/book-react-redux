@@ -20,7 +20,8 @@ module.exports = {
   resolve: {
     alias: {
       store: join(root, 'client/store'),
-      components: join(root, 'client/components')
+      components: join(root, 'client/components'),
+      utils: join(root, 'client/utils')
     }
   }
 };

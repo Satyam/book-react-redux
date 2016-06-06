@@ -2,7 +2,7 @@ const prepared = {};
 
 module.exports = {
   init: (done) => {
-    prepared.selectAllProjects = db.prepare('select * from projects', (err) => {
+    prepared.selectAllProjects = db.prepare('select projects.*, count(tasks.completed) as pending from projects inner join tasks using (pid) where completed = 0 group by pid', (err) => {
       if (err) return done(err);
     });
     prepared.selectProjectByPid = db.prepare('select * from projects where pid = $pid', (err) => {
@@ -32,17 +32,28 @@ module.exports = {
   getAllProjects: (keys, data, options, done) => {
     const fields = options.fields;
     const search = options.search;
+    const makePidString = (err, projects) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      projects.forEach(project => {
+        project.pid = String(project.pid);
+      });
+      done(null, projects);
+    };
     if (!(fields || search)) {
-      prepared.selectAllProjects.all(done);
+      prepared.selectAllProjects.all(makePidString);
     } else {
+      const st = prepared.selectAllProjects.bind([]);
       const sql = 'select ' +
         (fields || '*') +
-        ' from projects' +
+        ' from ( ' + st.sql + ' )' +
          (search
            ? ' where ' + search.replace(/([^=]+)=(.+)/, '$1 like "%$2%"')
            : ''
          );
-      db.all(sql, done);
+      db.all(sql, makePidString);
     }
   },
 

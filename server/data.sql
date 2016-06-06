@@ -15,6 +15,9 @@ CREATE TABLE tasks (
   completed TINYINT,
   FOREIGN KEY (pid) REFERENCES projects(pid)
 );
+
+create index tasksPid on tasks(pid);
+
 INSERT INTO projects (pid, name, descr) VALUES (
   25,
   "Writing a Book on Web Dev Tools",

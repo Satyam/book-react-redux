@@ -22,12 +22,21 @@ ProjectList.propTypes = {
   projects: PropTypes.object,
 };
 
+import initialDispatcher from 'utils/initialDispatcher.js';
+import { getAllProjects } from 'store/actions';
+import isEmpty from 'lodash/isEmpty';
+
+const initialDispatch = (dispatch, nextProps, currentProps, state) => {
+  if (isEmpty(state.projects)) {
+    dispatch(getAllProjects());
+  }
+};
 import { connect } from 'react-redux';
 
 export const mapStateToProps = state => ({
   projects: state.projects,
 });
 
-export default connect(
+export default initialDispatcher(initialDispatch)(connect(
   mapStateToProps
-)(ProjectList);
+)(ProjectList));
