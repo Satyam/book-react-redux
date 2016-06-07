@@ -7,6 +7,8 @@ import {
   FAILURE_RECEIVED,
 } from './actions';
 
+export { CLEAR_HTTP_ERRORS, clearHttpErrors } from './actions';
+
 export default (state = { pending: 0, errors: [] }, action) => {
   switch (action.type) {
     case CLEAR_HTTP_ERRORS:
