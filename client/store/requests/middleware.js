@@ -2,7 +2,7 @@ import {
   requestSent,
   replyReceived,
   failureReceived,
-} from 'store/requests';
+} from './actions';
 
 const operationRegExp = /\/([A-Z_]+)$/;
 
