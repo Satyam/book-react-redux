@@ -1,7 +1,7 @@
 import { combineReducers, createStore, applyMiddleware, compose } from 'redux';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import reduxThunk from 'redux-thunk';
-import remoteRequests from './middleware/remoteRequests';
+import remoteRequests from './requests/middleware';
 
 import { projects, tasks } from './projects';
 import requests from './requests';
