@@ -19,9 +19,9 @@ const fail = (dispatch, type) => response => {
     url: response.config.url.replace(response.config.baseURL, ''),
   });
 };
-export const ALL_PROJECTS_REQUEST = 'projects/Projects list request';
-export const ALL_PROJECTS_SUCCESS = 'projects/Projects list received';
-export const ALL_PROJECTS_FAILURE = 'projects/Projects list failed';
+export const ALL_PROJECTS_REQUEST = 'projects/Projects list/REQUEST';
+export const ALL_PROJECTS_SUCCESS = 'projects/Projects list/SUCCESS';
+export const ALL_PROJECTS_FAILURE = 'projects/Projects list/FAILURE';
 
 export function getAllProjects() {
   return dispatch => {
@@ -39,9 +39,9 @@ export function getAllProjects() {
   };
 }
 
-export const PROJECT_BY_ID_REQUEST = 'projects/Project info request';
-export const PROJECT_BY_ID_SUCCESS = 'projects/Project info received';
-export const PROJECT_BY_ID_FAILURE = 'projects/Project info failed';
+export const PROJECT_BY_ID_REQUEST = 'projects/Project info/REQUEST';
+export const PROJECT_BY_ID_SUCCESS = 'projects/Project info/SUCCESS';
+export const PROJECT_BY_ID_FAILURE = 'projects/Project info/FAILURE';
 
 export function getProjectById(pid) {
   return dispatch => {
