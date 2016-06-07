@@ -30,16 +30,27 @@ export default (state = {}, action) => {
     case PROJECT_BY_ID_SUCCESS: {
       const project = action.data;
       return update(
-        state,
-        {
-          [project.pid]: {
-            $merge: {
-              descr: project.descr,
-              tids: project.tasks.map(task => task.tid),
-            },
-          },
-        }
-      );
+          state,
+          state[project.pid]
+            ? {
+              [project.pid]: {
+                $merge: {
+                  descr: project.descr,
+                  tids: project.tasks.map(task => task.tid),
+                },
+              },
+            }
+            : {
+              $merge: {
+                [project.pid]: {
+                  pid: project.pid,
+                  name: project.name,
+                  descr: project.descr,
+                  tids: project.tasks.map(task => task.tid),
+                },
+              },
+            }
+        );
     }
     default:
       return state;
