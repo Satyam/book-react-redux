@@ -169,6 +169,13 @@
 <ul class="level-h2"><li><a href="#chapter17-reducing-the-number-of-requests">Reducing the number of requests</a></li>
 </ul>
 <li><a href="#chapter17-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter18-asynchronous-operations">Asynchronous operations</a></li>
+<ul class="level-h1"><li><a href="#chapter18-phases-of-a-remote-request">Phases of a remote request</a></li>
+<li><a href="#chapter18-redux-middleware">Redux Middleware</a></li>
+<li><a href="#chapter18-dispatching-initial-loading-actions">Dispatching initial loading actions</a></li>
+<li><a href="#chapter18-writing-our-own-middleware">Writing our own middleware</a></li>
+<li><a href="#chapter18-summary">Summary</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded"><div class="close">&lt; close</div><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
 <p>With the rapid pace of progress in the creation of libraries and tools for web development, most information comes in brief articles and blog posts.  There are not very many comprehensive guides to all that may be needed from A to Z.</p>
@@ -4965,6 +4972,512 @@ expect(data.tids).to.eql(['1', '2', '3']);</code></pre></div>
 <p>We have taken the data for the tasks as a separate collection within our <code>data.js</code> file.  This is called database normalization and is common practice.  Our application has been simplified as a result.  Though it might not be immediately obvious right now, this simplification will make our lives easier as the application grows.</p>
 <p>We have seen how a reducer can be split and later combined in a couple of ways.</p>
 <p>We have also applied the same normalization principles to our REST API.  We have discussed a few alternatives on how to respond to requests for hierarchical data.  For our particular set of data, with a <em>one-to-many</em> relation and not so many on the <em>many</em> side, we decided to send all the tasks along the project they belong two.  We simply changed the format of the returned data.</p>
+<h1><a class="self-ref" id="chapter18-asynchronous-operations" href="#chapter18-asynchronous-operations"># </a>Asynchronous operations</h1>
+<p>Though we started this book developing the server-side part of the application and even as recently as in the last chapter we reviewed the REST API, since we started with React, we reverted to our <code>data.js</code> file loaded in memory on the client side for all our operations.  This was done to decouple the issues of handling the UI from handling the communication with the server, but it is high time we connected both sides.</p>
+<p>While we were dealing with data loaded on the client-side, all our operations have been synchronous, whenever we did something, it happened everywhere all at once, <em>everywhere</em> here meaning all within the client.  This is hardly the case in real life.  The client will deal with information that is stored in a remote server and reaching it will always require asynchronous operations.</p>
+<p>Currently, our client-side application loads the two collections within <code>data.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/client/store/projects/data.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> as the default state in our two reducers, <code>projectsReducer</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/client/store/projects/projectsReducer.js#L15">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and <code>tasksReducer</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/client/store/projects/tasksReducer.js#L6">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>. From then on, all the information is permanently available in the client.</p>
+<p>We need to move away from this mechanism and make the client request the data from the server via the REST API on demand instead. Our first step will be to remove <code>data.js</code> and drop the references to it from both reducers <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-01/client/store/projects/projectsReducer.js#L4">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-01/client/store/projects/tasksReducer.js#L4">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  A reducer should never return <code>undefined</code> so, if the state is <code>undefined</code> they should return an empty object instead:</p>
+<pre><code class="language-js">export default (state = {}, action) =&gt; {
+</code></pre>
+<p>If we run the application in this state, it will show no project listing nor will it show a specific project if its URL, such as <code>http://localhost:8080/projects/25</code>, is given.  It will show no application errors, since the lack of projects is a real possibility and the application handles it nicely.</p>
+<h2><a class="self-ref" id="chapter18-phases-of-a-remote-request" href="#chapter18-phases-of-a-remote-request"># </a>Phases of a remote request</h2>
+<p>Remote requests have two phases, the request itself and the response which might be successful or not.  These events must be reflected in our application, for example, by showing a spinner while the data is being fetched, an error message if it failed or, hopefully, the requested data when it succeeds. For the components to show any of that, those events must change the store somehow and the only way to modify the store is via actions.</p>
+<p>That is why for every remote operation we will define three actions with three different suffixes, <code>_REQUEST</code>, <code>_SUCCESS</code> and <code>_FAILURE</code>.  Thus, to produce our projects list, we will have <code>PROJECT_LIST_REQUEST</code> which will initiate the request for data, and <code>PROJECT_LIST_SUCCESS</code> when the reply arrives.  Occasionally we might receive a <code>PROJECT_LIST_FAILURE</code> so we must plan for it as well.</p>
+<p>It is easy to envision where to dispatch the request action, the data container component could do that as with any other action.  However, where can we dispatch the rest of the actions?  Most HTTP request packages will either expect a callback to be called when the reply arrives, or will return a Promise to be resolved with the reply.  The problem is, how can we provide these callbacks with a reference to the store and its <code>dispatch</code> function?</p>
+<p>It would be great to have some means to tell Redux when an action will be resolved in the future and tell it what to do at that point.  Redux on its own has no ability to do this, whenever it receives an action, it acts upon it straight away.  But we can expand Redux's abilities via middleware.</p>
+<h2><a class="self-ref" id="chapter18-redux-middleware" href="#chapter18-redux-middleware"># </a>Redux Middleware</h2>
+<p>We have already used middleware in the server-side code.  Generically, middleware is a piece of code that stands in the middle. In Express, the middleware is able to intercept requests, possibly do something about them, and then let them pass on to its final destination or not.  We even wrote some middleware ourselves <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/server/projects/validators.js#L12-L69">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> to validate the request parameters before they get into the function that actually processes the request.</p>
+<p>In Redux, middleware stands in between the actions dispatched and the reducers that process them.  Just as Express middleware receives the HTTP request, Redux middleware receives the dispatched action and can do something with it before it gets processed by the reducers.</p>
+<p>We have already used a bit of middleware in the client, the <code>routerMiddleware</code> from <code>react-router-redux</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/client/store/createStore.js#L13">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> as part of the recipe to store location information in the store.</p>
+<p>In this case, we need middleware that is able to process asynchronous actions, that is, actions that will have effects in the future.</p>
+<p>There is a package <a href="https://www.npmjs.com/package/redux-thunk">redux-thunk</a> by the same author of Redux that helps us deal with this.  We install it just like a regular dependency:</p>
+<pre><code>npm i --save redux-thunk
+</code></pre>
+<p>As with all middleware, we somehow need to register the middleware.  In Express, we used <code>app.use</code>, like with <code>bodyParser</code>, <code>express.static</code> and some others.  With Redux we use <code>applyMiddleware</code></p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/createStore.js#L13-L20"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/store/createStore.js</div>
+    <div class="from">From: 13</div>
+    <div class="to">To: 20</div>
+  </div>
+  <pre><code class="language-js">export default (history) =&gt; {
+  const mw = applyMiddleware(reduxThunk, routerMiddleware(history));
+  return createStore(
+    reducers,
+    process.env.NODE_ENV !== 'production' &amp;&amp; window.devToolsExtension
+    ? compose(mw, window.devToolsExtension())
+    : mw
+  );</code></pre></div>
+<p>The <code>createStore</code> method requires the combined <code>reducers</code> as its first argument, then an optional initial state for the store, usually an object and then an <em>enhancer</em>, a function that adds capabilities.  If the second argument is not an object but a function, <code>createStore</code> assumes it to be the <em>enhancer</em>.  We were already using one such enhancer, the Redux developer tools <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-01/client/store/createStore.js#L11-L13">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and later we added <code>routerMiddleware</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/createStore.js#L12">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> via another enhancer, <code>applyMiddleware</code> that is part of Redux.  The <code>compose</code> function, also part of Redux is simply a generic utility function that when called, calls each of the functions passed as its arguments in sequence.  Since we have a single slot for enhancers and we have two of them we need to call both of them in sequence, that is all <code>compose</code> does.  We simply add <code>redux-thunk</code> to the list of middleware to apply <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/createStore.js#L14">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>A normal action is a simple object with at least a <code>type</code> property <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/actions.js#L3-L8">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  To tell Redux that an action will have secondary effects in the future, instead of a simple object we dispatch a function. Just as any other middleware, <code>redux-thunk</code> gets all the actions and, if it is an object, it lets it through to be handled in the normal way.  However, if any of them is a function, it will call it with a reference to the <code>dispatch</code> function  bound to the store.</p>
+<p>So, from the developer point of view, it is quite simple.</p>
+<ul>
+<li>If we dispatch an object, it is a regular synchronous action that will be taken care of immediately.</li>
+<li>If we dispatch a function, it is an asynchronous action, <code>redux-thunk</code> will intercept it and call it with a reference to the <code>dispatch</code> method.  The function is then responsible to dispatch further actions at its convenience.</li>
+</ul>
+<p>To dispatch actions, we usually use <em>action creators</em>. For example, we have a simple synchronous action creator to set the task completion status:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/actions.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-16-03</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">export const TASK_COMPLETED_CHANGE = 'projects/Task completed changed';
+
+export const completedChanged = (pid, tid, completed) =&gt; ({
+  type: TASK_COMPLETED_CHANGE,
+  pid,
+  tid,
+  completed,
+});</code></pre></div>
+<p>An asynchronous action creator looks like this</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/projects/actions.js#L26-L40"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 26</div>
+    <div class="to">To: 40</div>
+  </div>
+  <pre><code class="language-js">export function getAllProjects() {
+  return dispatch =&gt; {
+    dispatch({
+      type: ALL_PROJECTS_REQUEST,
+    });
+    return api.read('?fields=pid,name,pending')
+      .then(
+        response =&gt; dispatch({
+          type: ALL_PROJECTS_SUCCESS,
+          data: response.data,
+        }),
+        fail(dispatch, ALL_PROJECTS_FAILURE)
+      );
+  };
+}</code></pre> :</div>
+<p>We already have defined our three action type constants following our convention of a common base name plus the suffixes <code>_REQUEST</code>, <code>_SUCCESS</code> and <code>_FAILURE</code>.</p>
+<p>The <code>getAllProjects</code> action creator returns a function, a <em>fat arrow</em> function, that expects <code>dispatch</code> as its argument. This is the key for <code>redux-thunk</code> to know this is an asynchronous action. The first thing it does is call <code>dispatch</code> to dispatch the REQUEST action to notify all interested parties that a request is going out.  Then it sends the actual HTTP request using Axios as we already did in our server tests <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/test/server.js#L105-L129">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a></p>
+<p>Axios returns a Promise so, when it is resolved, we dispatch either a SUCCESS action or a FAILURE action, each with its associated data.  These two actions will happen some time after the original request is sent.  All actions dispatched from the asynchronous action are synchronous themselves, they are all plain objects but they might have been further asynchronous actions, Redux doesn't mind at all.</p>
+<p>For the FAILURE action, we use the <code>fail</code> function defined at the top:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/projects/actions.js#L14-L21"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 14</div>
+    <div class="to">To: 21</div>
+  </div>
+  <pre><code class="language-js">const fail = (dispatch, type) =&gt; response =&gt; {
+  dispatch({
+    type,
+    status: response.status,
+    msg: response.statusText,
+    url: response.config.url.replace(response.config.baseURL, ''),
+  });
+};</code></pre></div>
+<p>The function is actually a function returning a function, that is a <em>curried function</em>.  When called with the reference to the <code>dispatch</code> method and the action type, it returns a function that might eventually be called when a failure occurs.  At that point it will receive the failed response.   Though each successful response will require processing it in different ways, all failures are processed just the same because all contain the same information.</p>
+<p>We are using a pre-configured instance of Axios.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/projects/actions.js#L10-L12"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 10</div>
+    <div class="to">To: 12</div>
+  </div>
+  <pre><code class="language-js">import restAPI from 'utils/restAPI.js';
+
+const api = restAPI('data/v2/projects');</code></pre></div>
+<p>Since we might use Axios elsewhere, we created a utility function <code>restAPI</code> that returns the pre-configured instance based on the base address for all the requests, in this case <code>'data/v2/projects'</code>.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/utils/restAPI.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/utils/restAPI.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">import axios from 'axios';
+
+const PORT = process.env.npm_package_myServerApp_port || 8080;
+const HOST = process.env.npm_package_myServerApp_host || 'http://localhost';
+
+export default base =&gt; {
+  const restClient = axios.create({
+    baseURL: `${typeof window !== 'undefined'
+      ? window.location.origin
+      : `${HOST}:${PORT}`}/${base}`,
+    responseType: 'json',
+  });
+  return Object.assign(restClient, {
+    read: restClient.get,
+    create: restClient.post,
+    update: restClient.put,
+  });
+};</code></pre></div>
+<p>The instance is set to handle data in JSON format and as a convenience, we have added aliases to the normal REST operations so that <code>read</code> becomes an alias for <code>get</code> but, most important, <code>create</code> is an alias for <code>post</code> and <code>update</code> for <code>put</code>.  After all, since we are doing CRUD operations on the database, it makes sense that we use those operations in the API as well, besides, <code>post</code> and <code>put</code> are often confused with one another.</p>
+<p>Since we expect to have several utility functions, we have added an alias to our <code>webpack.config.js</code> file to make it easy to import them <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/webpack.config.js#L24">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>In the <code>getAllProjects</code> action creator we return the Promise that Axios returns <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/projects/actions.js#L31">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  This is not mandatory, <code>redux-thunk</code> doesn't care about the return value, it will simply pass it on as the return of the action creator function, just in case it cares about it.  In our case, we don't, but it is good to know it is available to us.  We will use it in the future.</p>
+<p>Now we need the reducers to process these actions.  Originally, we simply had our store initialized from <code>data.js</code> and we handled a single action, <code>TASK_COMPLETED_CHANGE</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/client/store/projects/tasksReducer.js#L8-L17">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>Now we have to handle one more action type, a successful response for our request:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/projects/projectsReducer.js#L22-L29"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/store/projects/projectsReducer.js</div>
+    <div class="from">From: 22</div>
+    <div class="to">To: 29</div>
+  </div>
+  <pre><code class="language-js">case ALL_PROJECTS_SUCCESS:
+  return action.data.reduce(
+    (projects, project) =&gt; (projects[project.pid]
+      ? projects
+      : update(projects, { $merge: { [project.pid]: project } })
+    ),
+    state
+  );</code></pre></div>
+<p>Upon receiving the <code>ALL_PROJECTS_SUCCESS</code> action, since the data in the response is an array, we use Array <code>reduce</code> method to return the new state using the current state as the initial state for <code>reduce</code>.  For each item, we use <code>update</code> to merge the new values into the original state, or keep the ones if we already have them. The resulting state will not have all the project information because we explicitly asked for just a few fields, <code>pid</code>,  <code>name</code> and <code>pending</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/projects/actions.js#L31"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 31</div>
+    <div class="to">To: 31</div>
+  </div>
+  <pre><code class="language-js">return api.read('?fields=pid,name,pending')</code></pre></div>
+<p>Since we don't have access to all the data on the client-side, we can no longer calculate the <code>pending</code> count for all projects by looping through the tasks, as we did before. We do not have and do not want to have all the tasks loaded because, in a real application, they might be too many.  Thus, we have moved the calculation of the <code>pending</code> count to the server side by using a nested SQL query to produce it on the database side:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/server/projects/transactions.js#L5"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: server/projects/transactions.js</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 5</div>
+  </div>
+  <pre><code class="language-js">prepared.selectAllProjects = db.prepare('select projects.*, count(tasks.completed) as pending from projects inner join tasks using (pid) where completed = 0 group by pid', (err) =&gt; {</code></pre></div>
+<p>The <code>getAllProjects</code> action creator provides information for the <code>ProjectList</code> component.   When we go into the detail of any of those projects, we need to request some extra information from the server via <code>getProjectById</code>.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/projects/actions.js#L42-L61"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 42</div>
+    <div class="to">To: 61</div>
+  </div>
+  <pre><code class="language-js">export const PROJECT_BY_ID_REQUEST = 'projects/Project info request';
+export const PROJECT_BY_ID_SUCCESS = 'projects/Project info received';
+export const PROJECT_BY_ID_FAILURE = 'projects/Project info failed';
+
+export function getProjectById(pid) {
+  return dispatch =&gt; {
+    dispatch({
+      type: PROJECT_BY_ID_REQUEST,
+      pid,
+    });
+    return api.read(pid)
+      .then(
+        response =&gt; dispatch({
+          type: PROJECT_BY_ID_SUCCESS,
+          data: response.data,
+        }),
+        fail(dispatch, PROJECT_BY_ID_FAILURE)
+      );
+  };
+}</code></pre></div>
+<p>The action creator follows a similar pattern of initially dispatching the REQUEST action and then using Axios to send the request to the server.  Upon return, it either dispatches the SUCCESS of FAILURE action, the later through the <code>fail</code> curried function.</p>
+<p>The <code>projectsReducer</code> handles this action, to fill the information it had not initially requested:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/projects/projectsReducer.js#L30-L54"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/store/projects/projectsReducer.js</div>
+    <div class="from">From: 30</div>
+    <div class="to">To: 54</div>
+  </div>
+  <pre><code class="language-js">case PROJECT_BY_ID_SUCCESS: {
+  const project = action.data;
+  return update(
+      state,
+      state[project.pid]
+        ? {
+          [project.pid]: {
+            $merge: {
+              descr: project.descr,
+              tids: project.tasks.map(task =&gt; task.tid),
+            },
+          },
+        }
+        : {
+          $merge: {
+            [project.pid]: {
+              pid: project.pid,
+              name: project.name,
+              descr: project.descr,
+              tids: project.tasks.map(task =&gt; task.tid),
+            },
+          },
+        }
+    );
+}</code></pre></div>
+<p>The operation looks somewhat long but it is actually composed of two separate operations.  In the first half is the case where the basic data for the project  is there thanks to <code>getAllProjects</code> and only some extra information needs to be added in. It adds the <code>descr</code> field and collects into <code>tids</code> the <code>tid</code>s of the individual tasks. The second is when no prior information exists and it all has to be merged in. Though the order of the requests might be predicted, the order of the replies can never be so both alternatives need to be handled.</p>
+<p>It is up to <code>tasksReducer</code> to load the tasks information into the store:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/store/projects/tasksReducer.js#L19-L27"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/store/projects/tasksReducer.js</div>
+    <div class="from">From: 19</div>
+    <div class="to">To: 27</div>
+  </div>
+  <pre><code class="language-js">case PROJECT_BY_ID_SUCCESS: {
+  return action.data.tasks.reduce(
+    (tasks, task) =&gt; (tasks[task.pid]
+      ? tasks
+      : update(tasks, { $merge: { [task.tid]: task } })
+    ),
+    state
+  );
+}</code></pre></div>
+<p>The reason to use the Array <code>reduce</code> method instead of simply merging the received data is that our sub-stores are indexed by <code>pid</code> and <code>tid</code> respectively.  Thus, we need to go through each row and pick the <code>pid</code> or <code>tid</code> to use as index in the hash.</p>
+<p>The <code>projectsReducer</code> and <code>tasksReducer</code> reducers do not care about the REQUEST or FAILURE actions, only the SUCCESS one.  Actions, like DOM events, are notifications of things happening, whether any part of the application is interested in doing something about them or not is another matter.</p>
+<p>It might seem that after all this amount of code, something should happen if we ran the application, but it doesn't yet.</p>
+<h2><a class="self-ref" id="chapter18-dispatching-initial-loading-actions" href="#chapter18-dispatching-initial-loading-actions"># </a>Dispatching initial loading actions</h2>
+<p>We have seen how to create asynchronous actions and how to handle them, but we have not dispatched any yet.  Where should we do that?</p>
+<p>Stateful React components have <a href="https://facebook.github.io/react/docs/component-specs.html#lifecycle-methods">several methods</a> that we can declare and are called during the lifecycle of a component.  Two of them are of particular interest to us.</p>
+<p>The <a href="https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount"><code>componentDidMount</code></a> method is called when the component is loaded for the first time. As the React documentation says, this is a perfect place to send AJAX requests. In our case, using Redux, it is the place to dispatch an action to initiate such a request.</p>
+<p>The <a href="https://facebook.github.io/react/docs/component-specs.html#updating-componentwillreceiveprops"><code>componentWillReceiveProps</code></a> will be called on any further updates of the component presumably because the properties might have changed. The properties might not have actually changed. Doing a thorough check on all the values, specially on deeply nested objects, is too expensive so React calls this method more often than what is actually required and lets us decide, possibly using the <a href="https://facebook.github.io/react/docs/component-specs.html#updating-shouldcomponentupdate"><code>shouldComponentUpdate</code></a> method. This later method is not written until after we do some performance analysis and detect too much <a href="https://facebook.github.io/react/docs/perf.html#perf.printwastedmeasurements">time wasted</a> in some specific components.</p>
+<p>We could rewrite some of our components and turn them from stateless to stateful to make use of these lifecycle methods, but that would be a pity. Stateless components are smaller, thus cheaper and, since they have less functionality, are faster to process. The are a new addition to React but are expected to benefit from huge performance improvements in the future since they are so lightweight.  It would be a bad idea to weight them down with extra code.</p>
+<p>However, each of the stateless components that needs data from the store are wrapped via <code>connect</code> with a stateful component which is the one that actually deals with the store through the <code>mapStateToProps</code> and <code>mapDispatchToProps</code> methods.  Wouldn't it make sense to have the data containers be the ones responsible to dispatch the data loading actions?</p>
+<p>The <a href="https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options"><code>connect</code></a> method of <code>react-redux</code> actually returns a stateful component.  Though we often call it a <em>wrapper</em> it is, indeed, a fully featured React component, a HoC or High-order Component. Since React components are still regular JavaScript classes, we can extend them and have their methods redefined.  That is what we've done in <code>utils/initialDispatcher.js</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/utils/initialDispatcher.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/utils/initialDispatcher.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">export default initialDispatch =&gt; Connector =&gt; class extends Connector {
+  componentWillMount() {
+    if (super.componentDidMount) super.componentDidMount();
+    initialDispatch(this.store.dispatch, this.props, null, this.state.storeState);
+  }
+  componentWillReceiveProps(nextProps) {
+    if (super.componentWillReceiveProps) super.componentWillReceiveProps(nextProps);
+    initialDispatch(this.store.dispatch, nextProps, this.props, this.state.storeState);
+  }
+};</code></pre></div>
+<p>The single function we export from <code>initialDispatcher.js</code> returns a curried function.  It is written in the same style as <code>connect</code> so that, whenever ES7 decorators become standard, it can be used as a decorator.  It is curried with an <code>initialDispatch</code> function and returns a function that can be applied to the component wrapped with <code>connect</code>.</p>
+<p>It returns a new class which <code>extend</code>s the class <code>Connect</code> which it receives as an argument and redefines its <code>componentDidMount</code> and <code>componentWillReceiveProps</code> methods.  In each of them, it first calls the original <code>super</code> version (if there is any) and then calls the <code>initialDispatch</code> method which it also has received as an argument.</p>
+<p>It provides that function with a reference to the <code>dispatch</code> method (the same that <code>mapDispatchToProps</code> usually receives), the future properties, the current properties (none on componentDidMount since it is the first time and there are no current values yet) and the state of the store. It is used thus:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/components/projects/projectList.js#L25-L33"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/components/projects/projectList.js</div>
+    <div class="from">From: 25</div>
+    <div class="to">To: 33</div>
+  </div>
+  <pre><code class="language-js">import initialDispatcher from 'utils/initialDispatcher.js';
+import { getAllProjects } from 'store/actions';
+import isEmpty from 'lodash/isEmpty';
+
+export const initialDispatch = (dispatch, nextProps, currentProps, state) =&gt; {
+  if (isEmpty(state.projects)) {
+    dispatch(getAllProjects());
+  }
+};</code></pre></div>
+<p>In this case, taken from the <code>ProjectList</code>, if <code>state.projects</code> is empty <code>initialDispatch</code> dispatches the action created by <code>getAllProjects</code>.</p>
+<p>To apply <code>initialDispatch</code> to our data container we simply call it using the <code>initialDispatcher</code> function and the data container that wraps <code>ProjectList</code>.  We can export the returned class immediately as it is still a valid data container.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/components/projects/projectList.js#L40-L42"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/components/projects/projectList.js</div>
+    <div class="from">From: 40</div>
+    <div class="to">To: 42</div>
+  </div>
+  <pre><code class="language-js">export default initialDispatcher(initialDispatch)(connect(
+  mapStateToProps
+)(ProjectList));</code></pre></div>
+<p>So far we have modified <code>ProjectList</code> and the related actions and reducer.  We must do the same with the <code>Project</code> component:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/components/projects/project.js#L35-L48"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-02</div>
+    <div class="filename">File: client/components/projects/project.js</div>
+    <div class="from">From: 35</div>
+    <div class="to">To: 48</div>
+  </div>
+  <pre><code class="language-js">import initialDispatcher from 'utils/initialDispatcher.js';
+import { getProjectById } from 'store/actions';
+
+export const initialDispatch = (dispatch, nextProps, currentProps, state) =&gt; {
+  const pid = nextProps.params.pid;
+  const prj = pid &amp;&amp; state.projects[pid];
+  if (!prj || !prj.tids) {
+    dispatch(getProjectById(pid));
+  }
+};
+
+export default initialDispatcher(initialDispatch)(connect(
+  mapStateToProps
+)(Project));</code></pre></div>
+<p>In this case, we check whether there is a project entry for the given <code>pid</code> and if it has any <code>tids</code> listed.  It there is a project but with no task references, it means the basic information was loaded by <code>ProjectList</code> dispatching <code>getAllProjects</code> but no detail yet.  A project with no tasks would have an empty array as <code>tids</code>, which evaluates as true, against <code>undefined</code> when none were loaded yet.</p>
+<p>It is also important to provide the render methods in our components with an alternative when the data is not there yet. Originally, all our data was there from the very start, we were safe to assume that to be so.  With remote data, that is no longer true.  For example, the <code>TaskList</code> component must now check whether <code>tids</code> is not undefined before attempting to render it  <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-02/client/components/projects/taskList.js#L6-L14">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<h2><a class="self-ref" id="chapter18-writing-our-own-middleware" href="#chapter18-writing-our-own-middleware"># </a>Writing our own middleware</h2>
+<p>All the asynchronous transactions with the server take some time and all may fail. In between the REQUEST action and either of the SUCCESS or FAILURE actions, we might want to show a loading spinner and, if the outcome is a FAILURE, we would want to show the error message.  As with any status that might affect our application, both the loading status and the error messages will go into our store.</p>
+<p>We will add another sub-store to our Redux store by adding a new reducer which will handle these two pieces of information:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/requests/index.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-03</div>
+    <div class="filename">File: client/store/requests/index.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">import update from 'react-addons-update';
+
+import {
+  CLEAR_HTTP_ERRORS,
+  REQUEST_SENT,
+  REPLY_RECEIVED,
+  FAILURE_RECEIVED,
+} from './actions';
+
+export { CLEAR_HTTP_ERRORS, clearHttpErrors } from './actions';
+
+export default (state = { pending: 0, errors: [] }, action) =&gt; {
+  switch (action.type) {
+    case CLEAR_HTTP_ERRORS:
+      return update(state, { errors: { $set: [] } });
+    case REQUEST_SENT:
+      return update(state, { pending: { $apply: x =&gt; x + 1 } });
+    case REPLY_RECEIVED:
+      return update(state, { pending: { $apply: x =&gt; (x &gt; 0 ? x - 1 : 0) } });
+    case FAILURE_RECEIVED:
+      return update(
+        state,
+        {
+          pending: { $apply: x =&gt; (x &gt; 0 ? x - 1 : 0) },
+          errors: { $push: [
+            `${action.type.replace('[FAILURE] ', '')}:
+            ${action.url}: (${action.status}) - ${action.msg}`,
+          ] },
+        });
+    default:
+      return state;
+  }
+};</code></pre></div>
+<p>The sub-store will have a <code>pending</code> property which counts the number of pending HTTP operations and an <code>errors</code> array listing the errors reported by the failed operations.  Both are initialized by using the default parameter value for the <code>state</code> argument.</p>
+<p>For every <code>REQUEST_SENT</code> the <code>pending</code> count is incremented and for any reply, successful or not, it is decremented.  On a <code>FAILURE_RECEIVED</code> a formatted error message is also stored in the <code>errors</code> array. Formatting the error information here is not a good idea, it would be better left to the UI designer later on, but for the purpose of this book it will do. The <code>CLEAR_HTTP_ERRORS</code> action clears the <code>errors</code> array.</p>
+<p>The action-type constants and the action creators themselves are defined in <code>actions.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/requests/actions.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>To dispatch all those actions, we would need to either add the three of them to each and every action creator that does an HTTP request or we might do something smarter, add a piece of middleware of our own creation.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/requests/middleware.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-03</div>
+    <div class="filename">File: client/store/requests/middleware.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">import {
+  requestSent,
+  replyReceived,
+  failureReceived,
+} from './actions';
+
+const operationRegExp = /\/([A-Z_]+)$/;
+
+export default ({ dispatch }) =&gt; next =&gt; action =&gt; {
+  const match = operationRegExp.exec(action.type);
+  switch (match &amp;&amp; match[1]) {
+    case 'REQUEST':
+      dispatch(requestSent());
+      break;
+    case 'SUCCESS':
+      dispatch(replyReceived());
+      break;
+    case 'FAILURE':
+      dispatch(failureReceived(action));
+      break;
+    default:
+      break;
+  }
+  return next(action);
+};</code></pre></div>
+<p>The declaration of Redux middleware seems a little complex, it is a series of functions that return functions that return functions. All are <em>curried</em>, receiving each of the arguments as the chain of function calls progresses.  It first receives a reference to the store object, not the data in it but the store itself. We might read the state of the store by using the <code>getState</code> method but we only pick the <code>dispatch</code> method from it.  It then receives whatever <code>next</code> piece of middleware is there in the chain and finally the <code>action</code> object.</p>
+<p>At the bottom, we are calling <code>next(action)</code> to allow processing to continue.  We are not modifying the <code>action</code> object in this case, we are just letting it pass through, but other middleware might modify it or it might take care of the action itself and don't even call <code>next</code> at all.</p>
+<p>Our middleware will pick one of three patterns at the end of the action type string.  It will look for strings ending in <code>/REQUEST</code>, <code>/SUCCESS</code> or <code>/FAILURE</code> and it will dispatch the corresponding action for each of them. Since all the failure actions contain the same information <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/projects/actions.js#L14-L21">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, we send the action object when dispatching <code>failureReceived</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/requests/middleware.js#L19">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>This means that we only need to add one of these suffixes to our existing action types to make it work:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/projects/actions.js#L22-L24"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-03</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 22</div>
+    <div class="to">To: 24</div>
+  </div>
+  <pre><code class="language-js">export const ALL_PROJECTS_REQUEST = 'projects/Projects list/REQUEST';
+export const ALL_PROJECTS_SUCCESS = 'projects/Projects list/SUCCESS';
+export const ALL_PROJECTS_FAILURE = 'projects/Projects list/FAILURE';</code></pre></div>
+<p>We have to add the reducer for the new sub-store in the main store:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/createStore.js#L5-L13"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-03</div>
+    <div class="filename">File: client/store/createStore.js</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 13</div>
+  </div>
+  <pre><code class="language-js">import { projects, tasks } from './projects';
+import requests from './requests';
+
+const reducers = combineReducers({
+  projects,
+  tasks,
+  requests,
+  routing: routerReducer,
+});</code></pre></div>
+<p>And we must add the imported <code>remoteRequests</code> middleware to our list of middleware as well:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/createStore.js#L15-L19"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-03</div>
+    <div class="filename">File: client/store/createStore.js</div>
+    <div class="from">From: 15</div>
+    <div class="to">To: 19</div>
+  </div>
+  <pre><code class="language-js">import remoteRequests from './requests/middleware';
+
+export default (history) =&gt; {
+  const mw = applyMiddleware(reduxThunk, remoteRequests, routerMiddleware(history));
+  return createStore(</code></pre></div>
+<p>Of all the action types and action creators we defined <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/requests/actions.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, we are only re-exporting <code>CLEAR_HTTP_ERRORS</code>, <code>clearHttpErrors</code> because all the rest are dealt with in between the reducer and the middleware no other element outside of this folder cares about them.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/requests/index.js#L10"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-03</div>
+    <div class="filename">File: client/store/requests/index.js</div>
+    <div class="from">From: 10</div>
+    <div class="to">To: 10</div>
+  </div>
+  <pre><code class="language-js">export { CLEAR_HTTP_ERRORS, clearHttpErrors } from './actions';</code></pre></div>
+<p>Finally, since our store now has a count of pending HTTP requests and communication errors, if any, we should show them. We can do that in the <code>App</code> component:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L6-L7"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-03</div>
+    <div class="filename">File: client/components/app.js</div>
+    <div class="from">From: 6</div>
+    <div class="to">To: 7</div>
+  </div>
+  <pre><code class="language-html">&lt;p className="loading" style={{ display: loading ? 'block' : 'none' }}&gt;loading&lt;/p&gt;
+&lt;pre className="errors" style={{ display: errors.length ? 'block' : 'none' }}&gt;</code></pre></div>
+<p>So far, <code>App</code> had no data to read from the store.  Now, it uses <code>pending</code> and <code>errors</code> from the <code>requests</code> sub-store so we must now wrap it with Redux <code>connect</code> HoC:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L26-L36"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-18-03</div>
+    <div class="filename">File: client/components/app.js</div>
+    <div class="from">From: 26</div>
+    <div class="to">To: 36</div>
+  </div>
+  <pre><code class="language-js">import { connect } from 'react-redux';
+
+const mapStateToProps = (state, props) =&gt; ({
+  pathname: props.location.pathname,
+  loading: !!state.requests.pending,
+  errors: state.requests.errors,
+});
+
+export default connect(
+  mapStateToProps
+)(App);</code></pre></div>
+<h2><a class="self-ref" id="chapter18-summary" href="#chapter18-summary"># </a>Summary</h2>
+<p>We have learned how to handle asynchronous operations from the client by requesting data from the server via the REST API we had designed earlier.</p>
+<p>We have used the <code>redux-thunk</code> middleware to handle those asynchronous actions.</p>
+<p>We have also written a simple Redux middleware.</p>
 </div>
   </body>
   <script type="text/javascript" src="index.js"></script>
