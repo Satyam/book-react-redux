@@ -1,15 +1,12 @@
 import React, { PropTypes } from 'react';
+import isPlainClick from 'utils/isPlainClick.js';
 
 export const Task = ({ descr, completed, onCompletedChange, pid, tid }) => {
-  const onClickHandler = ev => {
-    if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return;
-    ev.preventDefault();
-    onCompletedChange({
-      pid,
-      tid,
-      completed: !completed,
-    });
-  };
+  const onClickHandler = ev => isPlainClick(ev) && onCompletedChange({
+    pid,
+    tid,
+    completed: !completed,
+  });
   return (
     <li
       onClick={onClickHandler}

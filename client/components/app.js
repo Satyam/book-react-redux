@@ -6,17 +6,21 @@ export const App = ({ children, pathname, loading, errors, onCloseErrors }) => (
   <div className="app">
     <p className="loading" style={{ display: loading ? 'block' : 'none' }}>loading</p>
     <pre
-      className="errors"
+      className="alert alert-warning alert-dismissible"
       style={{ display: errors.length ? 'block' : 'none' }}
-      onClick={onCloseErrors}
     >
+      <button onClick={onCloseErrors} className="close pull-right">
+        <span>&times;</span>
+      </button>
       {errors.join('\n')}
     </pre>
-    <p>{
-      /^\/projects/.test(pathname)
-      ? 'Projects'
-      : (<Link to="/projects">Projects</Link>)
-    }</p>
+    <ul className="nav nav-tabs">
+      {
+        /^\/projects/.test(pathname)
+        ? (<li className="active"><a href="#">Projects</a></li>)
+        : (<li><Link to="/projects">Projects</Link></li>)
+      }
+    </ul>
     {children}
   </div>
 );

@@ -28,10 +28,5 @@
   z-index: 2;
   border: thin solid blue;
   background-color: silver;
-}
-
-.app .errors {
-  color: orange;
-  border: thin solid red;
-  padding: 1em;
+  padding: 3px;
 }
