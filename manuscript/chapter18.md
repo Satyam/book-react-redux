@@ -204,14 +204,23 @@ Of all the action types and action creators we defined [(:octocat:)](https://git
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/requests/index.js#L10)
 
+We will modify the `App` component to display the new inforation and also to clear the errors:
 
-Finally, since our store now has a count of pending HTTP requests and communication errors, if any, we should show them. We can do that in the `App` component:
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L5-L14)
 
-[(:memo:html)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L6-L7)
+We will provide the `App` component with the `loading` status, the `errors` array and the `onCloseErrors` function.  We use `loading` to show and hide a simple sign. The `errors` are displayed in a pre-formatted box in successive lines that will show if there are any errors.  Finally, we will use the `onCloseErrors` function as the `onClick` handler for this error listing.
 
-So far, `App` had no data to read from the store.  Now, it uses `pending` and `errors` from the `requests` sub-store so we must now wrap it with Redux `connect` HoC:
+All those new properties are produced by Redux `connect` wrapper:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L26-L36)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L32-L49)
+
+`mapStateToProps` extracts the data from the store, assuming `loading` to be true whenever there are any `pending` operations. Since it receives the properties, it unwraps the `pathname` from the location.  This is not simply for convenience.  Since the wrapper does a shallow compare of the resulting properties to decide whether to redraw itself, it is always good to bring up to the surface any values nested deep inside.
+
+`mapDispatchToProps` provides the `onCloseErrors` function. To ensure that the click is with the left button and no modifier keys, we have extracted the function we used earlier into `isPlainClick` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/utils/isPlainClick.js).  If it is a plain click, we `dispatch` the `clearHttpErrors` action [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L43).
+
+We export the wrapped function as the default but we also export by name both mapping functions and the unwrapped component, for testing purposes.
+
+To see it all working, the easiest way is to place a breakpoint whenever a reply from the server is received and before the SUCCESS action is dispatched [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/projects/actions.js#L33) or [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/projects/actions.js#L54) and to force an error, the easiest is to force a syntax error on the request, for example, inserting some funny character in between the field names or replacing a comma with a semicolon  [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/projects/actions.js#L31).
 
 ## Summary
 
@@ -220,3 +229,5 @@ We have learned how to handle asynchronous operations from the client by request
 We have used the `redux-thunk` middleware to handle those asynchronous actions.
 
 We have also written a simple Redux middleware.
+
+We modified the `App` component to handle the HTTP status information.
