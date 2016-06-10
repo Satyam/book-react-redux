@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import isPlainClick from 'utils/isPlainClick.js';
+import './app.css';
 
 export const App = ({ children, pathname, loading, errors, onCloseErrors }) => (
   <div className="app">
