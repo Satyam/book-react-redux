@@ -1,6 +1,6 @@
-.project-item .disguise-link {
+.disguise-link, .disguise-link:focus, .disguise-link:hover {
   text-decoration: none;
   font-weight: bold;
-  color: inherit;
+  color: black;
   cursor: default;
 }

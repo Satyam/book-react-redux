@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import './taskList.css';
 import Task from './task';
 
 export const TaskList = ({ pid, tids }) => (

@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import isPlainClick from 'utils/isPlainClick.js';
-import './app.css';
+import styles from './app.css';
 
 export const App = ({ children, pathname, loading, errors, onCloseErrors }) => (
   <div className="app">
-    <p className="loading" style={{ display: loading ? 'block' : 'none' }}>loading</p>
+    <p className={styles.loading} style={{ display: loading ? 'block' : 'none' }}>loading</p>
     <pre
       className="alert alert-warning alert-dismissible"
       style={{ display: errors.length ? 'block' : 'none' }}
