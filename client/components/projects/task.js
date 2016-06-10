@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import isPlainClick from 'utils/isPlainClick.js';
 import styles from './task.css';
+import classNames from 'classnames';
 
 export const Task = ({ descr, completed, onCompletedChange, pid, tid }) => {
   const onClickHandler = ev => isPlainClick(ev) && onCompletedChange({
@@ -11,7 +12,11 @@ export const Task = ({ descr, completed, onCompletedChange, pid, tid }) => {
   return (
     <li
       onClick={onClickHandler}
-      className={`task ${completed ? styles.completed : styles.pending} ${styles.task}`}
+      className={classNames(
+        'task',
+        { [styles.completed]: completed },
+        styles.task
+      )}
     >
       {descr}
     </li>

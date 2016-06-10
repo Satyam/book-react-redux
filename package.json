@@ -36,6 +36,7 @@
   "dependencies": {
     "axios": "^0.9.1",
     "body-parser": "^1.15.0",
+    "classnames": "^2.2.5",
     "cookie-parser": "^1.4.3",
     "express": "^4.13.4",
     "lodash": "^4.13.1",

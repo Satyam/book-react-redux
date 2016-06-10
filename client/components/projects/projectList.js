@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react';
 
 import styles from './projectList.css';
-
+import classNames from 'classnames';
 import ProjectItem from './projectItem';
 
 export const ProjectList = ({ children, projects }) => (
-  <div className={`project-list ${styles.projectList}`}>
+  <div className={classNames('project-list', styles.projectList)}>
     <h1>Projects:</h1>
     <ul>{
       Object.keys(projects).map(pid =>

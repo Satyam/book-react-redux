@@ -2,13 +2,18 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import isPlainClick from 'utils/isPlainClick.js';
 import styles from './app.css';
+import classNames from 'classnames';
 
 export const App = ({ children, pathname, loading, errors, onCloseErrors }) => (
   <div className="app">
-    <p className={styles.loading} style={{ display: loading ? 'block' : 'none' }}>loading</p>
+    <p className={classNames(styles.loading, { hide: !loading })}>loading</p>
     <pre
-      className="alert alert-warning alert-dismissible"
-      style={{ display: errors.length ? 'block' : 'none' }}
+      className={classNames(
+        'alert',
+        'alert-warning',
+        'alert-dismissible',
+        { hide: !errors.length }
+      )}
     >
       <button onClick={onCloseErrors} className="close pull-right">
         <span>&times;</span>

@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react';
 import TaskList from './taskList';
 import styles from './project.css';
+import classNames from 'classnames';
 
 export const Project = ({ pid, name, descr }) => (
   name
   ? (
-    <div className={`project ${styles.project}`}>
+    <div className={classNames('project', styles.project)}>
       <h1>{name}</h1>
       <p>{descr}</p>
       <TaskList

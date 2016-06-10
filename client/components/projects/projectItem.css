@@ -1,4 +1,6 @@
-.disguise-link, .disguise-link:focus, .disguise-link:hover {
+.disguise-link,
+.disguise-link:focus,
+.disguise-link:hover {
   text-decoration: none;
   font-weight: bold;
   color: black;
