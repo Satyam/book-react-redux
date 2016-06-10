@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react';
 
+import './projectList.css';
+
 import ProjectItem from './projectItem';
 
 export const ProjectList = ({ children, projects }) => (

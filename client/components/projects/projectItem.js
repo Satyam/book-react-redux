@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Link, routerShape, withRouter } from 'react-router';
+import './projectItem.css';
 
 export const ProjectItem = ({ pid, name, pending, router }) => (
   <li className="project-item">

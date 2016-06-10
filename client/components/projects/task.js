@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import isPlainClick from 'utils/isPlainClick.js';
+import './task.css';
 
 export const Task = ({ descr, completed, onCompletedChange, pid, tid }) => {
   const onClickHandler = ev => isPlainClick(ev) && onCompletedChange({
