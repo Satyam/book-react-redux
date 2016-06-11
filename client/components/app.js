@@ -6,24 +6,25 @@ import classNames from 'classnames';
 
 export const App = ({ children, pathname, loading, errors, onCloseErrors }) => (
   <div className="app">
-    <p className={classNames(styles.loading, { hide: !loading })}>loading</p>
-    <pre
+    <div
       className={classNames(
-        'alert',
-        'alert-warning',
-        'alert-dismissible',
+        styles.loading,
+        { hide: !loading }
+      )}
+    >loading</div>
+    <div
+      className={classNames(
+        styles.errorsList,
         { hide: !errors.length }
       )}
     >
-      <button onClick={onCloseErrors} className="close pull-right">
-        <span>&times;</span>
-      </button>
+      <button onClick={onCloseErrors} className={styles.closeButton} />
       {errors.join('\n')}
-    </pre>
-    <ul className="nav nav-tabs">
+    </div>
+    <ul className={styles.tabs}>
       {
         /^\/projects/.test(pathname)
-        ? (<li className="active"><a href="#">Projects</a></li>)
+        ? (<li className={styles.active}><a href="#">Projects</a></li>)
         : (<li><Link to="/projects">Projects</Link></li>)
       }
     </ul>

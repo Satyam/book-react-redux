@@ -7,3 +7,28 @@
   background-color: silver;
   padding: 3px;
 }
+
+.errors-list {
+  composes: global(alert);
+  composes: global(alert-warning);
+  composes: global(alert-dismissible);
+  white-space: pre;
+  font-family: monospace;
+}
+
+.tabs {
+  composes: global(nav);
+  composes: global(nav-tabs);
+}
+
+.active {
+  composes: global(active);
+}
+
+.closeButton {
+  composes: global(close);
+  composes: global(pull-right);
+}
+.closeButton::before {
+  content: "\00D7";
+}
