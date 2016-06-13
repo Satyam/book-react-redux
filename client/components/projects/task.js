@@ -4,9 +4,9 @@ import styles from './task.css';
 import classNames from 'classnames';
 
 export const Task = (
-  { pid, tid, descr, completed, onTaskClick, onTaskEdit, onTaskDelete }
+  { pid, tid, descr, completed, onCompletedChange, onTaskEdit, onTaskDelete }
 ) => {
-  const onClickHandler = ev => isPlainClick(ev) && onTaskClick({
+  const onClickHandler = ev => isPlainClick(ev) && onCompletedChange({
     pid,
     tid,
     descr,
@@ -65,7 +65,7 @@ Task.propTypes = {
   tid: PropTypes.string,
   descr: PropTypes.string,
   completed: PropTypes.bool,
-  onTaskClick: PropTypes.func,
+  onCompletedChange: PropTypes.func,
   onTaskEdit: PropTypes.func,
   onTaskDelete: PropTypes.func,
 };
@@ -77,7 +77,7 @@ export const mapStateToProps = (state, props) => state.tasks[props.tid];
 import { completedChanged, setEditTid, deleteTask } from 'store/actions';
 
 export const mapDispatchToProps = (dispatch) => ({
-  onTaskClick:
+  onCompletedChange:
     ({ pid, tid, descr, completed }) => dispatch(completedChanged(pid, tid, descr, completed)),
   onTaskEdit: ({ tid }) => dispatch(setEditTid(tid)),
   onTaskDelete: ({ pid, tid, completed }) => dispatch(deleteTask(pid, tid, completed)),
