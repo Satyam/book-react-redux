@@ -10,7 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 import createStore from './store/createStore';
 
-export const store = createStore();
+export const store = createStore(browserHistory);
 
 const history = syncHistoryWithStore(browserHistory, store);
 
