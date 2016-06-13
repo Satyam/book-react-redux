@@ -1,20 +1,30 @@
 import React, { PropTypes } from 'react';
-
+import { Link } from 'react-router';
 import styles from './projectList.css';
 import classNames from 'classnames';
 import ProjectItem from './projectItem';
 
-export const ProjectList = ({ children, projects }) => (
+export const ProjectList = ({ children, projects, newProject }) => (
   <div className={classNames('project-list', styles.projectList)}>
     <h1>Projects:</h1>
-    <ul>{
-      Object.keys(projects).map(pid =>
-        (<ProjectItem
-          key={pid}
-          pid={pid}
-        />)
-      )
-    }</ul>
+    <div className="row">
+      <div className="col-md-9">
+        <ul>{
+          Object.keys(projects).map(pid =>
+            (<ProjectItem
+              key={pid}
+              pid={pid}
+            />)
+          )
+        }</ul>
+      </div>
+      <div className="col-md-3">
+        {newProject
+          ? (<button className="btn btn-default" disabled="disabled">Add Project</button>)
+          : (<Link className="btn btn-default" to="/projects/newProject">Add Project</Link>)
+        }
+      </div>
+    </div>
     {children}
   </div>
 );
@@ -22,6 +32,7 @@ export const ProjectList = ({ children, projects }) => (
 ProjectList.propTypes = {
   children: PropTypes.node,
   projects: PropTypes.object,
+  newProject: PropTypes.bool,
 };
 
 import initialDispatcher from 'utils/initialDispatcher.js';

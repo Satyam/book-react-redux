@@ -1,7 +1,22 @@
 .task {
   cursor: pointer;
 }
+.task:hover {
+  font-weight: bold;
+}
 .completed {
   text-decoration: line-through;
   color: silver;
+}
+.descr::before {
+  content: '\2022 \00A0 ';
+  font-weight: bold;
+}
+
+.icons :global .glyphicon {
+  opacity: 0.5;
+  margin-left: 1em;
+}
+.icons :global .glyphicon:hover {
+  opacity: 1;
 }

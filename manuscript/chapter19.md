@@ -206,7 +206,7 @@ WebPack can also load and bundle images in various formats provided of the suita
 
 We have seen how we can improve the looks of our application by using any of many UI libraries available for free.
 
-We learned how to tell WebPack to import CSS files as it does with regular modules and how to keep their definitions private to the module importing them, avoiding conflicts with overlapping selectors.
+We learned how we can deliver a full component, JavaScript, markup and style using WebPack to import CSS files as it does with regular modules and how to keep their definitions private to the module importing them, avoiding conflicts with overlapping selectors.
 
 This has freed us to use plenty more CSS styles than before, certain that we don't risk messing up with other components, packing each component with its own private style definitions.
 

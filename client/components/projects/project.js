@@ -2,13 +2,23 @@ import React, { PropTypes } from 'react';
 import TaskList from './taskList';
 import styles from './project.css';
 import classNames from 'classnames';
+import { Link } from 'react-router';
+import isPlainClick from 'utils/isPlainClick';
 
-export const Project = ({ pid, name, descr }) => (
+export const Project = ({ pid, name, descr, onDeleteClick }) => (
   name
   ? (
     <div className={classNames('project', styles.project)}>
-      <h1>{name}</h1>
-      <p>{descr}</p>
+      <div className="row">
+        <div className="col-md-9">
+          <h1>{name}</h1>
+          <div className={styles.descr}>{descr}</div>
+        </div>
+        <div className="col-md-3">
+          <Link className="btn btn-default" to={`/projects/editProject/${pid}`}>Edit Project</Link>
+          <button className="btn btn-warning" onClick={onDeleteClick}>Delete Project</button>
+        </div>
+      </div>
       <TaskList
         pid={pid}
       />
@@ -20,6 +30,7 @@ Project.propTypes = {
   pid: PropTypes.string.isRequired,
   name: PropTypes.string,
   descr: PropTypes.string,
+  onDeleteClick: PropTypes.func,
 };
 
 import { connect } from 'react-redux';
@@ -34,8 +45,19 @@ export const mapStateToProps = (state, props) => {
   };
 };
 
+import { deleteProject, getProjectById, push } from 'store/actions';
+
+export const mapDispatchToProps = (dispatch, props) => ({
+  onDeleteClick: ev => {
+    if (isPlainClick(ev) && window.confirm('Are you sure?')) { // eslint-disable-line no-alert
+      return dispatch(deleteProject(props.params.pid))
+        .then(() => dispatch(push('/projects')));
+    }
+    return undefined;
+  },
+});
+
 import initialDispatcher from 'utils/initialDispatcher.js';
-import { getProjectById } from 'store/actions';
 
 export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
   const pid = nextProps.params.pid;
@@ -46,5 +68,6 @@ export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
 };
 
 export default initialDispatcher(initialDispatch)(connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(Project));

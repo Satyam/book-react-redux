@@ -1,7 +1,7 @@
-export const TASK_COMPLETED_CHANGE = 'projects/Task completed changed';
+import ACTION_TYPES from './actionTypes.js';
 
 export const completedChanged = (pid, tid, completed) => ({
-  type: TASK_COMPLETED_CHANGE,
+  type: ACTION_TYPES.TASK_COMPLETED_CHANGE,
   pid,
   tid,
   completed,
@@ -19,43 +19,155 @@ const fail = (dispatch, type) => response => {
     url: response.config.url.replace(response.config.baseURL, ''),
   });
 };
-export const ALL_PROJECTS_REQUEST = 'projects/Projects list/REQUEST';
-export const ALL_PROJECTS_SUCCESS = 'projects/Projects list/SUCCESS';
-export const ALL_PROJECTS_FAILURE = 'projects/Projects list/FAILURE';
+
 
 export function getAllProjects() {
   return dispatch => {
     dispatch({
-      type: ALL_PROJECTS_REQUEST,
+      type: ACTION_TYPES.ALL_PROJECTS_REQUEST,
     });
     return api.read('?fields=pid,name,pending')
       .then(
         response => dispatch({
-          type: ALL_PROJECTS_SUCCESS,
+          type: ACTION_TYPES.ALL_PROJECTS_SUCCESS,
           data: response.data,
         }),
-        fail(dispatch, ALL_PROJECTS_FAILURE)
+        fail(dispatch, ACTION_TYPES.ALL_PROJECTS_FAILURE)
       );
   };
 }
 
-export const PROJECT_BY_ID_REQUEST = 'projects/Project info/REQUEST';
-export const PROJECT_BY_ID_SUCCESS = 'projects/Project info/SUCCESS';
-export const PROJECT_BY_ID_FAILURE = 'projects/Project info/FAILURE';
-
 export function getProjectById(pid) {
   return dispatch => {
     dispatch({
-      type: PROJECT_BY_ID_REQUEST,
+      type: ACTION_TYPES.PROJECT_BY_ID_REQUEST,
       pid,
     });
     return api.read(pid)
       .then(
         response => dispatch({
-          type: PROJECT_BY_ID_SUCCESS,
+          type: ACTION_TYPES.PROJECT_BY_ID_SUCCESS,
           data: response.data,
         }),
-        fail(dispatch, PROJECT_BY_ID_FAILURE)
+        fail(dispatch, ACTION_TYPES.PROJECT_BY_ID_FAILURE)
+      );
+  };
+}
+
+export function addProject(name, descr) {
+  return dispatch => {
+    dispatch({
+      type: ACTION_TYPES.ADD_PROJECT_REQUEST,
+      name,
+      descr,
+    });
+    return api.create('', { name, descr })
+      .then(
+        response => dispatch({
+          type: ACTION_TYPES.ADD_PROJECT_SUCCESS,
+          data: Object.assign({ name, descr }, response.data),
+        }),
+        fail(dispatch, ACTION_TYPES.ADD_PROJECT_FAILURE)
+      );
+  };
+}
+
+export function updateProject(pid, name, descr) {
+  return dispatch => {
+    dispatch({
+      type: ACTION_TYPES.UPDATE_PROJECT_REQUEST,
+      name,
+      descr,
+    });
+    return api.update(pid, { name, descr })
+      .then(
+        response => dispatch({
+          type: ACTION_TYPES.UPDATE_PROJECT_SUCCESS,
+          data: Object.assign({ name, descr }, response.data),
+        }),
+        fail(dispatch, ACTION_TYPES.UPDATE_PROJECT_FAILURE)
+      );
+  };
+}
+
+export function deleteProject(pid) {
+  return dispatch => {
+    dispatch({
+      type: ACTION_TYPES.DELETE_PROJECT_REQUEST,
+      pid,
+    });
+    return api.delete(pid)
+      .then(
+        response => {
+          dispatch({
+            type: ACTION_TYPES.DELETE_PROJECT_SUCCESS,
+            data: response.data,
+          });
+        },
+        fail(dispatch, ACTION_TYPES.DELETE_PROJECT_FAILURE)
+      );
+  };
+}
+
+export function addTaskToProject(pid, descr, completed) {
+  return dispatch => {
+    dispatch({
+      type: ACTION_TYPES.ADD_TASK_REQUEST,
+      pid,
+      descr,
+      completed,
+    });
+    return api.create(pid, { descr })
+      .then(
+        response => {
+          dispatch({
+            type: ACTION_TYPES.ADD_TASK_SUCCESS,
+            data: { descr, completed, pid, tid: String(response.data.tid) },
+          });
+        },
+        fail(dispatch, ACTION_TYPES.ADD_TASK_FAILURE)
+      );
+  };
+}
+
+export function updateTask(pid, tid, descr, completed) {
+  return dispatch => {
+    dispatch({
+      type: ACTION_TYPES.UPDATE_TASK_REQUEST,
+      pid,
+      tid,
+      descr,
+      completed,
+    });
+    return api.update(`/${pid}/${tid}`, { descr, completed })
+      .then(
+        response => {
+          dispatch({
+            type: ACTION_TYPES.UPDATE_TASK_SUCCESS,
+            data: Object.assign({ descr, completed }, response.data),
+          });
+        },
+        fail(dispatch, ACTION_TYPES.UPDATE_TASK_FAILURE)
+      );
+  };
+}
+
+export function deleteTask(pid, tid, completed) {
+  return dispatch => {
+    dispatch({
+      type: ACTION_TYPES.DELETE_TASK_REQUEST,
+      pid,
+      tid,
+    });
+    return api.delete(`/${pid}/${tid}`)
+      .then(
+        response => {
+          dispatch({
+            type: ACTION_TYPES.DELETE_TASK_SUCCESS,
+            data: Object.assign({ completed }, response.data),
+          });
+        },
+        fail(dispatch, ACTION_TYPES.DELETE_TASK_FAILURE)
       );
   };
 }

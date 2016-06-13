@@ -1,14 +1,19 @@
 import {
   TASK_COMPLETED_CHANGE,
   PROJECT_BY_ID_SUCCESS,
-} from './actions';
+  ADD_TASK_SUCCESS,
+  UPDATE_TASK_SUCCESS,
+  DELETE_TASK_SUCCESS,
+} from './actionTypes';
+
 const update = require('react-addons-update');
+import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 
 export default (state = {}, action) => {
   switch (action.type) {
     case TASK_COMPLETED_CHANGE: {
-      return update(
-        state,
+      return update(state,
         {
           [action.tid]: {
             completed: { $set: action.completed },
@@ -25,6 +30,14 @@ export default (state = {}, action) => {
         state
       );
     }
+    case ADD_TASK_SUCCESS:
+      return update(state, { $merge: { [action.data.tid]: action.data } });
+    case UPDATE_TASK_SUCCESS:
+      return update(state, {
+        [action.data.tid]: { $set: pick(action.data, 'descr', 'completed') },
+      });
+    case DELETE_TASK_SUCCESS:
+      return update(state, { $apply: tasks => omit(tasks, action.data.tid) });
     default:
       return state;
   }

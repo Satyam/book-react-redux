@@ -1,3 +1,11 @@
 .project {
   border-top: thin solid silver;
+  margin-top: 1em;
+  padding-top: 1em;
+}
+.descr {
+  composes: global(text-primary);
+  margin-bottom: 1em;
+  padding-left: 1em;
+  border-left: thick solid silver;
 }

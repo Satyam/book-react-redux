@@ -4,11 +4,13 @@ import reduxThunk from 'redux-thunk';
 
 import { projects, tasks } from './projects';
 import requests from './requests';
+import misc from './misc';
 
 const reducers = combineReducers({
   projects,
   tasks,
   requests,
+  misc,
   routing: routerReducer,
 });
 
