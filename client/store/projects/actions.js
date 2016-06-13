@@ -1,11 +1,5 @@
 import ACTION_TYPES from './actionTypes.js';
 
-export const completedChanged = (pid, tid, completed) => ({
-  type: ACTION_TYPES.TASK_COMPLETED_CHANGE,
-  pid,
-  tid,
-  completed,
-});
 
 import restAPI from 'utils/restAPI.js';
 
@@ -171,3 +165,16 @@ export function deleteTask(pid, tid, completed) {
       );
   };
 }
+
+export const completedChanged = (pid, tid, descr, completed) =>
+  dispatch =>
+    dispatch(updateTask(pid, tid, descr, completed))
+      .then(() =>
+        dispatch({
+          type: ACTION_TYPES.TASK_COMPLETED_CHANGE,
+          pid,
+          tid,
+          completed,
+        })
+      )
+  ;

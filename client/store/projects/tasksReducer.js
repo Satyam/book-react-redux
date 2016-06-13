@@ -1,5 +1,4 @@
 import {
-  TASK_COMPLETED_CHANGE,
   PROJECT_BY_ID_SUCCESS,
   ADD_TASK_SUCCESS,
   UPDATE_TASK_SUCCESS,
@@ -12,15 +11,6 @@ import pick from 'lodash/pick';
 
 export default (state = {}, action) => {
   switch (action.type) {
-    case TASK_COMPLETED_CHANGE: {
-      return update(state,
-        {
-          [action.tid]: {
-            completed: { $set: action.completed },
-          },
-        }
-      );
-    }
     case PROJECT_BY_ID_SUCCESS: {
       return action.data.tasks.reduce(
         (tasks, task) => (tasks[task.pid]
@@ -34,7 +24,7 @@ export default (state = {}, action) => {
       return update(state, { $merge: { [action.data.tid]: action.data } });
     case UPDATE_TASK_SUCCESS:
       return update(state, {
-        [action.data.tid]: { $set: pick(action.data, 'descr', 'completed') },
+        [action.data.tid]: { $merge: action.data },
       });
     case DELETE_TASK_SUCCESS:
       return update(state, { $apply: tasks => omit(tasks, action.data.tid) });

@@ -9,6 +9,7 @@ export const Task = (
   const onClickHandler = ev => isPlainClick(ev) && onTaskClick({
     pid,
     tid,
+    descr,
     completed: !completed,
   });
   const onTaskEditHandler = ev => isPlainClick(ev) && onTaskEdit({ pid, tid });
@@ -76,7 +77,8 @@ export const mapStateToProps = (state, props) => state.tasks[props.tid];
 import { completedChanged, setEditTid, deleteTask } from 'store/actions';
 
 export const mapDispatchToProps = (dispatch) => ({
-  onTaskClick: ({ pid, tid, completed }) => dispatch(completedChanged(pid, tid, completed)),
+  onTaskClick:
+    ({ pid, tid, descr, completed }) => dispatch(completedChanged(pid, tid, descr, completed)),
   onTaskEdit: ({ tid }) => dispatch(setEditTid(tid)),
   onTaskDelete: ({ pid, tid, completed }) => dispatch(deleteTask(pid, tid, completed)),
 });
