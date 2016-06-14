@@ -22,6 +22,9 @@ export class EditProject extends Component {
     ev.preventDefault();
     this.props.onSubmit(this.state);
   }
+  onCancelHandler(ev) {
+    if (isPlainClick(ev)) this.props.onCancelEdit(this.state);
+  }
   render() {
     return (
       <div className={classNames('edit-project', styles.editProject)}>
@@ -44,11 +47,15 @@ export class EditProject extends Component {
               value={this.state.descr}
             />
           </div>
-          <button className="btn btn-primary" type="submit">Ok</button>
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={this.state.name.length === 0}
+          >Ok</button>
           <button
             className="btn btn-default"
             type="button"
-            onClick={this.props.cancelButton}
+            onClick={this.onCancelHandler}
           >Cancel</button>
         </form>
       </div>
@@ -60,12 +67,10 @@ EditProject.propTypes = {
   name: PropTypes.string,
   descr: PropTypes.string,
   onSubmit: PropTypes.func,
-  cancelButton: PropTypes.func,
+  onCancelEdit: PropTypes.func,
 };
 
 import { getProjectById, addProject, updateProject, push, replace } from 'store/actions';
-
-EditProject.serverInit = (dispatch, { params }) => dispatch(getProjectById(params.pid));
 
 export const mapStateToProps = (state, { params }) => {
   const pid = params.pid;
@@ -80,27 +85,36 @@ export const mapDispatchToProps = (dispatch, { params }) => ({
   onSubmit: ({ name, descr }) => {
     const pid = params.pid;
     if (pid) {
-      return dispatch(updateProject(params.pid, name, descr))
+      return dispatch(updateProject(pid, name, descr))
         .then(() => dispatch(push(`/projects/${pid}`)));
     }
     return dispatch(addProject(name, descr))
       .then(response => dispatch(push(`/projects/${response.data.pid}`)));
   },
-  cancelButton: ev => {
+  onCancelEdit: () => {
     const pid = params.pid;
-    if (isPlainClick(ev)) {
-      dispatch(replace(
-        pid
-        ? `/projects/${pid}`
-        : '/projects'
-      ));
-    }
+    dispatch(replace(
+      pid
+      ? `/projects/${pid}`
+      : '/projects'
+    ));
   },
 });
 
+import initialDispatcher from 'utils/initialDispatcher.js';
+
+export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
+  const pid = nextProps.params.pid;
+  if (!pid) return;
+  const prj = pid && state.projects[pid];
+  if (!prj || !prj.tids) {
+    dispatch(getProjectById(pid));
+  }
+};
+
 import { connect } from 'react-redux';
 
-export default connect(
+export default initialDispatcher(initialDispatch)(connect(
   mapStateToProps,
   mapDispatchToProps
-)(EditProject);
+)(EditProject));

@@ -21,6 +21,9 @@ export class EditTask extends Component {
       if (! st.tid) this.setState({ descr: '' });
     });
   }
+  onCancelHandler(ev) {
+    if (isPlainClick(ev)) this.props.onCancelEdit(this.state);
+  }
   render() {
     return (
       <div
@@ -42,7 +45,11 @@ export class EditTask extends Component {
             </div>
           </div>
           <div className="col-xs-5">
-            <button className="btn btn-primary" type="submit">
+            <button
+              className="btn btn-primary"
+              type="submit"
+              disabled={this.state.descr.length === 0}
+            >
               <span
                 className={`glyphicon glyphicon-${this.state.tid ? 'ok' : 'plus'}`}
               >
@@ -50,7 +57,7 @@ export class EditTask extends Component {
             </button>
             {this.state.tid
               ? (
-              <button className="btn btn-default" type="button" onClick={this.props.onCancel}>
+              <button className="btn btn-default" type="button" onClick={this.onCancelHandler}>
                 <span className="glyphicon glyphicon-remove"></span>
               </button>)
               : null
@@ -68,7 +75,7 @@ EditTask.propTypes = {
   descr: PropTypes.string,
   completed: PropTypes.bool,
   onSubmit: PropTypes.func,
-  onCancel: PropTypes.func,
+  onCancelEdit: PropTypes.func,
 };
 
 import { connect } from 'react-redux';
@@ -96,7 +103,7 @@ export const mapDispatchToProps = (dispatch) => ({
     }
     return dispatch(addTaskToProject(pid, descr, completed));
   },
-  onCancel: ev => isPlainClick(ev) && dispatch(setEditTid(null)),
+  onCancelEdit: () => dispatch(setEditTid(null)),
 });
 
 export default connect(
