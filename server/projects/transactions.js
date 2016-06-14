@@ -2,9 +2,14 @@ const prepared = {};
 
 module.exports = {
   init: (done) => {
-    prepared.selectAllProjects = db.prepare('select projects.*, count(tasks.completed) as pending from projects inner join tasks using (pid) where completed = 0 group by pid', (err) => {
-      if (err) return done(err);
-    });
+    prepared.selectAllProjects = db.prepare(
+      `select projects.*, count(tid) as pending from projects left join
+      (select pid, tid from tasks where completed = 0)
+      using (pid) group by pid`,
+      (err) => {
+        if (err) return done(err);
+      }
+    );
     prepared.selectProjectByPid = db.prepare('select * from projects where pid = $pid', (err) => {
       if (err) return done(err);
     });
@@ -21,6 +26,9 @@ module.exports = {
       if (err) return done(err);
     });
     prepared.deleteProject = db.prepare('delete from projects where pid = $pid', (err) => {
+      if (err) return done(err);
+    });
+    prepared.deleteTasksInProject = db.prepare('delete from tasks where pid = $pid', (err) => {
       if (err) return done(err);
     });
     prepared.deleteTask = db.prepare('delete from tasks where pid = $pid and tid = $tid', (err) => {
@@ -119,7 +127,7 @@ module.exports = {
         return;
       }
       if (this.changes) {
-        done(null, keys);
+        done(null, { pid: keys.pid });
       } else {
         done(null, null);
       }
@@ -146,15 +154,20 @@ module.exports = {
   },
 
   deleteProject: (keys, data, options, done) => {
-    prepared.deleteProject.run({
+    prepared.deleteTasksInProject.run({
       $pid: keys.pid
     }, function (err) {
       if (err) return done(err);
-      if (this.changes) {
-        done(null, keys);
-      } else {
-        done(null, null);
-      }
+      prepared.deleteProject.run({
+        $pid: keys.pid
+      }, function (err) {
+        if (err) return done(err);
+        if (this.changes) {
+          done(null, keys);
+        } else {
+          done(null, null);
+        }
+      });
     });
   },
 

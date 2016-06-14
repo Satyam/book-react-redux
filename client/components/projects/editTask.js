@@ -45,14 +45,13 @@ export class EditTask extends Component {
             <button className="btn btn-primary" type="submit">
               <span
                 className={`glyphicon glyphicon-${this.state.tid ? 'ok' : 'plus'}`}
-                aria-hidden="true"
               >
               </span>
             </button>
             {this.state.tid
               ? (
               <button className="btn btn-default" type="button" onClick={this.props.onCancel}>
-                <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                <span className="glyphicon glyphicon-remove"></span>
               </button>)
               : null
             }

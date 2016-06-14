@@ -48,12 +48,10 @@ export const Task = (
         <span
           className="glyphicon glyphicon-pencil text-primary"
           onClick={onTaskEditHandler}
-          aria-hidden="true"
         ></span>
         <span
           className="glyphicon glyphicon-trash text-danger"
           onClick={onTaskDeleteHandler}
-          aria-hidden="true"
         ></span>
       </span>
     </div>

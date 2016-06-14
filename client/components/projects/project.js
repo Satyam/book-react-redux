@@ -2,12 +2,16 @@ import React, { PropTypes } from 'react';
 import TaskList from './taskList';
 import styles from './project.css';
 import classNames from 'classnames';
-import { Link } from 'react-router';
 import isPlainClick from 'utils/isPlainClick';
 
-export const Project = ({ pid, name, descr, onDeleteClick }) => (
-  name
-  ? (
+export const Project = ({ pid, name, descr, onEditClick, onDeleteClick }) => {
+  const editClickHandler = ev => isPlainClick(ev) && onEditClick({ pid });
+  const deleteClickHandler = ev =>
+    isPlainClick(ev) &&
+    window.confirm('Are you sure?') && // eslint-disable-line no-alert
+    onDeleteClick({ pid });
+  return name
+    ? (
     <div className={classNames('project', styles.project)}>
       <div className="row">
         <div className="col-md-9">
@@ -15,21 +19,23 @@ export const Project = ({ pid, name, descr, onDeleteClick }) => (
           <div className={styles.descr}>{descr}</div>
         </div>
         <div className="col-md-3">
-          <Link className="btn btn-default" to={`/projects/editProject/${pid}`}>Edit Project</Link>
-          <button className="btn btn-warning" onClick={onDeleteClick}>Delete Project</button>
+          <button className={styles.editButton} onClick={editClickHandler}>Edit Project</button>
+          <button className={styles.deleteButton} onClick={deleteClickHandler}>Delete Project</button>
         </div>
       </div>
       <TaskList
         pid={pid}
       />
     </div>)
-  : (<p>Project {pid} not found</p>)
-);
+    : (<p>Project {pid} not found</p>)
+  ;
+};
 
 Project.propTypes = {
   pid: PropTypes.string.isRequired,
   name: PropTypes.string,
   descr: PropTypes.string,
+  onEditClick: PropTypes.func,
   onDeleteClick: PropTypes.func,
 };
 
@@ -47,14 +53,11 @@ export const mapStateToProps = (state, props) => {
 
 import { deleteProject, getProjectById, push } from 'store/actions';
 
-export const mapDispatchToProps = (dispatch, props) => ({
-  onDeleteClick: ev => {
-    if (isPlainClick(ev) && window.confirm('Are you sure?')) { // eslint-disable-line no-alert
-      return dispatch(deleteProject(props.params.pid))
-        .then(() => dispatch(push('/projects')));
-    }
-    return undefined;
-  },
+export const mapDispatchToProps = dispatch => ({
+  onEditClick: ({ pid }) => dispatch(push(`/projects/editProject/${pid}`)),
+  onDeleteClick: ({ pid }) =>
+    dispatch(deleteProject(pid))
+      .then(() => dispatch(push('/projects'))),
 });
 
 import initialDispatcher from 'utils/initialDispatcher.js';

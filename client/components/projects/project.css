@@ -9,3 +9,11 @@
   padding-left: 1em;
   border-left: thick solid silver;
 }
+.editButton {
+  composes: global(btn);
+  composes: global(btn-default);
+}
+.deleteButton {
+  composes: global(btn);
+  composes: global(btn-warning);
+}
