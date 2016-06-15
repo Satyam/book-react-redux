@@ -6,18 +6,10 @@ export const TaskList = ({ pid, tids, editTid }) => (
   <div className="task-list">{
     tids
     ? tids.map(tid => (
-      tid === editTid
-        ? <EditTask
-          key={tid}
-          pid={pid}
-          tid={tid}
-        />
-      : <Task
-        key={tid}
-        tid={tid}
-        pid={pid}
-      />)
-    )
+        tid === editTid
+        ? <EditTask key={tid} pid={pid} tid={tid} />
+        : <Task key={tid} pid={pid} tid={tid} />
+      ))
     : null}
     {editTid ? null : <EditTask pid={pid} />}
   </div>

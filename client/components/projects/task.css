@@ -13,10 +13,24 @@
   font-weight: bold;
 }
 
-.icons :global .glyphicon {
+.icon {
   opacity: 0.5;
-  margin-left: 1em;
+  margin: 0 0.5em;
 }
-.icons :global .glyphicon:hover {
+.icon:hover {
   opacity: 1;
+}
+
+.edit-icon {
+  composes: icon;
+  composes: global(glyphicon);
+  composes: global(glyphicon-pencil);
+  composes: global(text-primary);
+}
+
+.delete-icon {
+  composes: icon;
+  composes: global(glyphicon);
+  composes: global(glyphicon-trash);
+  composes: global(text-danger);
 }

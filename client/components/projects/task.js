@@ -29,7 +29,7 @@ export const Task = (
         styles.task
       )}
     >
-      <span
+      <div
         onClick={onClickHandler}
         className={classNames(
           'col-xs-9',
@@ -38,22 +38,22 @@ export const Task = (
         )}
       >
         {descr}
-      </span>
-      <span
+      </div>
+      <div
         className={classNames(
           'col-xs-3',
           styles.icons
         )}
       >
         <span
-          className="glyphicon glyphicon-pencil text-primary"
+          className={styles.editIcon}
           onClick={onTaskEditHandler}
         ></span>
         <span
-          className="glyphicon glyphicon-trash text-danger"
+          className={styles.deleteIcon}
           onClick={onTaskDeleteHandler}
         ></span>
-      </span>
+      </div>
     </div>
   );
 };
