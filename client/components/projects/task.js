@@ -70,7 +70,10 @@ Task.propTypes = {
 
 import { connect } from 'react-redux';
 
-export const mapStateToProps = (state, props) => state.tasks[props.tid];
+export const mapStateToProps = (state, props) => state.tasks[props.tid] || {
+  descr: '',
+  completed: false,
+};
 
 import { completedChanged, setEditTid, deleteTask } from 'store/actions';
 

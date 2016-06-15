@@ -11,79 +11,65 @@ export class EditProject extends Component {
     this.state = pick(props, 'name', 'descr');
     bindHandlers(this);
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState(pick(nextProps, 'name', 'descr'));
-  }
   onChangeHandler(ev) {
     const target = ev.target;
     this.setState({ [target.name]: target.value });
   }
   onSubmitHandler(ev) {
-    ev.preventDefault();
-    this.props.onSubmit(this.state);
+    if (isPlainClick(ev)) this.props.onSubmit(this.state);
   }
   onCancelHandler(ev) {
-    if (isPlainClick(ev)) this.props.onCancelEdit(this.state);
+    if (isPlainClick(ev)) this.props.onCancelEdit();
   }
   render() {
     return (
       <div className={classNames('edit-project', styles.editProject)}>
-        <form onSubmit={this.onSubmitHandler}>
-          <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input
-              className="form-control"
-              name="name"
-              onChange={this.onChangeHandler}
-              value={this.state.name}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="descr">Description</label>
-            <textarea
-              className="form-control"
-              name="descr"
-              onChange={this.onChangeHandler}
-              value={this.state.descr}
-            />
-          </div>
-          <button
-            className="btn btn-primary"
-            type="submit"
-            disabled={this.state.name.length === 0}
-          >Ok</button>
-          <button
-            className="btn btn-default"
-            type="button"
-            onClick={this.onCancelHandler}
-          >Cancel</button>
-        </form>
+        <div className={styles.formGroup}>
+          <label htmlFor="name">Name</label>
+          <input
+            className={styles.formControl}
+            name="name"
+            onChange={this.onChangeHandler}
+            value={this.state.name}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="descr">Description</label>
+          <textarea
+            className={styles.formControl}
+            name="descr"
+            onChange={this.onChangeHandler}
+            value={this.state.descr}
+          />
+        </div>
+        <button
+          className={styles.okButton}
+          disabled={this.state.name.length === 0}
+          onClick={this.onSubmitHandler}
+        >Ok</button>
+        <button
+          className={styles.cancelButton}
+          onClick={this.onCancelHandler}
+        >Cancel</button>
       </div>
     );
   }
 }
 
 EditProject.propTypes = {
+  pid: PropTypes.string,
   name: PropTypes.string,
   descr: PropTypes.string,
   onSubmit: PropTypes.func,
   onCancelEdit: PropTypes.func,
 };
 
-import { getProjectById, addProject, updateProject, push, replace } from 'store/actions';
+import { addProject, updateProject, push, replace } from 'store/actions';
 
-export const mapStateToProps = (state, { params }) => {
-  const pid = params.pid;
-  const prj = pid && state.projects[pid];
-  return prj || {
-    name: '',
-    descr: '',
-  };
-};
+import { mapStateToProps, initialDispatch } from './project';
 
-export const mapDispatchToProps = (dispatch, { params }) => ({
+export const mapDispatchToProps = (dispatch, { params: { pid } }) => ({
   onSubmit: ({ name, descr }) => {
-    const pid = params.pid;
     if (pid) {
       return dispatch(updateProject(pid, name, descr))
         .then(() => dispatch(push(`/projects/${pid}`)));
@@ -92,7 +78,6 @@ export const mapDispatchToProps = (dispatch, { params }) => ({
       .then(response => dispatch(push(`/projects/${response.data.pid}`)));
   },
   onCancelEdit: () => {
-    const pid = params.pid;
     dispatch(replace(
       pid
       ? `/projects/${pid}`
@@ -102,15 +87,6 @@ export const mapDispatchToProps = (dispatch, { params }) => ({
 });
 
 import initialDispatcher from 'utils/initialDispatcher.js';
-
-export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
-  const pid = nextProps.params.pid;
-  if (!pid) return;
-  const prj = pid && state.projects[pid];
-  if (!prj || !prj.tids) {
-    dispatch(getProjectById(pid));
-  }
-};
 
 import { connect } from 'react-redux';
 

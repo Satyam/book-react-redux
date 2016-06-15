@@ -43,11 +43,10 @@ import { connect } from 'react-redux';
 
 export const mapStateToProps = (state, props) => {
   const pid = props.params.pid;
-  const project = state.projects[pid];
-  return {
+  return state.projects[pid] || {
     pid,
-    name: project && project.name,
-    descr: project && project.descr,
+    name: '',
+    descr: '',
   };
 };
 
@@ -64,6 +63,7 @@ import initialDispatcher from 'utils/initialDispatcher.js';
 
 export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
   const pid = nextProps.params.pid;
+  if (!pid) return;
   const prj = pid && state.projects[pid];
   if (!prj || !prj.tids) {
     dispatch(getProjectById(pid));

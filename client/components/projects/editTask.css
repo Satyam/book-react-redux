@@ -1,0 +1,29 @@
+.form-group {
+  composes: global(form-group);
+}
+.form-control {
+  composes: global(form-control);
+}
+.ok-button {
+  composes: global(btn);
+  composes: global(btn-primary);
+  composes: global(glyphicon);
+}
+
+.add-button {
+  composes: ok-button;
+  composes: global(glyphicon-plus);
+}
+.edit-button {
+  composes: ok-button;
+  composes: global(glyphicon-ok);
+}
+.cancel-button {
+  composes: global(btn);
+  composes: global(btn-default);
+  composes: global(glyphicon);
+  composes: global(glyphicon-remove);
+}
+:global(.add-task) .cancel-button {
+  display: none;
+}
