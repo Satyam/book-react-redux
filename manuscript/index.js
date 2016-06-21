@@ -15,13 +15,22 @@ const writeFile = denodeify(fs.writeFile);
 
 const linkGitHubRE = /\[\(:memo:([^\)]*)\)\]\(https:\/\/github.com\/Satyam\/book-react-redux\/blob\/([^#\)]+)/g;
 const octocatRE = /:octocat:/g;
+const downloadRE = /<a href="(\d\d-\d\d)">:o:<\/a>/g;
 const ampRE = /&/g;
 const ltRE = /</g;
 const gtRE = />/g;
 const memoRE=/\(:memo:([^\)]*)\)/;
 
+const download =
+`<a
+  href="https://github.com/Satyam/book-react-redux/archive/chapter-$1.zip"
+  class="download"
+><img
+  title="Download Chapter $1 from GitHub"
+  src="octocat.png"
+/>&dArr;</a>`
 const octocat = '<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />';
-
+// https://github.com/Satyam/book-react-redux/archive/chapter-02-03.zip
 const rawGitHub = axios.create({
   baseURL: 'https://raw.githubusercontent.com/Satyam/book-react-redux/',
   transformResponse: (data) => data
@@ -199,7 +208,7 @@ readFile('book.txt', 'utf8')
     toc += '</ul></li></ul>';
     return {
       toc,
-      contents: contents.replace(octocatRE, octocat)
+      contents: contents.replace(octocatRE, octocat).replace(downloadRE, download)
     };
   })
   .then((values) => writeFile(
