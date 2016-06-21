@@ -16,11 +16,14 @@ const reducers = combineReducers({
 
 import remoteRequests from './requests/middleware';
 
-export default (history) => {
+export default (history, initialState) => {
   const mw = applyMiddleware(reduxThunk, remoteRequests, routerMiddleware(history));
   return createStore(
     reducers,
-    process.env.NODE_ENV !== 'production' && window.devToolsExtension
+    initialState,
+    process.env.NODE_ENV !== 'production' &&
+    typeof window !== 'undefined' &&
+    window.devToolsExtension
     ? compose(mw, window.devToolsExtension())
     : mw
   );

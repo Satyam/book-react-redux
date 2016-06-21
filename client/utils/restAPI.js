@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const PORT = process.env.npm_package_myServerApp_port || 8080;
-const HOST = process.env.npm_package_myServerApp_host || 'http://localhost';
+const PORT = process.env.npm_package_myWebServer_port || 8080;
+const HOST = process.env.npm_package_myWebServer_host || 'http://localhost';
 
 export default base => {
   const restClient = axios.create({

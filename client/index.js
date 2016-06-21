@@ -8,9 +8,15 @@ if (process.env.NODE_ENV !== 'production') {
   window.Perf = require('react-addons-perf'); // eslint-disable-line global-require
 }
 
+const initialStateEl = document.getElementById('initialState');
+let initialState = {};
+if (initialStateEl) {
+  initialState = JSON.parse(initialStateEl.innerHTML);
+}
+
 import createStore from './store/createStore';
 
-export const store = createStore(browserHistory);
+export const store = createStore(browserHistory, initialState);
 
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -25,3 +31,14 @@ export default render((
     </Router>
   </Provider>
 ), dest);
+
+if (process.env.NODE_ENV !== 'production') {
+  if (
+    !dest ||
+    !dest.firstChild ||
+    !dest.firstChild.attributes ||
+    !dest.firstChild.attributes['data-react-checksum']
+  ) {
+    console.error('Server-side React render was discarded. Make sure that your initial render does not contain any client-side code.'); // eslint-disable-line
+  }
+}

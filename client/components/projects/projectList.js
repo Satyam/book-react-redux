@@ -39,11 +39,13 @@ import initialDispatcher from 'utils/initialDispatcher.js';
 import { getAllProjects } from 'store/actions';
 import isEmpty from 'lodash/isEmpty';
 
-export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
-  if (isEmpty(state.projects)) {
-    dispatch(getAllProjects());
-  }
-};
+export const initialDispatch = ProjectList.initialDispatch =
+  (dispatch, nextProps, currentProps, state) => {
+    if (isEmpty(state.projects)) {
+      return dispatch(getAllProjects());
+    }
+    return undefined;
+  };
 import { connect } from 'react-redux';
 
 export const mapStateToProps = state => ({

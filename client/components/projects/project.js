@@ -61,14 +61,16 @@ export const mapDispatchToProps = dispatch => ({
 
 import initialDispatcher from 'utils/initialDispatcher.js';
 
-export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
-  const pid = nextProps.params.pid;
-  if (!pid) return;
-  const prj = pid && state.projects[pid];
-  if (!prj || !prj.tids) {
-    dispatch(getProjectById(pid));
-  }
-};
+export const initialDispatch = Project.initialDispatch =
+  (dispatch, nextProps, currentProps, state) => {
+    const pid = nextProps.params.pid;
+    if (!pid) return undefined;
+    const prj = pid && state.projects[pid];
+    if (!prj || !prj.tids) {
+      return dispatch(getProjectById(pid));
+    }
+    return undefined;
+  };
 
 export default initialDispatcher(initialDispatch)(connect(
   mapStateToProps,

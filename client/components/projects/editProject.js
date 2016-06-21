@@ -68,6 +68,9 @@ import { addProject, updateProject, push, replace } from 'store/actions';
 
 import { mapStateToProps, initialDispatch } from './project';
 
+EditProject.initialDispatch = initialDispatch;
+
+
 export const mapDispatchToProps = (dispatch, { params: { pid } }) => ({
   onSubmit: ({ name, descr }) => {
     if (pid) {

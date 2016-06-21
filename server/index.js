@@ -1,25 +1,23 @@
 const http = require('http');
 const path = require('path');
 const express = require('express');
-const app = express();
+global.app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 
 const server = http.createServer(app);
 
-const PORT = process.env.npm_package_myServerApp_port || 8080;
-
+const PORT = process.env.npm_package_myWebServer_port || 8080;
 app.use('/data', bodyParser.json());
 
 const dataRouter = express.Router();
 app.use('/data/v2', dataRouter);
 
+app.use('/bootstrap', express.static(path.join(__dirname, '../node_modules/bootstrap/dist')));
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.get('*', function (request, response) {
-  response.sendFile(path.join(__dirname, '../public', 'index.html'));
-});
+require(path.join(__dirname, '../public/lib/server.bundle.js'));
 
 const webServer = {
   start: (done) => {
