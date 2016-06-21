@@ -82,43 +82,93 @@ After so much insistence on the benefits of stateless components over stateful o
 
 ## Rendering a stateful form
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L28-L63)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L24-L57)
 
-We use a `<form>` element with its `onSubmit` event set to a method within the component itself.  The elements within are formated with Bootstrap's `form-group`, `form-control` and the various `btn` classNames.  We must user the pseudo-attribute `htmlFor` instead of `for` in the `<label>` elements because `for` is a reserved word in JavaScript and it confuses the JSX pre-compiler (the same happens with `className` instead of `class`, another reserved word).
+We use a couple of input fields and a couple of buttons with classNames imported from `editProject.css` [(:octocat:)]() which in turn point to Bootstrap's styles for form elements and buttons.  We must use the pseudo-attribute `htmlFor` instead of `for` in the `<label>` elements because `for` is a reserved word in JavaScript and it confuses the JSX pre-compiler (the same happens with `className` instead of `class`, another reserved word).
 
 Each `<input>` element has its `name` set to the value they represent.  They both have their `onChange` event set to a listener to detect any changes.  Their `value`s are taken from `this.state.`*whatever*.  The `onChangeHandler` constantly preserves any change in either input element in the component state using the element `name` property to identify each:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L17-L20)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L14-L17)
 
 By preserving the values of the input elements in the component `state` we ensure that they are not lost if the page is accidentally refreshed.  Admittedly, a change in one section of the page should not refresh components elsewhere, but it may still happen.
 
-Saving the input values in the state has other benefits.  Values could be formatted on the fly, for example, a space could be added every fourth digit in a credit card number. Values could be validated on each keystroke as well, before saving them into the state, for example, a message text could be truncated to the first 140 characters.  In our form, we disable the submit button when the `name` field is empty:
+Saving the input values in the state has other benefits.  Values could be formatted on the fly, for example, a space could be added every fourth digit in a credit card number. Values could be validated on each keystroke as well, before saving them into the state, for example, a message text could be truncated to the first 140 characters.  Values can be transformed in between their formatted representation to show to the user and the internal representation to be used internally within the application. That is why, on submitting the form, we are sending the values from `this.state` and not from the input fields:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L50-L54)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L18-L20)
+
+The rest of the application should not be concerned about which kind of element we have used to request the information, whether it is a simple text box or a full-blown calendar component that returns a Date object, it is important that, when the entered values are send out from the component, they are in an application-oriented format.
+
+In our form, we disable the submit button when the `name` field is empty:
+
+[(:memo:html)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L45-L49)
 
 The component is declared as a new class which extends `React.Component`:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L8-L16)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L8-L13)
 
-In the `constructor` we call `super` to pass on the `props` to `Component` and then set the initial `state` to the `name` and `descr` properties which we `pick` with the `lodash` utility of that name.  The `props` contain other values, but we don't want to pointlessly fill up `this.state` with information we don't really need. Since this component is a direct child of a `<Route>`, it will receive very many properties so we must be choosy.  We only pick the values needed for our input elements.
+In the `constructor` we call `super` to pass on the `props` to `Component` and then set the initial `state` to the `name` and `descr` properties which we `pick` from `props` with the `lodash` utility of that name.  The `props` contain other values, but we don't want to pointlessly fill up `this.state` with information we don't really need. For example, since this component is a direct child of a `<Route>`, it will receive very many properties so we must be choosy.  We only pick the values needed for our input elements.
 
-Calling `bindHandlers` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/utils/bindHandlers.js) comes next.  This is just one of many recipes we can find out there.  The problem is that event handlers such as `onChangeHandler` are not called in the context of the component, that is, the `this` for an event handler is usually useless. To solve this, event handlers need to be bound to the context of the component.  This should **never** be done in the `render` method, where the event handler is assigned, because the `render` method may be called many times (in this example, at least once per keystroke) and on each execution a new bound copy would be created quickly trashing the browser memory with these bound functions until the garbage collector kicks in.
+Calling `bindHandlers` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/utils/bindHandlers.js) comes next. The problem is that event handlers such as `onChangeHandler` are not called in the context of the component, that is, the `this` for an event handler is usually useless. To solve this, event handlers need to be bound to the context of the component. This should **never** be done in the `render` method, where the event handler is assigned, because the `render` method may be called many times (in this example, at least once per keystroke) and on each execution a new bound copy would be created quickly trashing the browser memory with these bound functions until the garbage collector kicks in.
 
-`bindHandlers` looks for any own methods (not inherited) that start with `on` and end with `Handler` and binds them all to `this` just once when the object instance is created.  Thus, it will bind `onChangeHandler`, `onSubmitHandler` and `onCancelHandler`.  Actually, `bindHandlers` takes a second, optional argument that should be a regular expression with the pattern of the method names to be bound and it defaults to `on`*XXXX*`Handler` if none is specified.
+ `bindHandlers` is just one of many recipes we can find out there. It looks for any own methods (not inherited) that start with `on` and end with `Handler` and binds them all to `this` just once when the object instance is created.  Thus, it will bind `onChangeHandler`, `onSubmitHandler` and `onCancelHandler`.  Actually, `bindHandlers` takes a second, optional argument that should be a regular expression with the pattern of the method names to be bound and it defaults to `on`*XXXX*`Handler` if none is specified.
 
-The `componentWillReceiveProps` method is also defined so as to update the state if new values for `name` or `descr` are received.  This may not always be a good idea.  Should the component receive new properties for whatever reason, whatever the user entered so far would be lost, even if the property that changed is not related to the input fields. It would be better to update the state only with those properties that have actually changed.  React provides the [shallowCompare](https://facebook.github.io/react/docs/shallow-compare.html) utility to do this. Most often, `componentWillReceiveProps` is simply not defined since most components don't receive new properties once instantiated.
+To submit or quit editing we have the following as handlers for the corresponding buttons:
 
-Every time `setState` is called, the component is re-rendered, to prevent it we may use `shouldComponentUpdate` to decide whether the new properties or state deserve a refresh. This should be dictated by a performance analysis and not done prematurely.
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L18-L23)
 
+In both cases we are checking it is a plain left-mouse button click and calling the corresponding custom event listener with the current state if it corresponds.  This is the place to do any final conversion of the data from its external representation, for example, a string representing a date, to its internal one, such as a Date object.
+
+Though `EditProject` is a stateful React component and it could deal with the store directly, it is still quite convenient to rely on the `connect` method of `react-redux`.  Both, `EditProject` and `Project` use the same data so it should not be surprising that instead of copying them, we import `mapStateToProps` and `initialDispatch` straight from `project.js` [(:octocat:)]().  We modified the originals just a little bit to allow them to provide defaults when a project is about to be added and does not yet exist, but it gives us the benefit of testing and maintaining just one set of functions.
+
+We do have to define a new `mapDispatchToProps` because the actions to be dispatched from `EditProject` are clearly different from those in `Project`.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L71-L87)
+
+Both have to branch of to different actions depending on whether `pid` has a value or not.  The first implies an update, the second, an addition.  When canceling, on an update we return to the project that was to be updated, otherwise we simply go to the project list.  We use the `replace` action from `react-router-redux` instead of `push` because, since we canceled, we don't want the browser history to remember we wanted to edit.
+
+In the `onSubmit` handler we dispatch either `updateProject` or `addProject` and upon a successful return we go to show the updated or newly added project.  For the added project, since we didn't have a `pid`, we read it from `respose.data.pid` as it is the database that will provide the `pid` from the newly added record.
 
 The `Task` component has grown to handle two more actions besides toggling the `completed` flag. It has two new event handlers, `onTaskEditHandler` and `onTaskDeleteHandler`
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/task.js#L6-L23)
 
-The new event handlers first check the event is a plain left button, no modifiers click and call the corresponding custom component event with the required arguments.  The `onTaskDeleteHandler` useops `window.confirm` which is quite an awful thing to do.  This is in no way recommended at all, but using any of the available alternatives such as the one provided by [React-Bootstrap](http://react-bootstrap.github.io/components.html#overlays) would have required loading lots of extra packages and adding code that would not have added any particular benefit for the purpose of this book.
+The new events are fired by clicking on a couple of icons added to each task.  Since tasks can be numerous, it seemed better to use small icons instead of a full-size buttons.
 
-The new events are fired by clicking on a couple of icons added to each task.  Since tasks can be numerous, it seemed better to use a small icon instead of a full-size button.
+[(:memo:html)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/task.js#L48-L55)
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/task.js#L48-L55)
+The event handlers call the dispatchers in `mapDispatchToProps`.  `onCompletedChange` now sends all the information for the task because it eventually will have to call `updateTask` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/actions.js#L169-L180) and has to give it all the information.
 
-To help with the layout, we have used Bootstrap's [grid system](http://getbootstrap.com/css/#grid) by designating elements with the classname `row` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/task.js#L26-L30) to contain elements which take fractions of that row by using the `col-xs-`*n* classNames [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/task.js#L32-L47)
+`onTaskDelete` simply dispatches `deleteTask`.  It has to give it the `pid` so `projectsReducer` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/projectsReducer.js#L76-L82) can delete the `tid` for this task from its `tids` array. It also needs to provide `completed` so it can update the `pending` count.
+
+`onTaskEdit` dispatches `setEditTid` which is a new action acting on a new reducer:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/misc/index.js)
+
+It all adds up to simply adding a `editTid` property into a new sub-store we call `misc` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/createStore.js#L7) for *miscellaneous* which eventually might collect some other minor status information that doesn't deserve a whole sub-store.  `editTid` either contains `null` if no task is being edited, or the `tid` of the one being edited. This works along `TaskList`:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/taskList.js#L5-L16)
+
+If the `tid` of the task to be listed matches `editTid`, it uses `EditTask`, otherwise, it uses `Task`.  Also, if not task is currently being edited, it adds an `EditTask` with no `tid` attribute which allows adding new tasks.
+
+It is important when creating multiple instances of a control such as the `Task`s in `TaskList` that each should have a `key` pseudo-attribute set to a unique value within the list to identify each instance.  React users this `key` to know whether it needs refreshing.  In `TaskList` we can clearly see the advantage.  As any of the `Task` instances can be replaced by `EditTask`, if they were not individually identified with the `key`, React would have little alternative but to redraw them all.  With the `key` it can know which `Task` instance has been replaced by `EditTask` and which ones remain and don't need redrawing.
+
+This brings us to `EditTask` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js) which follows the same basic structure as `EditProject`, even to the point of sharing `mapStateToProps` with `Task`.  Just a few details deserve highlighting.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js#L81-L90)
+
+We use the `tid` property to determine if it should update an existing task or add a new one.  It dispatches either `updateTask` or `addTaskToProject` depending on that.  We use the same `tid` to determine if we are in edit mode [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js#L29) and change the style of the submit button [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js#L51) to show either a check-mark or a plus sign (or whatever the graphics designer might choose).
+
+After dispatching any of the actions, we dispatch `setEditTid` sending it back to `null` so the edit box goes away.
+
+Finally, in the `onSubmitHandler` we have:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js#L17-L24)
+
+Here it is worth highlighting how important it is to keep returning the Promises returned by the actions dispatched.  We have already chained to the `.then` part of the Promises to navigate one place or another or to make the task edit box disappear.  Here, we are going one step further.  We have returned the Promise all the way back to the even handler, not just in `mapDispatchToProps` as we've done so far.  The reason for doing so is that when adding a task, the same instance of `EditTask` is used over and over again so we want to empty the input box to have it ready for a new task.  We do that with `this.setState` but  `mapDispatchToProps` has no access to `this` so it had to go all the way back to the event handler.
+
+There are two points to make here:
+
+* Use Promises, you can keep chaining and chaining plenty of useful code into them
+* Always return Promises in asynchronous actions and keep returning them.  The `dispatch` method returns them for our benefit and we should keep returning them higher up.
+
+Whenever we call `dispatch` on an asynchronous action we are either explicitly returning whatever it returns or leveraging the *fat arrow function* implicit return.
