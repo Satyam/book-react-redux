@@ -17,7 +17,7 @@ app.use('/data/v2', dataRouter);
 app.use('/bootstrap', express.static(path.join(ROOT_DIR, 'node_modules/bootstrap/dist')));
 app.use(express.static(path.join(ROOT_DIR, 'public')));
 
-require('./isomorphic/index.js')(app);
+require('client/isomorphic/index.js')(app);
 
 const webServer = {
   start: (done) => {

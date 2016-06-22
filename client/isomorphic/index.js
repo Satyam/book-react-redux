@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { createMemoryHistory, match, RouterContext } from 'react-router';
