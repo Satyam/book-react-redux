@@ -2,10 +2,10 @@
   "name": "book-react-redux",
   "version": "0.2.0",
   "description": "Sample code for the book Step by step with React and Redux",
-  "main": "server/index.js",
+  "main": "public/lib/server.bundle.js",
   "scripts": {
-    "start": "node server/index.js",
-    "debug": "node-debug -p 8888 server/index.js",
+    "start": "node public/lib/server.bundle.js",
+    "debug": "node-debug -p 8888 public/lib/server.bundle.js",
     "lint": "eslint . || exit 0",
     "test": "mocha",
     "coverage": "istanbul cover node_modules/.bin/_mocha",

@@ -9,7 +9,7 @@ import clientRoutes from 'client/routes';
 
 import html from './index.html.js';
 
-app.use((req, res, next) => {
+module.exports = app => app.use((req, res, next) => {
   const memoryHistory = createMemoryHistory(req.url);
   const store = createStore(memoryHistory);
   const history = syncHistoryWithStore(memoryHistory, store);

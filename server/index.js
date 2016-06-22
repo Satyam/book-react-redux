@@ -1,7 +1,7 @@
 const http = require('http');
 const path = require('path');
 const express = require('express');
-global.app = express();
+const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
@@ -14,16 +14,16 @@ app.use('/data', bodyParser.json());
 const dataRouter = express.Router();
 app.use('/data/v2', dataRouter);
 
-app.use('/bootstrap', express.static(path.join(__dirname, '../node_modules/bootstrap/dist')));
-app.use(express.static(path.join(__dirname, '../public')));
+app.use('/bootstrap', express.static(path.join(ROOT_DIR, 'node_modules/bootstrap/dist')));
+app.use(express.static(path.join(ROOT_DIR, 'public')));
 
-require(path.join(__dirname, '../public/lib/server.bundle.js'));
+require('./isomorphic/index.js')(app);
 
 const webServer = {
   start: (done) => {
     global.db = new sqlite3.Database(':memory:', (err) => {
       if (err) return done(err);
-      fs.readFile(path.join(__dirname, 'data.sql'), 'utf8', (err, data) => {
+      fs.readFile(path.join(ROOT_DIR, 'server/data.sql'), 'utf8', (err, data) => {
         if (err) return done(err);
         db.exec(data, (err) => {
           if (err) return done(err);

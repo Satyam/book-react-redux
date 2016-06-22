@@ -8,6 +8,6 @@
   },
   "globals": {
     "db": false,
-    "app": false
+    "ROOT_DIR": false
   }
 }
