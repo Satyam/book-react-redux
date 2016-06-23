@@ -1,2 +1,4 @@
-.project-list {
+.add-project-button {
+  composes: global(btn);
+  composes: global(btn-default);
 }

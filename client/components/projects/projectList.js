@@ -1,42 +1,47 @@
 import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
+import isPlainClick from 'utils/isPlainClick';
 import styles from './projectList.css';
 import classNames from 'classnames';
 import ProjectItem from './projectItem';
 
-export const ProjectList = ({ children, projects, newProject }) => (
-  <div className={classNames('project-list', styles.projectList)}>
-    <h1>Projects:</h1>
-    <div className="row">
-      <div className="col-md-9">
-        <ul>{
-          Object.keys(projects).map(pid =>
-            (<ProjectItem
-              key={pid}
-              pid={pid}
-            />)
-          )
-        }</ul>
+export const ProjectList = ({ children, projects, isNewProject, onNewProject }) => {
+  const addProjectHandler = ev => isPlainClick(ev) && onNewProject();
+  return (
+    <div className={classNames('project-list', styles.projectList)}>
+      <h1>Projects:</h1>
+      <div className="row">
+        <div className="col-md-9">
+          <ul>{
+            Object.keys(projects).map(pid =>
+              (<ProjectItem
+                key={pid}
+                pid={pid}
+              />)
+            )
+          }</ul>
+        </div>
+        <div className="col-md-3">
+          <button
+            className={styles.addProjectButton}
+            disabled={isNewProject}
+            onClick={addProjectHandler}
+          >Add Project</button>
+        </div>
       </div>
-      <div className="col-md-3">
-        {newProject
-          ? (<button className="btn btn-default" disabled="disabled">Add Project</button>)
-          : (<Link className="btn btn-default" to="/projects/newProject">Add Project</Link>)
-        }
-      </div>
+      {children}
     </div>
-    {children}
-  </div>
-);
+  );
+};
 
 ProjectList.propTypes = {
   children: PropTypes.node,
   projects: PropTypes.object,
-  newProject: PropTypes.bool,
+  isNewProject: PropTypes.bool,
+  onNewProject: PropTypes.func,
 };
 
 import initialDispatcher from 'utils/initialDispatcher.js';
-import { getAllProjects } from 'store/actions';
+import { getAllProjects, push } from 'store/actions';
 import isEmpty from 'lodash/isEmpty';
 
 export const initialDispatch = ProjectList.initialDispatch =
@@ -48,10 +53,16 @@ export const initialDispatch = ProjectList.initialDispatch =
   };
 import { connect } from 'react-redux';
 
-export const mapStateToProps = state => ({
+export const mapStateToProps = (state, params) => ({
   projects: state.projects,
+  isNewProject: params.location.pathname.indexOf('/newProject') !== -1,
+});
+
+export const mapDispatchToProps = dispatch => ({
+  onNewProject: () => dispatch(push('/projects/newProject')),
 });
 
 export default initialDispatcher(initialDispatch)(connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(ProjectList));
