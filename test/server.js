@@ -374,7 +374,7 @@ describe('Server testing', () => {
           .then((response) => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
-            expect(parseInt(response.data.pid, 10)).to.equal(pid);
+            expect(response.data.pid).to.equal(pid);
             return http.get(`/${pid}`);
           })
           .then(

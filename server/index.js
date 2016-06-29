@@ -26,7 +26,7 @@ const webServer = {
   start: (done) => {
     global.db = new sqlite3.Database(':memory:', (err) => {
       if (err) return done(err);
-      fs.readFile(join(ROOT_DIR, 'server/data.sql'), 'utf8', (err, data) => {
+      fs.readFile(join(ROOT_DIR, 'server', 'data.sql'), 'utf8', (err, data) => {
         if (err) return done(err);
         db.exec(data, (err) => {
           if (err) return done(err);
