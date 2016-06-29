@@ -51,18 +51,6 @@ describe('Server testing', () => {
           expect(response.data).to.contain('<title>Sample Web Page</title>');
         })
     );
-
-    it('Get /xyz should return a "page not found" error', () =>
-      http.get('/xyz')
-        .then(
-          (response) => {
-            throw new Error('Should not have found it');
-          },
-          (response) => {
-            expect(response.status).to.equal(404);
-          }
-        )
-    );
   });
 
   describe('/data/v1 REST API test', () => {
@@ -108,7 +96,7 @@ describe('Server testing', () => {
           expect(data).to.be.an.instanceof(Array);
           expect(data).to.have.length(1);
           const prj = data[0];
-          expect(prj.pid).to.equal(34);
+          expect(prj.pid).to.equal('34');
           expect(prj.name).to.contain('Spanish omelette');
           expect(prj.descr).to.contain('Spanish omelette');
         })
@@ -149,7 +137,7 @@ describe('Server testing', () => {
           expect(data).to.be.an.instanceof(Array);
           expect(data).to.have.length(1);
           const prj = data[0];
-          expect(prj.pid).to.equal(34);
+          expect(prj.pid).to.equal('34');
           expect(prj.name).to.be.undefined;
           expect(prj.descr).to.be.undefined;
         })
@@ -376,7 +364,7 @@ describe('Server testing', () => {
           .then((response) => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
-            expect(parseInt(response.data.pid, 10)).to.equal(pid);
+            expect(response.data.pid).to.equal(pid);
             return http.get(`/${pid}`);
           })
           .then(

@@ -1,31 +1,32 @@
 const http = require('http');
-const path = require('path');
+const join = require('path').join;
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
+const ROOT_DIR = join(__dirname, '..');
 
 const server = http.createServer(app);
 
-const PORT = process.env.npm_package_myServerApp_port || 8080;
+const PORT = process.env.npm_package_myWebServer_port || 8080;
 
 app.use('/data', bodyParser.json());
 
 const dataRouter = express.Router();
 app.use('/data/v1', dataRouter);
 
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(join(ROOT_DIR, 'public')));
 
 app.get('*', function (request, response) {
-  response.sendFile(path.join(__dirname, '../public', 'index.html'));
+  response.sendFile(join(ROOT_DIR, 'public', 'index.html'));
 });
 
 const webServer = {
   start: (done) => {
     global.db = new sqlite3.Database(':memory:', (err) => {
       if (err) return done(err);
-      fs.readFile(path.join(__dirname, 'data.sql'), 'utf8', (err, data) => {
+      fs.readFile(join(ROOT_DIR, 'server', 'data.sql'), 'utf8', (err, data) => {
         if (err) return done(err);
         db.exec(data, (err) => {
           if (err) return done(err);

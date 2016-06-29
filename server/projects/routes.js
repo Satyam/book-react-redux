@@ -7,6 +7,8 @@ const processPrj = (op) => (req, res) => {
   transactions[op](valid.keys, valid.data, valid.options, (err, data) => {
     if (err) return void res.status(500).send(err);
     if (data === null) return void res.status(404).send('Item(s) not found');
+    if (data.pid) data.pid = String(data.pid);
+    if (data.tid) data.tid = String(data.tid);
     res.json(data);
   });
 };
