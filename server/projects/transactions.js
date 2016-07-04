@@ -53,15 +53,17 @@ module.exports = {
     if (!(fields || search)) {
       prepared.selectAllProjects.all(makePidString);
     } else {
-      const st = prepared.selectAllProjects.bind([]);
-      const sql = 'select ' +
-        (fields || '*') +
-        ' from ( ' + st.sql + ' )' +
-         (search
-           ? ' where ' + search.replace(/([^=]+)=(.+)/, '$1 like "%$2%"')
-           : ''
-         );
-      db.all(sql, makePidString);
+      const st = prepared.selectAllProjects.bind([], (err) => {
+        if (err && err.errno !== 101) return done(err);
+        const sql = 'select ' +
+          (fields || '*') +
+          ' from ( ' + st.sql + ' )' +
+           (search
+             ? ' where ' + search.replace(/([^=]+)=(.+)/, '$1 like "%$2%"')
+             : ''
+           );
+        db.all(sql, makePidString);
+      });
     }
   },
 
@@ -127,7 +129,7 @@ module.exports = {
         return;
       }
       if (this.changes) {
-        done(null, { pid: keys.pid });
+        done(null, keys);
       } else {
         done(null, null);
       }

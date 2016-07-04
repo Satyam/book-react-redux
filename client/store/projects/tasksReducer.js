@@ -7,7 +7,6 @@ import {
 
 const update = require('react-addons-update');
 import omit from 'lodash/omit';
-import pick from 'lodash/pick';
 
 export default (state = {}, action) => {
   switch (action.type) {

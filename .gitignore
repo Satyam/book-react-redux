@@ -27,8 +27,6 @@ build/Release
 node_modules
 
 public/lib
-public/fonts
-public/css
 
 #this book
 gh-pages

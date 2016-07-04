@@ -20,7 +20,10 @@ export const Project = ({ pid, name, descr, onEditClick, onDeleteClick }) => {
         </div>
         <div className="col-md-3">
           <button className={styles.editButton} onClick={editClickHandler}>Edit Project</button>
-          <button className={styles.deleteButton} onClick={deleteClickHandler}>Delete Project</button>
+          <button
+            className={styles.deleteButton}
+            onClick={deleteClickHandler}
+          >Delete Project</button>
         </div>
       </div>
       <TaskList

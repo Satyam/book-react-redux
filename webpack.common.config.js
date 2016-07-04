@@ -22,7 +22,8 @@ module.exports = function (version) {
     },
     output: {
       path: join(root, 'public/lib'),
-      filename: '[name].bundle.js'
+      filename: '[name].bundle.js',
+      libraryTarget: 'umd'
     },
     module: {
       loaders: [
@@ -62,6 +63,7 @@ module.exports = function (version) {
         // "Axios can't be packed by webpack"
         // Actually, it is only the HTTP adapter:
         if (
+          context &&
           context.indexOf('axios/lib/core') !== -1 &&
           request.indexOf('adapters/http') !== -1
         ) {

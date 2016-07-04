@@ -29,7 +29,7 @@ export default (state = {}, action) => {
     case ALL_PROJECTS_SUCCESS:
       return action.data.reduce(
         (projects, project) => (projects[project.pid]
-          ? projects
+          ? update(projects, { [project.pid]: { $merge: project } })
           : update(projects, { $merge: { [project.pid]: project } })
         ),
         state

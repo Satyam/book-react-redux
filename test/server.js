@@ -2,7 +2,7 @@ const chai = require('chai');
 const expect = chai.expect;
 const axios = require('axios');
 
-const server = require('..');
+const server = require('../public/lib/server.bundle.js');
 
 const PORT = process.env.npm_package_myServerApp_port || 8080;
 const HOST = process.env.npm_package_myServerApp_host || 'http://localhost';
@@ -36,15 +36,6 @@ describe('Server testing', () => {
 
     it('Get / should return home page', () =>
       http.get('/')
-        .then((response) => {
-          expect(response.status).to.equal(200);
-          expect(response.headers['content-type']).to.contain('text/html');
-          expect(response.data).to.contain('<title>Sample Web Page</title>');
-        })
-    );
-
-    it('Get /index.html should return the same home page', () =>
-      http.get('/index.html')
         .then((response) => {
           expect(response.status).to.equal(200);
           expect(response.headers['content-type']).to.contain('text/html');
@@ -374,7 +365,7 @@ describe('Server testing', () => {
           .then((response) => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
-            expect(parseInt(response.data.pid, 10)).to.equal(pid);
+            expect(response.data.pid).to.equal(pid);
             return http.get(`/${pid}`);
           })
           .then(

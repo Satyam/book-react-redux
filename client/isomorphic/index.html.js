@@ -2,7 +2,7 @@ export default (html, initialState) => `<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>How to do a Todo App</title>
+    <title>Sample Web Page</title>
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/bootstrap/css/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="/lib/styles.css" />

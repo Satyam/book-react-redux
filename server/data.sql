@@ -1,8 +1,6 @@
 DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS tasks;
 
-PRAGMA foreign_keys = on;
-
 CREATE TABLE projects (
   pid INTEGER PRIMARY KEY,
   name TEXT,
@@ -72,4 +70,4 @@ INSERT INTO tasks (tid, pid, descr, completed) VALUES (
   34,
   "Mix everything and fry",
   0
-)
+);

@@ -1,5 +1,5 @@
 const http = require('http');
-const path = require('path');
+const join = require('path').join;
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -14,8 +14,8 @@ app.use('/data', bodyParser.json());
 const dataRouter = express.Router();
 app.use('/data/v2', dataRouter);
 
-app.use('/bootstrap', express.static(path.join(ROOT_DIR, 'node_modules/bootstrap/dist')));
-app.use(express.static(path.join(ROOT_DIR, 'public')));
+app.use('/bootstrap', express.static(join(ROOT_DIR, 'node_modules/bootstrap/dist')));
+app.use(express.static(join(ROOT_DIR, 'public')));
 
 require('client/isomorphic/index.js')(app);
 
@@ -23,7 +23,7 @@ const webServer = {
   start: (done) => {
     global.db = new sqlite3.Database(':memory:', (err) => {
       if (err) return done(err);
-      fs.readFile(path.join(ROOT_DIR, 'server/data.sql'), 'utf8', (err, data) => {
+      fs.readFile(join(ROOT_DIR, 'server', 'data.sql'), 'utf8', (err, data) => {
         if (err) return done(err);
         db.exec(data, (err) => {
           if (err) return done(err);
