@@ -5,15 +5,13 @@ import restAPI from 'utils/restAPI.js';
 
 const api = restAPI('data/v2/projects');
 
-const fail = (dispatch, type) => response => {
+const fail = (dispatch, type) => response =>
   dispatch({
     type,
     status: response.status,
     msg: response.statusText,
     url: response.config.url.replace(response.config.baseURL, ''),
   });
-};
-
 
 export function getAllProjects() {
   return dispatch => {

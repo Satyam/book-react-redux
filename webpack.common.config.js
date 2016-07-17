@@ -54,7 +54,8 @@ module.exports = function (version) {
         store: join(root, 'client/store'),
         components: join(root, 'client/components'),
         utils: join(root, 'client/utils'),
-        client: join(root, 'client')
+        client: join(root, 'client'),
+        server: join(root, 'server')
       }
     },
     externals: [

@@ -1,4 +1,4 @@
-export const EDIT_TID = 'Set tid of task to be edited';
+export const EDIT_TID = 'misc/Set tid of task to be edited';
 
 export function setEditTid(tid) {
   return {

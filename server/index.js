@@ -40,6 +40,7 @@ const webServer = {
     });
   },
   stop: (done) => {
+    console.log(`Closing server at http://localhost:${PORT}/`);
     server.close(done);
   }
 };

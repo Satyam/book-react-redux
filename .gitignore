@@ -27,6 +27,7 @@ build/Release
 node_modules
 
 public/lib
+tmp
 
 #this book
 gh-pages

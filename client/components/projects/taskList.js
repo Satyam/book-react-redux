@@ -10,7 +10,7 @@ export const TaskList = ({ pid, tids, editTid }) => (
         ? <EditTask key={tid} pid={pid} tid={tid} />
         : <Task key={tid} pid={pid} tid={tid} />
       ))
-    : null}
+    : `No tasks found for project ${pid}`}
     {editTid ? null : <EditTask pid={pid} />}
   </div>
 );

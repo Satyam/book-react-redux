@@ -1,0 +1,11 @@
+{
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "extends": "airbnb",
+  "rules": {
+    "no-unused-expressions": 0,
+    "no-console": 0
+  }
+}

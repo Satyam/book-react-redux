@@ -2,15 +2,13 @@ const chai = require('chai');
 const expect = chai.expect;
 const axios = require('axios');
 
-const server = require('../public/lib/server.bundle.js');
+const server = require('server');
 
-const PORT = process.env.npm_package_myServerApp_port || 8080;
-const HOST = process.env.npm_package_myServerApp_host || 'http://localhost';
+const PORT = process.env.npm_package_myWebServer_port || 8080;
+const HOST = process.env.npm_package_myWebServer_host || 'http://localhost';
 
-describe('Server testing', () => {
-  before('Starting server', (done) => {
-    server.start(done);
-  });
+describe('Projects Data Server testing', () => {
+  before('Starting server', server.start);
 
   after('Closing the server', (done) => {
     db.all('PRAGMA integrity_check', (err, list) => {
@@ -28,22 +26,6 @@ describe('Server testing', () => {
       });
     });
   });
-
-  describe('Static pages test', () => {
-    const http = axios.create({
-      baseURL: `${HOST}:${PORT}`
-    });
-
-    it('Get / should return home page', () =>
-      http.get('/')
-        .then((response) => {
-          expect(response.status).to.equal(200);
-          expect(response.headers['content-type']).to.contain('text/html');
-          expect(response.data).to.contain('<title>Sample Web Page</title>');
-        })
-    );
-  });
-
   describe('/data/v2 REST API test', () => {
     const http = axios.create({
       baseURL: `${HOST}:${PORT}/data/v2/projects`,
