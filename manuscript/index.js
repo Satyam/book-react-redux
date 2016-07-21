@@ -182,7 +182,8 @@ readFile('book.txt', 'utf8')
             files: rawFiles
           }
         ),
-        toc: tocArray
+        toc: tocArray,
+        chapter: chapter.replace('.md', '')
       }));
     })
   ))
@@ -191,7 +192,7 @@ readFile('book.txt', 'utf8')
     let toc = '';
     let level = 0;
     parsed.forEach((chapter) => {
-      contents += chapter.text;
+      contents += `<section id="${chapter.chapter}">${chapter.text}</section>`;
       chapter.toc.forEach((item) => {
         const l = parseInt(item.tag.substr(1), 10);
         while (l < level) {
