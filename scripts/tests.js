@@ -6,6 +6,7 @@ const webpack = denodeify(require('webpack'));
 const mkdirp = denodeify(require('mkdirp'));
 const rmdir = denodeify(require('rmdir'));
 const readdir = denodeify(require('recursive-readdir'));
+const exec = denodeify(require('child_process').exec, (err, stdout, stderr) => [err, stdout, stderr]);
 
 const Mocha = require('mocha');
 const mocha = new Mocha();
@@ -51,7 +52,17 @@ rmdir(tmpDir)
           );
       }))
       .then(() => {
-        mocha.run(failures => console.log(`${failures} failures`));
+        if (process.argv.indexOf('--coverage') > -1) {
+          return exec(
+            'istanbul cover _mocha -- --recursive ./tmp',
+            {
+              env: process.env,
+              cwd: root,
+              encoding: 'utf8'
+            }
+          ).then(console.log);
+        }
+        mocha.run(failures => console.log(`${failures} failure(s)`));
         // mocha.run(failures => {
         //   process.on('exit', function () {
         //     process.exit(failures);  // exit with non-zero status if there were failures

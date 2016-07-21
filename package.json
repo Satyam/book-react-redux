@@ -8,11 +8,10 @@
     "debug": "node-debug -p 8888 public/lib/server.bundle.js",
     "lint": "eslint . || exit 0",
     "test": "node scripts/tests.js",
-    "coverage": "istanbul cover node_modules/.bin/_mocha",
+    "coverage": "node scripts/tests.js --coverage",
     "build": "webpack -d",
     "watch": "webpack -d --watch &",
-    "production": "webpack -p --config webpack.production.config.js",
-    "postinstall": "scripts/postinstall.sh"
+    "production": "webpack -p --config webpack.production.config.js"
   },
   "myWebServer": {
     "port": 8080,
