@@ -5,7 +5,7 @@ import { Task } from 'components/projects/task.js';
 import { EditTask } from 'components/projects/editTask.js';
 import { EDIT_TID } from 'store/actions';
 
-import { loadJSDOM, dropJSDOM, fullRender, data, mockStore } from '../../utils';
+import { loadJSDOM, dropJSDOM, fullRender, data, mockStore } from 'test/utils';
 
 describe('Component: taskList', () => {
   before(loadJSDOM);
