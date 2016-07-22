@@ -44,10 +44,12 @@ rmdir(tmpDir)
                   filename: fileName
                 }
               }))
-            // Uncomment if results of webPacking is needed
-            // .then(stats => {
-            //   console.log('---', file, stats.toString('normal'));
-            // })
+            .then(stats => {
+              if (stats.hasErrors()) {
+                console.error('---', file, stats.toString('errors-only'));
+                throw new Error('compilation error');
+              }
+            })
             .then(() => mocha.addFile(path.join(outDir, fileName)))
           );
       }))
@@ -63,11 +65,6 @@ rmdir(tmpDir)
           ).then(console.log);
         }
         mocha.run(failures => console.log(`${failures} failure(s)`));
-        // mocha.run(failures => {
-        //   process.on('exit', function () {
-        //     process.exit(failures);  // exit with non-zero status if there were failures
-        //   });
-        // });
       })
     )
   ).catch(console.error);
