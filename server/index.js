@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();
+const sqlJS = require('sql.js');
 
 const server = http.createServer(app);
 
@@ -21,20 +21,16 @@ require('client/isomorphic/index.js')(app);
 
 const webServer = {
   start: (done) => {
-    global.db = new sqlite3.Database(':memory:', (err) => {
+    global.db = new sqlJS.Database();
+    fs.readFile(join(ROOT_DIR, 'server', 'data.sql'), 'utf8', (err, data) => {
       if (err) return done(err);
-      fs.readFile(join(ROOT_DIR, 'server', 'data.sql'), 'utf8', (err, data) => {
+      db.exec(data);
+      const projectsRoutes = require('./projects/routes.js');
+      projectsRoutes(dataRouter, '/projects', (err) => {
         if (err) return done(err);
-        db.exec(data, (err) => {
-          if (err) return done(err);
-          const projectsRoutes = require('./projects/routes.js');
-          projectsRoutes(dataRouter, '/projects', (err) => {
-            if (err) return done(err);
-            server.listen(PORT, () => {
-              console.log(`Server running at http://localhost:${PORT}/`);
-              done();
-            });
-          });
+        server.listen(PORT, () => {
+          console.log(`Server running at http://localhost:${PORT}/`);
+          done();
         });
       });
     });

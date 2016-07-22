@@ -10,22 +10,8 @@ const HOST = process.env.npm_package_myWebServer_host || 'http://localhost';
 describe('Projects Data Server testing', () => {
   before('Starting server', server.start);
 
-  after('Closing the server', (done) => {
-    db.all('PRAGMA integrity_check', (err, list) => {
-      if (err) return done(err);
-      expect(list).to.be.an.instanceof(Array);
-      expect(list).to.have.length(1);
-      expect(list[0]).to.be.an.instanceof(Object);
-      expect(list[0].integrity_check).to.equal('ok');
-      db.all('PRAGMA foreign_key_check', (err, list) => {
-        if (err) return done(err);
-        expect(list).to.be.an.instanceof(Array);
-        expect(list).to.have.length(0);
+  after('Closing the server', server.stop);
 
-        server.stop(done);
-      });
-    });
-  });
   describe('/data/v2 REST API test', () => {
     const http = axios.create({
       baseURL: `${HOST}:${PORT}/data/v2/projects`,

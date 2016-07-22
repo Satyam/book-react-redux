@@ -11,7 +11,7 @@ const externalModules = [
   'express',
   'body-parser',
   'fs',
-  'sqlite3'
+  'sql.js'
 ];
 
 module.exports = function (version) {

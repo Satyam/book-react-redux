@@ -1,189 +1,146 @@
 const prepared = {};
 
+const sqlAllProjects =
+  `select projects.*, count(tid) as pending from projects left join
+  (select pid, tid from tasks where completed = 0)
+  using (pid) group by pid`;
+
+const lastID = () => db.exec('select last_insert_rowid();')[0].values[0][0];
+
 module.exports = {
   init: (done) => {
-    prepared.selectAllProjects = db.prepare(
-      `select projects.*, count(tid) as pending from projects left join
-      (select pid, tid from tasks where completed = 0)
-      using (pid) group by pid`,
-      (err) => {
-        if (err) return done(err);
-      }
-    );
-    prepared.selectProjectByPid = db.prepare('select * from projects where pid = $pid', (err) => {
-      if (err) return done(err);
-    });
-    prepared.selectTasksByPid = db.prepare('select tid, descr, completed from tasks where pid = $pid', (err) => {
-      if (err) return done(err);
-    });
-    prepared.selectTaskByTid = db.prepare('select * from tasks where tid = $tid', (err) => {
-      if (err) return done(err);
-    });
-    prepared.createProject = db.prepare('insert into projects (name, descr) values ($name, $descr)', (err) => {
-      if (err) return done(err);
-    });
-    prepared.createTask = db.prepare('insert into tasks (pid, descr, completed) values ($pid, $descr, $completed)', (err) => {
-      if (err) return done(err);
-    });
-    prepared.deleteProject = db.prepare('delete from projects where pid = $pid', (err) => {
-      if (err) return done(err);
-    });
-    prepared.deleteTasksInProject = db.prepare('delete from tasks where pid = $pid', (err) => {
-      if (err) return done(err);
-    });
-    prepared.deleteTask = db.prepare('delete from tasks where pid = $pid and tid = $tid', (err) => {
-      if (err) return done(err);
-    });
+    prepared.selectAllProjects = db.prepare(sqlAllProjects);
+    prepared.selectProjectByPid = db.prepare('select * from projects where pid = $pid');
+    prepared.selectTasksByPid = db.prepare('select tid, descr, completed from tasks where pid = $pid');
+    prepared.selectTaskByTid = db.prepare('select * from tasks where tid = $tid');
+    prepared.createProject = db.prepare('insert into projects (name, descr) values ($name, $descr)');
+    prepared.createTask = db.prepare('insert into tasks (pid, descr, completed) values ($pid, $descr, $completed)');
+    prepared.deleteProject = db.prepare('delete from projects where pid = $pid');
+    prepared.deleteTasksInProject = db.prepare('delete from tasks where pid = $pid');
+    prepared.deleteTask = db.prepare('delete from tasks where pid = $pid and tid = $tid');
     done();
   },
 
   getAllProjects: (keys, data, options, done) => {
     const fields = options.fields;
     const search = options.search;
-    const makePidString = (err, projects) => {
-      if (err) {
-        done(err);
-        return;
+    const fetch = stmt => {
+      let projects = [];
+      let prj;
+      while (stmt.step()) {
+        prj = stmt.getAsObject();
+        prj.pid = String(prj.pid);
+        projects.push(prj);
       }
-      projects.forEach(project => {
-        project.pid = String(project.pid);
-      });
+      stmt.reset();
       done(null, projects);
     };
     if (!(fields || search)) {
-      prepared.selectAllProjects.all(makePidString);
+      fetch(prepared.selectAllProjects);
     } else {
-      const st = prepared.selectAllProjects.bind([], (err) => {
-        if (err && err.errno !== 101) return done(err);
-        const sql = 'select ' +
-          (fields || '*') +
-          ' from ( ' + st.sql + ' )' +
-           (search
-             ? ' where ' + search.replace(/([^=]+)=(.+)/, '$1 like "%$2%"')
-             : ''
-           );
-        db.all(sql, makePidString);
-      });
+      fetch(db.prepare('select ' +
+        (fields || '*') +
+        ' from ( ' + sqlAllProjects + ' )' +
+         (search
+           ? ' where ' + search.replace(/([^=]+)=(.+)/, '$1 like "%$2%"')
+           : ''
+         )
+       ));
     }
   },
 
   getProjectById: (keys, data, options, done) => {
-    prepared.selectProjectByPid.get({$pid: keys.pid}, (err, prj) => {
-      if (err) return done(err);
-      if (!prj) return done(null, null);
-      prepared.selectTasksByPid.all({$pid: keys.pid}, (err, tasks) => {
-        if (err) return done(err);
-        prj.tasks = tasks.map(task => ({
-          tid: String(task.tid),
-          descr: task.descr,
-          completed: !!task.completed
-        }));
-        done(null, prj);
-      });
-    });
+    const prj = prepared.selectProjectByPid.getAsObject({$pid: keys.pid});
+    if (Object.keys(prj).length === 0) return done(null, null);
+    prj.tasks = [];
+    let task;
+    const stmt = prepared.selectTasksByPid;
+    if (stmt.bind({$pid: keys.pid})) {
+      while (stmt.step()) {
+        task = stmt.getAsObject();
+        task.tid = String(task.tid);
+        task.completed = !!task.completed;
+        prj.tasks.push(task);
+      }
+      done(null, prj);
+    } else done(new Error('Sql Statement binding failed'));
   },
 
   getTaskByTid: (keys, data, options, done) => {
-    prepared.selectTaskByTid.get({$tid: keys.tid}, (err, task) => {
-      if (err) return done(err);
-      if (!task || task.pid !== keys.pid) return done(null, null);
-      task.completed = !!task.completed;
-      done(null, task);
-    });
+    const task = prepared.selectTaskByTid.getAsObject({$tid: keys.tid});
+    if (!task || task.pid !== keys.pid) return done(null, null);
+    task.completed = !!task.completed;
+    prepared.selectTaskByTid.reset();
+    done(null, task);
   },
 
   addProject: (keys, data, options, done) => {
     prepared.createProject.run({
       $name: data.name || 'New Project',
       $descr: data.descr || 'No description'
-    }, function (err) {
-      if (err) return done(err);
-      done(null, {pid: this.lastID});
     });
+    done(null, {pid: lastID()});
   },
 
   addTaskToProject: (keys, data, options, done) => {
-    prepared.selectProjectByPid.get({$pid: keys.pid}, (err, prj) => {
-      if (err) return done(err);
-      if (!prj) return done(null, null);
+    if (prepared.selectProjectByPid.get({$pid: keys.pid}).length) {
       prepared.createTask.run({
         $descr: data.descr || 'No description',
         $completed: data.completed || 0,
         $pid: keys.pid
-      }, function (err) {
-        if (err) return done(err);
-        done(null, {tid: this.lastID});
       });
-    });
+      done(null, {tid: lastID()});
+    } else done(null, null);
+    prepared.selectProjectByPid.reset();
   },
 
   updateProject: (keys, data, options, done) => {
     const sql = 'update projects set ' +
       Object.keys(data).map((field) => `${field} = '${data[field]}'`) +
      ' where pid = ' + keys.pid;
-    db.run(sql, function (err) {
-      if (err) {
-        if (err.errno === 25) {
-          done(null, null);
-        } else done(err);
-        return;
-      }
-      if (this.changes) {
-        done(null, keys);
-      } else {
-        done(null, null);
-      }
-    });
+    db.run(sql);
+    if (db.getRowsModified()) {
+      done(null, keys);
+    } else {
+      done(null, null);
+    }
   },
 
   updateTask: (keys, data, options, done) => {
     const sql = 'update tasks set ' +
     Object.keys(data).map((field) => `${field} = '${data[field]}'`) +
     ` where pid = ${keys.pid} and tid = ${keys.tid}`;
-    db.run(sql, function (err) {
-      if (err) {
-        if (err.errno === 25) {
-          done(null, null);
-        } else done(err);
-        return;
-      }
-      if (this.changes) {
-        done(null, keys);
-      } else {
-        done(null, null);
-      }
-    });
+    db.run(sql);
+    if (db.getRowsModified()) {
+      done(null, keys);
+    } else {
+      done(null, null);
+    }
   },
 
   deleteProject: (keys, data, options, done) => {
     prepared.deleteTasksInProject.run({
       $pid: keys.pid
-    }, function (err) {
-      if (err) return done(err);
-      prepared.deleteProject.run({
-        $pid: keys.pid
-      }, function (err) {
-        if (err) return done(err);
-        if (this.changes) {
-          done(null, keys);
-        } else {
-          done(null, null);
-        }
-      });
     });
+    prepared.deleteProject.run({
+      $pid: keys.pid
+    });
+    if (db.getRowsModified()) {
+      done(null, keys);
+    } else {
+      done(null, null);
+    }
   },
 
   deleteTask: (keys, data, options, done) => {
     prepared.deleteTask.run({
       $pid: keys.pid,
       $tid: keys.tid
-    }, function (err) {
-      if (err) return done(err);
-      if (this.changes) {
-        done(null, keys);
-      } else {
-        done(null, null);
-      }
     });
+    if (db.getRowsModified()) {
+      done(null, keys);
+    } else {
+      done(null, null);
+    }
   }
 };
