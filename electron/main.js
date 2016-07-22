@@ -41,7 +41,9 @@ app.on('ready', () => {
   serverProcess.stdout.on('data', data => {
     console.log(data.toString('utf8'));
 
-    mainWindow.loadURL(`${HOST}:${PORT}`);
+    let args = process.argv[2] || '';
+    if (args[0] === '/') args = args.substr(1);
+    mainWindow.loadURL(`${HOST}:${PORT}/${args}`);
 
     // Un-comment the following to open the DevTools.
     // mainWindow.webContents.openDevTools();
