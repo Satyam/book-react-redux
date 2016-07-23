@@ -2,17 +2,17 @@
   "name": "book-react-redux",
   "version": "0.2.0",
   "description": "Sample code for the book Step by step with React and Redux",
-  "main": "public/lib/server.bundle.js",
+  "main": "public/bundles/server.js",
   "scripts": {
-    "start": "node public/lib/server.bundle.js",
-    "debug": "node-debug -p 8888 public/lib/server.bundle.js",
+    "start": "node public/bundles/server.js",
+    "debug": "node-debug -p 8888 public/bundles/server.js",
     "lint": "eslint . || exit 0",
     "test": "node scripts/tests.js",
     "coverage": "node scripts/tests.js --coverage",
     "build": "webpack -d",
     "watch": "webpack -d --watch &",
     "production": "webpack -p --config webpack.production.config.js",
-    "electron": "electron electron/main.js"
+    "electron": "DEBUG=express:router,express:router:layer,express:application electron public/bundles/electron.js"
   },
   "myWebServer": {
     "port": 8080,

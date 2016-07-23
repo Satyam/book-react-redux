@@ -11,20 +11,22 @@ const externalModules = [
   'express',
   'body-parser',
   'fs',
-  'sql.js'
+  'sql.js',
+  'electron'
 ];
 
 module.exports = function (version) {
   return {
     entry: {
       client: join(root, 'client/index.js'),
-      server: join(root, 'server/index.js')
+      server: join(root, 'server/index.js'),
+      electron: join(root, 'electron/index.js')
     },
     output: {
-      path: join(root, 'public/lib'),
-      filename: '[name].bundle.js',
-      libraryTarget: 'umd'
+      path: join(root, 'public/bundles'),
+      filename: '[name].js'
     },
+    target: 'node',
     module: {
       loaders: [
         {
