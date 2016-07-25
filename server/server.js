@@ -7,27 +7,11 @@ const fs = require('fs');
 const sqlJS = require('sql.js');
 
 const server = http.createServer(app);
-const PORT = process.env.npm_package_myWebServer_port || 8080;
+
 app.use('/data', bodyParser.json());
 
 const dataRouter = express.Router();
-app.use('/data/v2', (req, res, next) => {
-  console.log('dataRouter', Object.keys(req).map(key => {
-    const val = req[key];
-    switch (typeof val) {
-      case 'object':
-        return key + '=...';
-      case 'function':
-        return key + '=func';
-      default:
-        return key + '=' + val;
-    }
-  }),
-  'params', req.params,
-  'query', req.query,
-  'body', req.body);
-  dataRouter(req, res, next);
-});
+app.use(REST_API_PATH, dataRouter);
 
 app.use('/bootstrap', express.static(join(ROOT_DIR, 'node_modules/bootstrap/dist')));
 app.use(express.static(join(ROOT_DIR, 'public')));

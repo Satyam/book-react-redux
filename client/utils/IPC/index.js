@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-const PORT = process.env.npm_package_myWebServer_port || 8080;
-const HOST = process.env.npm_package_myWebServer_host || 'http://localhost';
 let ipc = null;
 if (global.window && window.process) {
   console.log(
@@ -10,16 +8,18 @@ if (global.window && window.process) {
      window.process.versions && window.process.versions.electron
   );
   ipc = require('electron').ipcRenderer;
+  ipc.on('restAPI', (event, response) => {
+    console.log('restAPI', response);
+  });
 }
 export default base => {
   const restClient = axios.create({
     baseURL: `${typeof window !== 'undefined'
       ? window.location.origin
-      : `${HOST}:${PORT}`}/${base}`,
+      : `${HOST}:${PORT}`}${REST_API_PATH}/${base}`,
     responseType: 'json',
   });
   if (ipc) {
-    console.log('**** found interceptor');
     restClient.interceptors.request.use(
       config => {
         ipc.send('restAPI', config);

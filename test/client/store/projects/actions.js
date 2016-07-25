@@ -6,10 +6,8 @@ const mockStore = configureMockStore([thunk]);
 
 import nock from 'nock';
 
-const PORT = process.env.npm_package_myWebServer_port || 8080;
-const HOST = process.env.npm_package_myWebServer_host || 'http://localhost';
 const SERVER = `${HOST}:${PORT}`;
-const API = '/data/v2/projects/';
+const API = `${REST_API_PATH}/projects/`;
 
 const actions = require('store/projects/actions.js');
 import ACTION_TYPES from 'store/projects/actionTypes.js';

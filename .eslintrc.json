@@ -8,6 +8,9 @@
   },
   "globals": {
     "db": false,
-    "ROOT_DIR": false
+    "ROOT_DIR": false,
+    "HOST": false,
+    "PORT": false,
+    "REST_API_PATH": false
   }
 }

@@ -12,11 +12,12 @@
     "build": "webpack -d",
     "watch": "webpack -d --watch &",
     "production": "webpack -p --config webpack.production.config.js",
-    "electron": "DEBUG=express:router,express:router:layer,express:application electron public/bundles/electron.js"
+    "electron": "electron public/bundles/electron.js"
   },
   "myWebServer": {
     "port": 8080,
-    "host": "http://localhost"
+    "host": "http://localhost",
+    "restAPIpath": "/data/v2"
   },
   "repository": {
     "type": "git",

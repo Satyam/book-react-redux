@@ -4,13 +4,14 @@ The purpose of this book is to provide a step-by-step guide on how to develop a 
 
 It is like setting up a carpentry workshop.  You know how to hit a nail, turn a screw or saw a piece of timber, but when you want to actually set up your workshop you start to find out that there are lots of ancillaries that are required, the more so if you are going to work with other people and for other people.
 
-We won't dump a ready-made setup on you from the start, we will go one step at a time explaining why each one is needed.  Do not take a sample from any chapter blindly, some contain mistakes or suboptimal solutions meant to show the way.  We won't cover absolutely all the possibilities that exist, they are too many, but if you know why we choose a particular option, you will have a base to compare it with the alternatives and decide for yourself.
+We won't dump a ready-made setup on you from the start, we will go one step at a time explaining why each one is needed.  Do not take a sample from any chapter blindly, some contain mistakes or suboptimal solutions meant to show the way.  We won't cover absolutely all the possibilities that exist, there are too many, but if you know why we choose a particular option, you will have a base to compare it with the alternatives and decide for yourself.
 
 This book is available as a single HTML page at [http://satyam.github.io/book-react-redux/](http://satyam.github.io/book-react-redux/). At some point I will provide other formats. Most browsers allow printing to PDF.  The stylesheet is already set so that it prints nicely. The original can also be read directly from this very same [GitHub repository](https://github.com/Satyam/book-react-redux/tree/master/manuscript).
 
 ## Sample code for each chapter
 
-Sample code for each successive chapter can be displayed by selecting it from the <kbd>Branch: **master**</kbd> dropdown list at the top left of the file listing box.  
+The book has links to the ZIP file containing the sample code for each chapter and section. The downloaded ZIP can be expanded anywhere and 
+Sample code for each successive chapter can be displayed by selecting it from the <kbd>Branch: **master**</kbd> dropdown list at the top left of the file listing box.
 
 Once a chapter (branch) is selected, the full code for that chapter can be downloaded as a compressed `.zip` file with the <kbd>Download ZIP</kbd> button.
 

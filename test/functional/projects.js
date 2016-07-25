@@ -4,17 +4,14 @@ const axios = require('axios');
 
 const server = require('server/server.js');
 
-const PORT = process.env.npm_package_myWebServer_port || 8080;
-const HOST = process.env.npm_package_myWebServer_host || 'http://localhost';
-
 describe('Projects Data Server testing', () => {
   before('Starting server', server.start);
 
   after('Closing the server', server.stop);
 
-  describe('/data/v2 REST API test', () => {
+  describe(`${REST_API_PATH} REST API test`, () => {
     const http = axios.create({
-      baseURL: `${HOST}:${PORT}/data/v2/projects`,
+      baseURL: `${HOST}:${PORT}${REST_API_PATH}/projects`,
       responseType: 'json'
     });
 

@@ -3,9 +3,6 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const url = require('url');
 
-const PORT = process.env.npm_package_myWebServer_port || 8080;
-const HOST = process.env.npm_package_myWebServer_host || 'http://localhost';
-
 let mainWindow;
 
 const webServer = require('server/server.js');
@@ -32,17 +29,40 @@ app.on('ready', () => {
       console.log('ipc', msg);
       const parsedUrl = url.parse(msg.url, true);
       const originalUrl = msg.url.replace(`${HOST}:${PORT}`, '');
-      const baseUrl = '/data/v2';
+      const baseUrl = REST_API_PATH;
+      let statusCode = 200;
       const res = {
-        status: code => console.log('res.status', code),
-        send: text => console.log('res.send', text)
+        status: code => {
+          statusCode = code;
+          console.log('res.status', code);
+          return res;
+        },
+        send: text => {
+          event.sender.send('restAPI', {
+            status: statusCode,
+            statusText: text,
+            data: {}
+          });
+          console.log('res.send', text);
+          return res;
+        },
+        json: obj => {
+          event.sender.send('restAPI', {
+            status: statusCode,
+            statusText: 'OK',
+            data: obj
+          });
+          console.log('res.json', obj);
+          return res;
+        }
       };
       const req = {
         method: msg.method.toUpperCase(),
         originalUrl,
         baseUrl,
         url: originalUrl.replace(baseUrl, ''),
-        body: msg.data || {},
+        _parsedUrl: parsedUrl,
+        body: msg.data ? JSON.parse(msg.data) : {},
         query: parsedUrl.query,
         params: {},
         res
@@ -52,6 +72,6 @@ app.on('ready', () => {
     });
 
     // Un-comment the following to open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
   });
 });

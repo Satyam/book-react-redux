@@ -1,9 +1,9 @@
 import ACTION_TYPES from './actionTypes.js';
 
 
-import restAPI from 'utils/restAPI.js';
+import restAPI from 'restAPI';
 
-const api = restAPI('data/v2/projects');
+const api = restAPI('projects');
 
 const fail = (dispatch, type) => response =>
   dispatch({
