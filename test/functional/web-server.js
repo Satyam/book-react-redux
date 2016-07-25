@@ -4,9 +4,6 @@ const axios = require('axios');
 
 const server = require('server/server.js');
 
-const PORT = process.env.npm_package_myWebServer_port || 8080;
-const HOST = process.env.npm_package_myWebServer_host || 'http://localhost';
-
 describe('Web Server testing', () => {
   before('Starting server', server.start);
 

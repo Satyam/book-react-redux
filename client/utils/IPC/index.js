@@ -1,38 +1,30 @@
-import axios from 'axios';
+const ipc = require('electron').ipcRenderer;
+const join = require('path').join;
 
-let ipc = null;
-if (global.window && window.process) {
-  console.log(
-    'electron?',
-     window.process.type,
-     window.process.versions && window.process.versions.electron
-  );
-  ipc = require('electron').ipcRenderer;
-  ipc.on('restAPI', (event, response) => {
-    console.log('restAPI', response);
-  });
-}
+let count = 0;
+
 export default base => {
-  const restClient = axios.create({
-    baseURL: `${typeof window !== 'undefined'
-      ? window.location.origin
-      : `${HOST}:${PORT}`}${REST_API_PATH}/${base}`,
-    responseType: 'json',
+  const request = method => (path, data) => new Promise((resolve, reject) => {
+    const channel = `req-${count++}`;
+    ipc.once(channel, (event, response) => {
+      if (response.status < 300) {
+        console.log('received', response);
+        resolve(response);
+      } else {
+        reject(new Error(response.statusText));
+      }
+    });
+    ipc.send('restAPI', {
+      channel,
+      url: `${HOST}:${PORT}${join(REST_API_PATH, base, path)}`,
+      method,
+      data,
+    });
   });
-  if (ipc) {
-    restClient.interceptors.request.use(
-      config => {
-        ipc.send('restAPI', config);
-        return config;
-        // return Promise.reject('no reason');
-      },
-      error => Promise.reject(error)
-    );
-  }
-
-  return Object.assign(restClient, {
-    read: restClient.get,
-    create: restClient.post,
-    update: restClient.put,
-  });
+  return {
+    read: request('GET'),
+    create: request('POST'),
+    update: request('PUT'),
+    delete: request('DELETE'),
+  };
 };

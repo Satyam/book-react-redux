@@ -38,18 +38,7 @@ const webServer = {
   stop: (done) => {
     console.log(`Closing server at http://localhost:${PORT}/`);
     server.close(done);
-  },
-  dataRouter
+  }
 };
 
 module.exports = webServer;
-
-if (require.main === module) {
-  console.log('auto start');
-  webServer.start((err) => {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
-  });
-}

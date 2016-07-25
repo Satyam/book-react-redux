@@ -13,12 +13,15 @@ let initialState = {};
 if (initialStateEl) {
   initialState = JSON.parse(initialStateEl.innerHTML);
 }
-
 import createStore from './store/createStore';
 
 export const store = createStore(browserHistory, initialState);
 
 const history = syncHistoryWithStore(browserHistory, store);
+
+if (BUNDLE === 'electronClient') {
+  browserHistory.replace('/');
+}
 
 import routes from './routes';
 
@@ -32,7 +35,7 @@ export default render((
   </Provider>
 ), dest);
 
-if (process.env.NODE_ENV !== 'production') {
+if (BUNDLE === 'client' && process.env.NODE_ENV !== 'production') {
   if (
     !dest ||
     !dest.firstChild ||

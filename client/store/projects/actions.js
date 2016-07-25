@@ -1,6 +1,5 @@
 import ACTION_TYPES from './actionTypes.js';
 
-
 import restAPI from 'restAPI';
 
 const api = restAPI('projects');

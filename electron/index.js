@@ -1,14 +1,22 @@
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
-const url = require('url');
+const join = require('path').join;
+const absPath = relative => join(ROOT_DIR, relative);
+
+const express = require('express');
+const fs = require('fs');
+const sqlJS = require('sql.js');
+
+const htmlTpl = require('./index.html.js');
 
 let mainWindow;
 
-const webServer = require('server/server.js');
+const dataRouter = express.Router();
+
+require('./serverIPC.js')(dataRouter);
 
 app.on('window-all-closed', () => {
-  webServer.stop();
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -21,57 +29,25 @@ app.on('ready', () => {
     mainWindow = null;
   });
 
-  webServer.start(() => {
-    let args = process.argv[2] || '';
-    if (args[0] === '/') args = args.substr(1);
-    mainWindow.loadURL(`${HOST}:${PORT}/${args}`);
-    electron.ipcMain.on('restAPI', (event, msg) => {
-      console.log('ipc', msg);
-      const parsedUrl = url.parse(msg.url, true);
-      const originalUrl = msg.url.replace(`${HOST}:${PORT}`, '');
-      const baseUrl = REST_API_PATH;
-      let statusCode = 200;
-      const res = {
-        status: code => {
-          statusCode = code;
-          console.log('res.status', code);
-          return res;
-        },
-        send: text => {
-          event.sender.send('restAPI', {
-            status: statusCode,
-            statusText: text,
-            data: {}
-          });
-          console.log('res.send', text);
-          return res;
-        },
-        json: obj => {
-          event.sender.send('restAPI', {
-            status: statusCode,
-            statusText: 'OK',
-            data: obj
-          });
-          console.log('res.json', obj);
-          return res;
+  global.db = new sqlJS.Database();
+  fs.readFile(absPath('server/data.sql'), 'utf8', (err, data) => {
+    if (err) throw err;
+    db.exec(data);
+    const projectsRoutes = require('server/projects/routes.js');
+    projectsRoutes(dataRouter, '/projects', (err) => {
+      if (err) throw err;
+      const htmlFile = absPath('electron/index.html');
+      fs.writeFile(
+        htmlFile,
+        htmlTpl(absPath('public/bundles'), absPath('node_modules')),
+        err => {
+          if (err) throw err;
+          mainWindow.loadURL(`file://${htmlFile}`);
         }
-      };
-      const req = {
-        method: msg.method.toUpperCase(),
-        originalUrl,
-        baseUrl,
-        url: originalUrl.replace(baseUrl, ''),
-        _parsedUrl: parsedUrl,
-        body: msg.data ? JSON.parse(msg.data) : {},
-        query: parsedUrl.query,
-        params: {},
-        res
-      };
-      console.log('req', req);
-      webServer.dataRouter(req, res, () => console.log('next called'));
-    });
+      );
 
-    // Un-comment the following to open the DevTools.
-    mainWindow.webContents.openDevTools();
+      // Un-comment the following to open the DevTools.
+      mainWindow.webContents.openDevTools({mode: 'bottom'});
+    });
   });
 });

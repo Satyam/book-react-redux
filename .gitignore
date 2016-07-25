@@ -27,6 +27,7 @@ build/Release
 node_modules
 
 public/bundles
+electron/index.html
 tmp
 
 #this book

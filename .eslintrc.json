@@ -11,6 +11,7 @@
     "ROOT_DIR": false,
     "HOST": false,
     "PORT": false,
-    "REST_API_PATH": false
+    "REST_API_PATH": false,
+    "BUNDLE": false
   }
 }
