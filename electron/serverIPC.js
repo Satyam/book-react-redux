@@ -43,7 +43,6 @@ module.exports = dataRouter => {
       params: {},
       res
     };
-    console.log('req', req);
     dataRouter(req, res, () => console.log('next called'));
   });
 };

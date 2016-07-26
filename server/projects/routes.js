@@ -13,7 +13,7 @@ const processPrj = (op) => (req, res) => {
   });
 };
 
-module.exports = (dataRouter, branch, done) => {
+module.exports = (dataRouter, branch, done) => new Promise((resolve, reject) => {
   const projectsRouter = express.Router();
   dataRouter.use(branch, validators.add$valid, projectsRouter);
 
@@ -59,5 +59,8 @@ module.exports = (dataRouter, branch, done) => {
     )
   ;
 
-  transactions.init(done);
-};
+  transactions.init(err => {
+    if (err) reject(err);
+    else resolve();
+  });
+});

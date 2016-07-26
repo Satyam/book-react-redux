@@ -37,7 +37,8 @@ module.exports = version => [
     target: {
       client: 'web',
       server: 'node',
-      electron: 'electron'
+      electron: 'electron',
+      electronClient: 'electron'
     }[bundle],
     module: {
       loaders: [

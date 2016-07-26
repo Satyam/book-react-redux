@@ -26,13 +26,16 @@ const webServer = {
       if (err) return done(err);
       db.exec(data);
       const projectsRoutes = require('./projects/routes.js');
-      projectsRoutes(dataRouter, '/projects', (err) => {
-        if (err) return done(err);
+      Promise.all([
+        projectsRoutes(dataRouter, '/projects')
+      ])
+      .then(() =>
         server.listen(PORT, () => {
           console.log(`Server running at http://localhost:${PORT}/`);
           done();
-        });
-      });
+        })
+      )
+      .catch(done);
     });
   },
   stop: (done) => {

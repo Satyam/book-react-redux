@@ -6,9 +6,14 @@ const absPath = relative => join(ROOT_DIR, relative);
 
 const express = require('express');
 const fs = require('fs');
+const denodeify = require('denodeify');
+const readFile = denodeify(fs.readFile);
+const writeFile = denodeify(fs.writeFile);
+
 const sqlJS = require('sql.js');
 
 const htmlTpl = require('./index.html.js');
+const htmlFile = absPath('electron/index.html');
 
 let mainWindow;
 
@@ -30,24 +35,25 @@ app.on('ready', () => {
   });
 
   global.db = new sqlJS.Database();
-  fs.readFile(absPath('server/data.sql'), 'utf8', (err, data) => {
-    if (err) throw err;
+  readFile(absPath('server/data.sql'), 'utf8')
+  .then(data => {
     db.exec(data);
     const projectsRoutes = require('server/projects/routes.js');
-    projectsRoutes(dataRouter, '/projects', (err) => {
-      if (err) throw err;
-      const htmlFile = absPath('electron/index.html');
-      fs.writeFile(
+    Promise.all([
+      projectsRoutes(dataRouter, '/projects')
+    ])
+    .then(() =>
+      writeFile(
         htmlFile,
-        htmlTpl(absPath('public/bundles'), absPath('node_modules')),
-        err => {
-          if (err) throw err;
-          mainWindow.loadURL(`file://${htmlFile}`);
-        }
-      );
-
-      // Un-comment the following to open the DevTools.
-      mainWindow.webContents.openDevTools({mode: 'bottom'});
+        htmlTpl(absPath('public/bundles'), absPath('node_modules'))
+      )
+      .then(() => mainWindow.loadURL(`file://${htmlFile}`))
+    )
+    // Un-comment the following to open the DevTools.
+    .then(() => mainWindow.webContents.openDevTools({mode: 'bottom'}))
+    // ---------
+    .catch(err => {
+      throw err;
     });
   });
 });
