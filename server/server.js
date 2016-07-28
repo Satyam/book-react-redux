@@ -4,6 +4,8 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const denodeify = require('denodeify');
+const readFile = denodeify(fs.readFile);
 const sqlJS = require('sql.js');
 
 const server = http.createServer(app);
@@ -22,8 +24,8 @@ const webServer = {
   start: (done) => {
     console.log('starting ....');
     global.db = new sqlJS.Database();
-    fs.readFile(join(ROOT_DIR, 'server', 'data.sql'), 'utf8', (err, data) => {
-      if (err) return done(err);
+    readFile(join(ROOT_DIR, 'server', 'data.sql'), 'utf8')
+    .then(data => {
       db.exec(data);
       const projectsRoutes = require('./projects/routes.js');
       Promise.all([
