@@ -1,3 +1,5 @@
+import {fail} from 'server/utils.js';
+
 const prepared = {};
 
 const sqlAllProjects =
@@ -8,7 +10,7 @@ const sqlAllProjects =
 const lastID = () => db.exec('select last_insert_rowid();')[0].values[0][0];
 
 module.exports = {
-  init: (done) => {
+  init: () => {
     prepared.selectAllProjects = db.prepare(sqlAllProjects);
     prepared.selectProjectByPid = db.prepare('select * from projects where pid = $pid');
     prepared.selectTasksByPid = db.prepare('select tid, descr, completed from tasks where pid = $pid');
@@ -18,12 +20,11 @@ module.exports = {
     prepared.deleteProject = db.prepare('delete from projects where pid = $pid');
     prepared.deleteTasksInProject = db.prepare('delete from tasks where pid = $pid');
     prepared.deleteTask = db.prepare('delete from tasks where pid = $pid and tid = $tid');
-    done();
   },
 
-  getAllProjects: (keys, data, options, done) => {
-    const fields = options.fields;
-    const search = options.search;
+  getAllProjects: (o) => {
+    const fields = o.options.fields;
+    const search = o.options.search;
     const fetch = stmt => {
       let projects = [];
       let prj;
@@ -33,7 +34,7 @@ module.exports = {
         projects.push(prj);
       }
       stmt.reset();
-      done(null, projects);
+      o.reply = projects;
     };
     if (!(fields || search)) {
       fetch(prepared.selectAllProjects);
@@ -49,98 +50,115 @@ module.exports = {
     }
   },
 
-  getProjectById: (keys, data, options, done) => {
-    const prj = prepared.selectProjectByPid.getAsObject({$pid: keys.pid});
-    if (Object.keys(prj).length === 0) return done(null, null);
+  getProjectById: (o) => {
+    const prj = prepared.selectProjectByPid.getAsObject({$pid: o.keys.pid});
+    if (Object.keys(prj).length === 0) {
+      prepared.selectProjectByPid.reset();
+      return fail(404, 'Item(s) not found');
+    }
+    prepared.selectProjectByPid.reset();
     prj.tasks = [];
     let task;
     const stmt = prepared.selectTasksByPid;
-    if (stmt.bind({$pid: keys.pid})) {
+    if (stmt.bind({$pid: o.keys.pid})) {
       while (stmt.step()) {
         task = stmt.getAsObject();
         task.tid = String(task.tid);
         task.completed = !!task.completed;
         prj.tasks.push(task);
       }
-      done(null, prj);
-    } else done(new Error('Sql Statement binding failed'));
+      stmt.reset();
+      o.reply = prj;
+    } else {
+      stmt.reset();
+      return fail(500, 'Sql Statement binding failed');
+    }
   },
 
-  getTaskByTid: (keys, data, options, done) => {
-    const task = prepared.selectTaskByTid.getAsObject({$tid: keys.tid});
-    if (!task || task.pid !== keys.pid) return done(null, null);
+  getTaskByTid: (o) => {
+    const task = prepared.selectTaskByTid.getAsObject({$tid: o.keys.tid});
+    if (!task || task.pid !== o.keys.pid) {
+      prepared.selectTaskByTid.reset();
+      return fail(404, 'Item(s) not found');
+    }
     task.completed = !!task.completed;
+    task.tid = String(task.tid);
     prepared.selectTaskByTid.reset();
-    done(null, task);
+    o.reply = task;
   },
 
-  addProject: (keys, data, options, done) => {
+  addProject: (o) => {
     prepared.createProject.run({
-      $name: data.name || 'New Project',
-      $descr: data.descr || 'No description'
+      $name: o.data.name || 'New Project',
+      $descr: o.data.descr || 'No description'
     });
-    done(null, {pid: lastID()});
+    o.reply = {pid: String(lastID())};
   },
 
-  addTaskToProject: (keys, data, options, done) => {
-    if (prepared.selectProjectByPid.get({$pid: keys.pid}).length) {
+  addTaskToProject: (o) => {
+    if (prepared.selectProjectByPid.get({$pid: o.keys.pid}).length) {
       prepared.createTask.run({
-        $descr: data.descr || 'No description',
-        $completed: data.completed || 0,
-        $pid: keys.pid
+        $descr: o.data.descr || 'No description',
+        $completed: o.data.completed || 0,
+        $pid: o.keys.pid
       });
-      done(null, {tid: lastID()});
-    } else done(null, null);
-    prepared.selectProjectByPid.reset();
+      o.reply = {tid: String(lastID())};
+      prepared.selectProjectByPid.reset();
+    } else {
+      prepared.selectProjectByPid.reset();
+      return fail(404, 'Item(s) not found');
+    }
   },
 
-  updateProject: (keys, data, options, done) => {
+  updateProject: (o) => {
     const sql = 'update projects set ' +
-      Object.keys(data).map((field) => `${field} = '${data[field]}'`) +
-     ' where pid = ' + keys.pid;
+      Object.keys(o.data).map((field) => `${field} = '${o.data[field]}'`) +
+     ' where pid = ' + o.keys.pid;
     db.run(sql);
     if (db.getRowsModified()) {
-      done(null, keys);
+      o.reply.pid = String(o.keys.pid);
     } else {
-      done(null, null);
+      return fail(404, 'Item(s) not found');
     }
   },
 
-  updateTask: (keys, data, options, done) => {
+  updateTask: (o) => {
     const sql = 'update tasks set ' +
-    Object.keys(data).map((field) => `${field} = '${data[field]}'`) +
-    ` where pid = ${keys.pid} and tid = ${keys.tid}`;
+    Object.keys(o.data).map((field) => `${field} = '${o.data[field]}'`) +
+    ` where pid = ${o.keys.pid} and tid = ${o.keys.tid}`;
     db.run(sql);
     if (db.getRowsModified()) {
-      done(null, keys);
+      o.reply.pid = String(o.keys.pid);
+      o.reply.tid = String(o.keys.tid);
     } else {
-      done(null, null);
+      return fail(404, 'Item(s) not found');
     }
   },
 
-  deleteProject: (keys, data, options, done) => {
+  deleteProject: (o) => {
     prepared.deleteTasksInProject.run({
-      $pid: keys.pid
+      $pid: o.keys.pid
     });
     prepared.deleteProject.run({
-      $pid: keys.pid
+      $pid: o.keys.pid
     });
     if (db.getRowsModified()) {
-      done(null, keys);
+      o.reply.pid = String(o.keys.pid);
     } else {
-      done(null, null);
+      return fail(404, 'Item(s) not found');
     }
   },
 
-  deleteTask: (keys, data, options, done) => {
+  deleteTask: (o) => {
     prepared.deleteTask.run({
-      $pid: keys.pid,
-      $tid: keys.tid
+      $pid: o.keys.pid,
+      $tid: o.keys.tid
     });
     if (db.getRowsModified()) {
-      done(null, keys);
+      o.reply.pid = String(o.keys.pid);
+      o.reply.tid = String(o.keys.tid);
     } else {
-      done(null, null);
+      return fail(404, 'Item(s) not found');
     }
   }
 };

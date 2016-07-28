@@ -2,65 +2,55 @@ const express = require('express');
 const transactions = require('./transactions.js');
 const validators = require('./validators.js');
 
-const processPrj = (op) => (req, res) => {
-  const valid = req.$valid;
-  transactions[op](valid.keys, valid.data, valid.options, (err, data) => {
-    if (err) return void res.status(500).send(err);
-    if (data === null) return void res.status(404).send('Item(s) not found');
-    if (data.pid) data.pid = String(data.pid);
-    if (data.tid) data.tid = String(data.tid);
-    res.json(data);
-  });
-};
+import {handle} from 'server/utils';
 
-module.exports = (dataRouter, branch, done) => new Promise((resolve, reject) => {
+module.exports = (dataRouter, branch) => new Promise((resolve, reject) => {
   const projectsRouter = express.Router();
-  dataRouter.use(branch, validators.add$valid, projectsRouter);
+  dataRouter.use(branch, projectsRouter);
 
   projectsRouter
-    .get('/',
+    .get('/', handle(
       validators.validateOptions,
-      processPrj('getAllProjects')
-    )
-    .get('/:pid',
+      transactions.getAllProjects
+    ))
+    .get('/:pid', handle(
       validators.validatePid,
-      processPrj('getProjectById')
-    )
-    .get('/:pid/:tid',
+      transactions.getProjectById
+    ))
+    .get('/:pid/:tid', handle(
+      validators.validatePid,
       validators.validateTid,
-      processPrj('getTaskByTid')
-    )
-    .post('/',
+      transactions.getTaskByTid
+    ))
+    .post('/', handle(
       validators.validatePrjData,
-      processPrj('addProject')
-    )
-    .post('/:pid',
+      transactions.addProject
+    ))
+    .post('/:pid', handle(
       validators.validatePid,
       validators.validateTaskData,
-      processPrj('addTaskToProject')
-    )
-    .put('/:pid',
+      transactions.addTaskToProject
+    ))
+    .put('/:pid', handle(
       validators.validatePid,
       validators.validatePrjData,
-      processPrj('updateProject')
-    )
-    .put('/:pid/:tid',
+      transactions.updateProject
+    ))
+    .put('/:pid/:tid', handle(
+      validators.validatePid,
       validators.validateTid,
       validators.validateTaskData,
-      processPrj('updateTask')
-    )
-    .delete('/:pid',
+      transactions.updateTask
+    ))
+    .delete('/:pid', handle(
       validators.validatePid,
-      processPrj('deleteProject')
-    )
-    .delete('/:pid/:tid',
+      transactions.deleteProject
+    ))
+    .delete('/:pid/:tid', handle(
+      validators.validatePid,
       validators.validateTid,
-      processPrj('deleteTask')
-    )
+      transactions.deleteTask
+    ))
   ;
-
-  transactions.init(err => {
-    if (err) reject(err);
-    else resolve();
-  });
+  resolve(transactions.init());
 });

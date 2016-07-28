@@ -1,70 +1,43 @@
-const send400 = (res) => void res.status(400).send('Bad request');
+import {fail} from 'server/utils.js';
 
 const testFields = /^\s*\w+\s*(,\s*\w+\s*)*$/;
 const testSearch = /^\s*\w+\s*=\s*\w[\w\s]*$/;
 
 module.exports = {
-  add$valid: (req, res, next) => {
-    req.$valid = {};
-    next();
+
+  validatePid: ({keys, data, options, reply}) => {
+    const pid = Number(keys.pid);
+    if (Number.isNaN(pid)) return fail(400, 'Bad Request');
+    keys.pid = pid;
   },
 
-  validatePid: (req, res, next) => {
-    const pid = Number(req.params.pid);
-    if (Number.isNaN(pid)) return send400(res);
-    req.$valid.keys = {
-      pid
-    };
-    next();
+  validateTid: ({keys, data, options, reply}) => {
+    const tid = Number(keys.tid);
+    if (Number.isNaN(tid)) return fail(400, 'Bad Request');
+    keys.tid = tid;
   },
 
-  validateTid: (req, res, next) => {
-    const pid = Number(req.params.pid);
-    const tid = Number(req.params.tid);
-    if (Number.isNaN(pid) || Number.isNaN(tid)) return send400(res);
-    req.$valid.keys = {
-      pid,
-      tid
-    };
-    next();
-  },
-
-  validateOptions: (req, res, next) => {
-    const fields = req.query.fields;
-    const search = req.query.search;
+  validateOptions: ({keys, data, options, reply}) => {
+    const fields = options.fields;
+    const search = options.search;
 
     if (
       (fields && !testFields.test(fields)) ||
       (search && !testSearch.test(search))
     ) {
-      return send400(res);
+      return fail(400, 'Bad Request');
     }
-    req.$valid.options = {
-      fields,
-      search
-    };
-    next();
   },
 
-  validatePrjData: (req, res, next) => {
-    const name = req.body.name;
-    const descr = req.body.descr;
-    if (name === undefined && descr === undefined) return send400(res);
-    const data = {};
-    if (name !== undefined) data.name = name;
-    if (descr !== undefined) data.descr = descr;
-    req.$valid.data = data;
-    next();
+  validatePrjData: ({keys, data, options, reply}) => {
+    const name = data.name;
+    const descr = data.descr;
+    if (name === undefined && descr === undefined) return fail(400, 'Bad Request');
   },
 
-  validateTaskData: (req, res, next) => {
-    const descr = req.body.descr;
-    const completed = req.body.completed;
-    if (descr === undefined && completed === undefined) return send400(res);
-    const data = {};
-    if (descr !== undefined) data.descr = descr;
-    if (completed !== undefined) data.completed = !!completed;
-    req.$valid.data = data;
-    next();
+  validateTaskData: ({keys, data, options, reply}) => {
+    const descr = data.descr;
+    const completed = data.completed;
+    if (descr === undefined && completed === undefined) return fail(400, 'Bad Request');
   }
 };
