@@ -1,4 +1,4 @@
-export default (html, initialState) => `<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -7,11 +7,9 @@ export default (html, initialState) => `<!DOCTYPE html>
     <link rel="stylesheet" href="/bootstrap/css/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="/bundles/client.css" />
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise" defer async></script>
-    <script id="initialState" type="application/json">${initialState}</script>
   </head>
   <body>
-    <div id="contents" class="container-fluid">${html}</div>
+    <div id="contents" class="container-fluid"></div>
     <script src="/bundles/client.js"></script>
   </body>
 </html>
-`;

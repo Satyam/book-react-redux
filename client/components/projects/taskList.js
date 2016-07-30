@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import Task from './task';
-import EditTask from './editTask.js';
+import EditTask from './editTask';
 
 export const TaskList = ({ pid, tids, editTid }) => (
   <div className="task-list">{
@@ -18,7 +18,7 @@ export const TaskList = ({ pid, tids, editTid }) => (
 TaskList.propTypes = {
   pid: PropTypes.string,
   tids: PropTypes.arrayOf(PropTypes.string),
-  editTid: React.PropTypes.string,
+  editTid: PropTypes.string,
 };
 
 import { connect } from 'react-redux';

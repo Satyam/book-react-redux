@@ -8,7 +8,6 @@ export default base => {
     const channel = `req-${count++}`;
     ipc.once(channel, (event, response) => {
       if (response.status < 300) {
-        console.log('received', response);
         resolve(response);
       } else {
         reject(new Error(response.statusText));

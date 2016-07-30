@@ -40,7 +40,7 @@ ProjectList.propTypes = {
   onNewProject: PropTypes.func,
 };
 
-import initialDispatcher from 'utils/initialDispatcher.js';
+import initialDispatcher from 'utils/initialDispatcher';
 import { getAllProjects, push } from 'store/actions';
 import isEmpty from 'lodash/isEmpty';
 

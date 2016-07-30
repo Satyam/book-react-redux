@@ -54,7 +54,7 @@ module.exports = version => [
       ]
     },
     plugins: [
-      new ExtractTextPlugin('styles.css'),
+      new ExtractTextPlugin(`${bundle}.css`),
       new webpack.DefinePlugin({
         'process.env': {
           'NODE_ENV': JSON.stringify(version)

@@ -1,4 +1,4 @@
-import {fail} from 'server/utils.js';
+import {fail} from 'server/utils';
 
 const testFields = /^\s*\w+\s*(,\s*\w+\s*)*$/;
 const testSearch = /^\s*\w+\s*=\s*\w[\w\s]*$/;

@@ -1,10 +1,12 @@
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+
 const join = require('path').join;
 const absPath = relative => join(ROOT_DIR, relative);
 
-const express = require('express');
+const expressRouter = require('express').Router;
+
 const fs = require('fs');
 const denodeify = require('denodeify');
 const readFile = denodeify(fs.readFile);
@@ -17,9 +19,9 @@ const htmlFile = absPath('electron/index.html');
 
 let mainWindow;
 
-const dataRouter = express.Router();
+const dataRouter = expressRouter();
 
-require('./serverIPC.js')(dataRouter);
+require('./serverIPC')(dataRouter);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -36,24 +38,24 @@ app.on('ready', () => {
 
   global.db = new sqlJS.Database();
   readFile(absPath('server/data.sql'), 'utf8')
-  .then(data => {
-    db.exec(data);
-    const projectsRoutes = require('server/projects/routes.js');
-    Promise.all([
+  .then(data => db.exec(data))
+  .then(() => {
+    const projectsRoutes = require('server/projects/routes');
+    return Promise.all([
       projectsRoutes(dataRouter, '/projects')
-    ])
-    .then(() =>
-      writeFile(
-        htmlFile,
-        htmlTpl(absPath('public/bundles'), absPath('node_modules'))
-      )
-      .then(() => mainWindow.loadURL(`file://${htmlFile}`))
+    ]);
+  })
+  .then(() =>
+    writeFile(
+      htmlFile,
+      htmlTpl(absPath('public/bundles'), absPath('node_modules'))
     )
-    // Un-comment the following to open the DevTools.
-    .then(() => mainWindow.webContents.openDevTools({mode: 'bottom'}))
-    // ---------
-    .catch(err => {
-      throw err;
-    });
+  )
+  .then(() => mainWindow.loadURL(`file://${htmlFile}`))
+  // Un-comment the following to open the DevTools.
+  // .then(() => mainWindow.webContents.openDevTools({mode: 'bottom'}))
+  // ---------
+  .catch(err => {
+    throw err;
   });
 });

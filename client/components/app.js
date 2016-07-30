@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
-import isPlainClick from 'utils/isPlainClick.js';
+import isPlainClick from 'utils/isPlainClick';
 import styles from './app.css';
 import classNames from 'classnames';
 
@@ -37,7 +37,7 @@ App.propTypes = {
   pathname: PropTypes.string,
   loading: PropTypes.bool,
   errors: PropTypes.array,
-  onCloseErrors: React.PropTypes.func,
+  onCloseErrors: PropTypes.func,
 };
 
 import { connect } from 'react-redux';

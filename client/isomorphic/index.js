@@ -8,7 +8,7 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import createStore from 'store/createStore';
 import clientRoutes from 'client/routes';
 
-import html from './index.html.js';
+import htmlTemplate from './index.html';
 
 module.exports = app => app.use((req, res, next) => {
   const memoryHistory = createMemoryHistory(req.url);
@@ -31,21 +31,20 @@ module.exports = app => app.use((req, res, next) => {
             return typeof initialDispatch === 'function'
             ? initialDispatch(store.dispatch, renderProps, null, store.getState())
             : undefined;
-          })).then(
-            () => {
-              const initialView = renderToString(
-                <Provider store={store}>
-                  <RouterContext {...renderProps} />
-                </Provider>
-              );
-              const finalState = JSON.stringify(store.getState());
-              res.status(200).type('html').end(html(initialView, finalState));
-            },
-            reason => {
-              console.error(reason);
-              res.status(500).end(`Internal server error \n${reason}`);
-            }
-          );
+          }))
+          .then(() => {
+            const initialView = renderToString(
+              <Provider store={store}>
+                <RouterContext {...renderProps} />
+              </Provider>
+            );
+            const finalState = JSON.stringify(store.getState());
+            res.status(200).type('html').end(htmlTemplate(initialView, finalState));
+          })
+          .catch(reason => {
+            console.error(reason);
+            res.status(500).end(`Internal server error \n${reason}`);
+          });
         }
       } else {
         next();

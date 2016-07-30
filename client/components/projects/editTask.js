@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import bindHandlers from 'utils/bindHandlers.js';
-import isPlainClick from 'utils/isPlainClick.js';
+import bindHandlers from 'utils/bindHandlers';
+import isPlainClick from 'utils/isPlainClick';
 import styles from './editTask.css';
 import classNames from 'classnames';
 import pick from 'lodash/pick';

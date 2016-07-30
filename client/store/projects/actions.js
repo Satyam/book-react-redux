@@ -1,4 +1,4 @@
-import ACTION_TYPES from './actionTypes.js';
+import ACTION_TYPES from './actionTypes';
 
 import restAPI from 'restAPI';
 

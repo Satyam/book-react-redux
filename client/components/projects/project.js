@@ -62,7 +62,7 @@ export const mapDispatchToProps = dispatch => ({
       .then(() => dispatch(push('/projects'))),
 });
 
-import initialDispatcher from 'utils/initialDispatcher.js';
+import initialDispatcher from 'utils/initialDispatcher';
 
 export const initialDispatch = Project.initialDispatch =
   (dispatch, nextProps, currentProps, state) => {

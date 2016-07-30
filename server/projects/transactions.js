@@ -1,4 +1,4 @@
-import {fail} from 'server/utils.js';
+const { fail, dolarize } = require('server/utils');
 
 const prepared = {};
 
@@ -60,7 +60,7 @@ module.exports = {
     prj.tasks = [];
     let task;
     const stmt = prepared.selectTasksByPid;
-    if (stmt.bind({$pid: o.keys.pid})) {
+    if (stmt.bind(dolarize(o.keys))) {
       while (stmt.step()) {
         task = stmt.getAsObject();
         task.tid = String(task.tid);
@@ -76,7 +76,7 @@ module.exports = {
   },
 
   getTaskByTid: (o) => {
-    const task = prepared.selectTaskByTid.getAsObject({$tid: o.keys.tid});
+    const task = prepared.selectTaskByTid.getAsObject(dolarize(o.keys));
     if (!task || task.pid !== o.keys.pid) {
       prepared.selectTaskByTid.reset();
       return fail(404, 'Item(s) not found');
@@ -96,7 +96,7 @@ module.exports = {
   },
 
   addTaskToProject: (o) => {
-    if (prepared.selectProjectByPid.get({$pid: o.keys.pid}).length) {
+    if (prepared.selectProjectByPid.get(dolarize(o.keys)).length) {
       prepared.createTask.run({
         $descr: o.data.descr || 'No description',
         $completed: o.data.completed || 0,
@@ -112,9 +112,9 @@ module.exports = {
 
   updateProject: (o) => {
     const sql = 'update projects set ' +
-      Object.keys(o.data).map((field) => `${field} = '${o.data[field]}'`) +
-     ' where pid = ' + o.keys.pid;
-    db.run(sql);
+      Object.keys(o.data).map(field => `${field} = $${field}`) +
+     ' where pid = $pid';
+    db.run(sql, dolarize(o.keys, o.data));
     if (db.getRowsModified()) {
       o.reply.pid = String(o.keys.pid);
     } else {
@@ -124,9 +124,9 @@ module.exports = {
 
   updateTask: (o) => {
     const sql = 'update tasks set ' +
-    Object.keys(o.data).map((field) => `${field} = '${o.data[field]}'`) +
-    ` where pid = ${o.keys.pid} and tid = ${o.keys.tid}`;
-    db.run(sql);
+    Object.keys(o.data).map(field => `${field} = $${field}`) +
+    ' where pid = $pid and tid = $tid';
+    db.run(sql, dolarize(o.keys, o.data));
     if (db.getRowsModified()) {
       o.reply.pid = String(o.keys.pid);
       o.reply.tid = String(o.keys.tid);
@@ -139,9 +139,7 @@ module.exports = {
     prepared.deleteTasksInProject.run({
       $pid: o.keys.pid
     });
-    prepared.deleteProject.run({
-      $pid: o.keys.pid
-    });
+    prepared.deleteProject.run(dolarize(o.keys));
     if (db.getRowsModified()) {
       o.reply.pid = String(o.keys.pid);
     } else {
@@ -150,10 +148,7 @@ module.exports = {
   },
 
   deleteTask: (o) => {
-    prepared.deleteTask.run({
-      $pid: o.keys.pid,
-      $tid: o.keys.tid
-    });
+    prepared.deleteTask.run(dolarize(o.keys));
     if (db.getRowsModified()) {
       o.reply.pid = String(o.keys.pid);
       o.reply.tid = String(o.keys.tid);

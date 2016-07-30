@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import bindHandlers from 'utils/bindHandlers.js';
-import isPlainClick from 'utils/isPlainClick.js';
+import bindHandlers from 'utils/bindHandlers';
+import isPlainClick from 'utils/isPlainClick';
 import styles from './editProject.css';
 import classNames from 'classnames';
 import pick from 'lodash/pick';
@@ -89,7 +89,7 @@ export const mapDispatchToProps = (dispatch, { params: { pid } }) => ({
   },
 });
 
-import initialDispatcher from 'utils/initialDispatcher.js';
+import initialDispatcher from 'utils/initialDispatcher';
 
 import { connect } from 'react-redux';
 

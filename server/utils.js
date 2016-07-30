@@ -16,3 +16,13 @@ export const handle = (...args) => (req, res) => {
     res.status(reason.code).send(reason.message);
   });
 };
+
+export const dolarize = (...objs) => {
+  const params = {};
+  objs.forEach(obj =>
+    Object.keys(obj).forEach(key => {
+      params[`$${key}`] = obj[key];
+    })
+  );
+  return params;
+};

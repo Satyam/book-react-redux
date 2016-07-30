@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import isPlainClick from 'utils/isPlainClick.js';
+import isPlainClick from 'utils/isPlainClick';
 import styles from './task.css';
 import classNames from 'classnames';
 

@@ -5,7 +5,7 @@ module.exports = (bundles, nodeModules) => `<!DOCTYPE html>
     <title>Sample Web Page</title>
     <link rel="stylesheet" href="file://${nodeModules}/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="file://${nodeModules}/bootstrap/dist/css/bootstrap-theme.min.css" />
-    <link rel="stylesheet" href="file://${bundles}/styles.css" />
+    <link rel="stylesheet" href="file://${bundles}/electronClient.css" />
   </head>
   <body>
     <div id="contents" class="container-fluid"></div>
