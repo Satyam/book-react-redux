@@ -4,6 +4,7 @@
     "browser": true
   },
   "settings": {
-    "import/resolver": "webpack"
+    "import/resolver": "webpack",
+    "import/core-modules": [ "electron" ]
   }
 }
