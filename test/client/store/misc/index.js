@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const misc = require('store/misc/index.js');
-const { testConstants } = require('test/utils');
+const testConstants = require('test/utils/testConstants');
 
 describe('Store: misc', () => {
   describe('actions', () => {

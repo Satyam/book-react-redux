@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-const NotFound = props => (
+export const NotFound = props => (
   <div>
     <h1>Not found</h1>
     <p>Path: <code>{props.location.pathname}</code></p>
@@ -12,5 +12,3 @@ NotFound.propTypes = {
     pathname: PropTypes.string,
   }),
 };
-
-export default NotFound;
