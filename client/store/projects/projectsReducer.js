@@ -27,13 +27,15 @@ export default (state = {}, action) => {
       );
     }
     case ALL_PROJECTS_SUCCESS:
-      return action.data.reduce(
-        (projects, project) => (projects[project.pid]
-          ? update(projects, { [project.pid]: { $merge: project } })
-          : update(projects, { $merge: { [project.pid]: project } })
-        ),
-        state
-      );
+      return update(state, { $merge: action.data.reduce(
+        (projects, project) => {
+          if (!(project.pid in state)) {
+            projects[project.pid] = project; // eslint-disable-line no-param-reassign
+          }
+          return projects;
+        },
+        {}
+      ) });
     case PROJECT_BY_ID_SUCCESS: {
       const project = action.data;
       return update(state,
