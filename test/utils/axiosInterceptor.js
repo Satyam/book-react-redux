@@ -21,11 +21,6 @@ const adapter = (resolve, reject, config) => {
         : true
       )
     ) {
-      console.log('response', {
-        status: 200,
-        statusText: 'OK',
-        data: redirect.response
-      });
       resolve({
         data: redirect.response,
         status: 200,
@@ -35,7 +30,6 @@ const adapter = (resolve, reject, config) => {
       return true;
     }
   })) {
-    console.log('--not found--');
     reject({
       status: 404,
       statusText: 'Not Found',
@@ -43,8 +37,6 @@ const adapter = (resolve, reject, config) => {
     });
   }
 };
-
-console.log('setting adapter');
 
 export default (baseURL, config) => {
   if (baseURL) {

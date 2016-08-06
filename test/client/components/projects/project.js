@@ -114,18 +114,11 @@ describe('Component: Project', () => {
       const store = mockStore(data);
       store.subscribe(() => {
         const actions = store.getActions();
-        switch (actions.length) {
-          case 1:
-            expect(actions[0]).to.eql({ type: 'projects/PROJECT_BY_ID/REQUEST', pid: '33' });
-            break;
-          case 2:
-            expect(actions[1]).to.eql({ type: 'projects/PROJECT_BY_ID/SUCCESS', data: 'whatever' });
-            setIntercept();
-            done();
-            break;
-          default:
-            expect(null, 'Should not dispatch any more actions').to.be.ok;
-            done();
+        if (actions.length === 2) {
+          expect(actions[0]).to.eql({ type: 'projects/PROJECT_BY_ID/REQUEST', pid: '33' });
+          expect(actions[1]).to.eql({ type: 'projects/PROJECT_BY_ID/SUCCESS', data: 'whatever' });
+          setIntercept();
+          done();
         }
       });
       const result = deepRender(
@@ -142,48 +135,32 @@ describe('Component: Project', () => {
   });
 
   describe('mapDispatchToProps', () => {
-    it('Should have two methods', () => {
+    it('onEditClick', () => {
       const store = fakeThunkStore(data);
       const props = mapDispatchToProps(store.dispatch);
       expect(props.onEditClick).to.be.a('function');
-      expect(props.onDeleteClick).to.be.a('function');
-    });
-
-    it('onEditClick', done => {
-      const store = fakeThunkStore(data);
-      store.subscribe(() => {
-        const actions = store.getActions();
-        expect(actions.length).to.equal(1);
-        const payload = actions[0].payload;
-        expect(payload.args).to.have.lengthOf(1);
-        expect(payload.args[0]).to.equal(`/projects/editProject/${PID}`);
-        done();
-      });
-      const props = mapDispatchToProps(store.dispatch);
       props.onEditClick({ pid: PID });
+      const actions = store.getActions();
+      expect(actions.length).to.equal(1);
+      const payload = actions[0].payload;
+      expect(payload.args).to.have.lengthOf(1);
+      expect(payload.args[0]).to.equal(`/projects/editProject/${PID}`);
     });
 
     it('onDeleteClick', done => {
       const store = fakeThunkStore(data);
       store.subscribe(() => {
         const actions = store.getActions();
-        switch (actions.length) {
-          case 1:
-            expect(actions[0].func.toString()).to.contain('.DELETE_PROJECT_REQUEST');
-            break;
-          case 2: {
-            const payload = actions[1].payload;
-            expect(payload.args).to.have.lengthOf(1);
-            expect(payload.args[0]).to.equal('/projects');
-            done();
-            break;
-          }
-          default:
-            expect(null, 'Should not dispatch any more actions').to.be.ok;
-            done();
+        if (actions.length === 2) {
+          expect(actions[0].func.toString()).to.contain('.DELETE_PROJECT_REQUEST');
+          const payload = actions[1].payload;
+          expect(payload.args).to.have.lengthOf(1);
+          expect(payload.args[0]).to.equal('/projects');
+          done();
         }
       });
       const props = mapDispatchToProps(store.dispatch);
+      expect(props.onDeleteClick).to.be.a('function');
       props.onDeleteClick({ pid: PID });
     });
   });

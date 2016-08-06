@@ -1,9 +1,8 @@
 const expect = require('chai').expect;
 
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-const mockStore = configureMockStore([thunk]);
-
+import { mockStore } from 'test/utils/renderers';
+// uncomment following for data to be used when testing update or delete
+// import data from 'test/utils/data';
 import nock from 'nock';
 
 const SERVER = `${HOST}:${PORT}`;

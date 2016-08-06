@@ -63,6 +63,7 @@
     "chai-enzyme": "^0.5.0",
     "cheerio": "^0.20.0",
     "css-loader": "^0.23.1",
+    "deep-diff": "^0.3.4",
     "denodeify": "^1.2.1",
     "enzyme": "^2.4.1",
     "eslint": "^2.13.1",
