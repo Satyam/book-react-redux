@@ -4,13 +4,15 @@ module.exports = {
       pid: '25',
       name: 'Writing a Book on Web Dev Tools',
       descr: 'Tasks required to write a book on the tools required to develop a web application',
-      tids: ['1', '2', '3']
+      tids: ['1', '2', '3'],
+      pending: 1
     },
     34: {
       pid: '34',
       name: 'Cook a Spanish omelette',
       descr: 'Steps to cook a Spanish omelette or "tortilla"',
-      tids: ['4', '5', '6', '7', '8', '9']
+      tids: ['4', '5', '6', '7', '8', '9'],
+      pending: 4
     }
   },
   tasks: {
