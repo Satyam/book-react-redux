@@ -1,23 +1,22 @@
-export const fail = (code, message) => Promise.reject({code, message});
+export const failRequest = (code, message) => Promise.reject({code, message});
 
-export const handle = (...args) => (req, res) => {
+export const handleRequest = (...args) => (req, res) => {
   const action = args[args.length - 1];
   const o = {
     keys: req.params,
     data: req.body,
-    options: req.query,
-    reply: {}
+    options: req.query
   };
 
   Promise.all(args.slice(0, -1).map(validator => validator(o)))
   .then(() => action(o))
-  .then(() => res.json(o.reply))
+  .then(reply => res.json(reply))
   .catch(reason => {
     res.status(reason.code).send(reason.message);
   });
 };
 
-export const dolarize = (...objs) => {
+export const dolarizeQueryParams = (...objs) => {
   const params = {};
   objs.forEach(obj =>
     Object.keys(obj).forEach(key => {
