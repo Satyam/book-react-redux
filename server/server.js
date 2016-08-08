@@ -20,7 +20,7 @@ app.use(REST_API_PATH, dataRouter);
 app.use('/bootstrap', express.static(absPath('node_modules/bootstrap/dist')));
 app.use(express.static(absPath('public')));
 
-require('client/isomorphic/index')(app);
+require('server/isomorphic/index')(app);
 
 app.get('*', (req, res) => res.sendFile(absPath('server/index.html')));
 
