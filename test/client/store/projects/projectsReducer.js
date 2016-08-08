@@ -244,7 +244,6 @@ describe('Store: Projects, projectsReducer', () => {
         descr: 'asdfasd fsdaf sdas', // descr ignored in projectsReducer
       }
     );
-    console.log('add task', d);
     expect(d).to.have.lengthOf(1);
     expect(d[0].path).to.equal('25');
     expect(deepDiff(d[0].old, d[0].new)).to.eql([
@@ -273,7 +272,6 @@ describe('Store: Projects, projectsReducer', () => {
         tid: '3',
       }
     );
-    console.log('delete task', d);
     expect(d).to.have.lengthOf(1);
     expect(d[0].path).to.equal('25');
     expect(deepDiff(d[0].old, d[0].new)).to.eql([
