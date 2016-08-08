@@ -10,17 +10,15 @@ import omit from 'lodash/omit';
 
 export default (state = {}, action) => {
   switch (action.type) {
-    case PROJECT_BY_ID_SUCCESS: {
+    case PROJECT_BY_ID_SUCCESS:
       return update(state, { $merge: action.data.tasks.reduce(
-        (tasks, task) => {
-          if (!(task.tid in state)) {
-            tasks[task.tid] = task; // eslint-disable-line no-param-reassign
-          }
-          return tasks;
-        },
+        (tasks, task) => (
+          task.tid in state
+          ? tasks
+          : Object.assign(tasks, { [task.tid]: task })
+        ),
         {}
       ) });
-    }
     case ADD_TASK_SUCCESS:
       return update(state, { $merge: { [action.data.tid]: action.data } });
     case UPDATE_TASK_SUCCESS:

@@ -28,12 +28,11 @@ export default (state = {}, action) => {
     }
     case ALL_PROJECTS_SUCCESS:
       return update(state, { $merge: action.data.reduce(
-        (projects, project) => {
-          if (!(project.pid in state)) {
-            projects[project.pid] = project; // eslint-disable-line no-param-reassign
-          }
-          return projects;
-        },
+        (projects, project) => (
+          project.pid in state
+          ? projects
+          : Object.assign(projects, { [project.pid]: project })
+        ),
         {}
       ) });
     case PROJECT_BY_ID_SUCCESS: {
