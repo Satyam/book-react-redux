@@ -23,7 +23,7 @@ const adapter = (resolve, reject, config) => {
     channel,
     url: config.url,
     method: config.method,
-    data: config.data,
+    data: config.data && JSON.parse(config.data),
   });
 };
 

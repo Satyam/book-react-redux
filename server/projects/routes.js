@@ -1,8 +1,8 @@
-const expressRouter = require('express').Router;
-const transactions = require('./transactions');
-const validators = require('./validators');
+import { Router as expressRouter } from 'express';
+import { handleRequest } from 'server/utils';
+import transactions from './transactions';
+import validators from './validators';
 
-const handleRequest = require('server/utils').handleRequest;
 
 module.exports = (dataRouter, branch) => new Promise((resolve /* , reject */) => {
   const projectsRouter = expressRouter();

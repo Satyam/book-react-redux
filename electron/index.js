@@ -1,24 +1,25 @@
-const electron = require('electron');
+import electron from 'electron';
+import { join } from 'path';
+import { Router as expressRouter } from 'express';
+
+import fs from 'fs';
+import denodeify from 'denodeify';
+import sqlJS from 'sql.js';
+
+import projectsRoutes from 'server/projects/routes';
+import serverIPC from './serverIPC';
+import htmlTpl from './htmlTemplate';
 
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
-const join = require('path').join;
 
 const absPath = relative => join(ROOT_DIR, relative);
 
-const expressRouter = require('express').Router;
-
-const fs = require('fs');
-const denodeify = require('denodeify');
 
 const readFile = denodeify(fs.readFile);
 const writeFile = denodeify(fs.writeFile);
 
-const sqlJS = require('sql.js');
-
-const htmlTpl = require('./htmlTemplate');
-const projectsRoutes = require('server/projects/routes');
 
 const htmlFile = absPath('electron/index.html');
 
@@ -26,7 +27,7 @@ let mainWindow;
 
 const dataRouter = expressRouter();
 
-require('./serverIPC')(dataRouter);
+serverIPC(dataRouter);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

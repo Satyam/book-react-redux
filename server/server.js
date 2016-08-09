@@ -1,13 +1,13 @@
-const http = require('http');
-const join = require('path').join;
-const express = require('express');
-const bodyParser = require('body-parser');
-const fs = require('fs');
-const denodeify = require('denodeify');
-const sqlJS = require('sql.js');
-const iso = require('server/isomorphic/index');
+import http from 'http';
+import { join } from 'path';
+import express from 'express';
+import bodyParser from 'body-parser';
+import fs from 'fs';
+import denodeify from 'denodeify';
+import sqlJS from 'sql.js';
+import iso from 'server/isomorphic/index';
 
-const projectsRoutes = require('./projects/routes');
+import projectsRoutes from './projects/routes';
 
 const readFile = denodeify(fs.readFile);
 const absPath = relPath => join(ROOT_DIR, relPath);

@@ -1,4 +1,4 @@
-const { failRequest, dolarizeQueryParams } = require('server/utils');
+import { failRequest, dolarizeQueryParams } from 'server/utils';
 
 let prepared = null;
 

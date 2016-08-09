@@ -1,5 +1,5 @@
-const electron = require('electron');
-const url = require('url');
+import electron from 'electron';
+import url from 'url';
 
 module.exports = dataRouter => {
   electron.ipcMain.on('restAPI', (event, msg) => {
