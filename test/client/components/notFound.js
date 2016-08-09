@@ -1,6 +1,4 @@
-import React from 'react';
-
-import { NotFound } from 'components/notFound.js';
+import NotFound from 'components/notFound';
 import { expect, shallowRender } from 'test/utils/renderers';
 
 describe('Component: NotFound', () => {

@@ -5,9 +5,9 @@ import { Provider } from 'react-redux';
 import { syncHistoryWithStore } from 'react-router-redux';
 
 import createStore from 'store/createStore';
-import clientRoutes from 'client/routes';
+import clientRoutes from 'components/routes';
 
-import htmlTemplate from './index.html';
+import htmlTemplate from './htmlTemplate';
 
 module.exports = app => app.use((req, res, next) => {
   const memoryHistory = createMemoryHistory(req.url);

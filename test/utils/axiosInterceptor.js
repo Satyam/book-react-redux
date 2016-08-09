@@ -8,32 +8,33 @@ let api = null;
 
 const adapter = (resolve, reject, config) => {
   if (!redirects.some(redirect => {
+    let bodyCheck = true;
+    if (redirect.body) {
+      bodyCheck = (
+        typeof redirect.body === 'function'
+        ? redirect.body(config.data)
+        : eq(redirect.body, config.data)
+      );
+    }
     if (
       config.method.toUpperCase() === redirect.method &&
       config.url === redirect.url &&
-      (
-        redirect.body
-        ? (
-          typeof redirect.body === 'function'
-          ? redirect.body(config.data)
-          : eq(redirect.body, config.data)
-        )
-        : true
-      )
+      bodyCheck
     ) {
       resolve({
         data: redirect.response,
         status: 200,
         statusText: 'OK',
-        config
+        config,
       });
       return true;
     }
+    return false;
   })) {
     reject({
       status: 404,
       statusText: 'Not Found',
-      config
+      config,
     });
   }
 };
@@ -45,7 +46,7 @@ export default (baseURL, config) => {
       method: redirect.method.toUpperCase(),
       url: `${HOST}:${PORT}${path.join(REST_API_PATH, baseURL, redirect.url)}`,
       body: redirect.body,
-      response: redirect.response
+      response: redirect.response,
     }));
     originalAdapter = api.defaults.adapter;
     api.defaults.adapter = adapter;

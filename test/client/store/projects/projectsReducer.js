@@ -1,7 +1,8 @@
-const expect = require('chai').expect;
+import { expect } from 'chai';
 
 import { diff as deepDiff } from 'deep-diff';
 import diff from 'test/utils/diff.js';
+import data from 'test/utils/data';
 
 import reducer from 'store/projects/projectsReducer';
 import {
@@ -15,7 +16,6 @@ import {
   DELETE_TASK_SUCCESS,
 } from 'store/projects/actionTypes';
 
-import data from 'test/utils/data';
 const projects = data.projects;
 
 const diffAfter = (type, payload, initialState = projects) => diff(

@@ -1,13 +1,13 @@
 import pick from 'lodash/pick';
+import sinon from 'sinon';
 
 import ConnectedProject, {
-  Project as PlainProject,
+  ProjectComponent,
   mapStateToProps,
   mapDispatchToProps,
   initialDispatch,
-} from 'components/projects/project.js';
+} from 'components/projects/project';
 
-import sinon from 'sinon';
 import {
   expect,
   loadJSDOM,
@@ -24,10 +24,10 @@ const PID = 25;
 
 describe('Component: Project', () => {
   describe('Shallow Render', () => {
-    it('PlainProject with pid 25 should return entry', () => {
+    it('ProjectComponent with pid 25 should return entry', () => {
       const onEditClick = sinon.spy();
       const onDeleteClick = sinon.spy();
-      const result = shallowRender(PlainProject, Object.assign({},
+      const result = shallowRender(ProjectComponent, Object.assign({},
         pick(data.projects[PID], 'pid', 'name', 'descr'),
         {
           onEditClick,
@@ -37,13 +37,13 @@ describe('Component: Project', () => {
       expect(result.find('h1')).to.contain.text(data.projects[PID].name);
       expect(result.find('h1').parent().last()).to.contain.text(data.projects[PID].descr);
       expect(result.find('button')).to.have.lengthOf(2);
-      expect(result.find('Connect(TaskList)')).to.have.lengthOf(1);
-      expect(result.find('Connect(TaskList)')).to.have.prop('pid', String(PID));
+      expect(result.find('Connect(TaskListComponent)')).to.have.lengthOf(1);
+      expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', String(PID));
     });
-    it('PlainProject with no name should return not found message', () => {
+    it('ProjectComponent with no name should return not found message', () => {
       const onEditClick = sinon.spy();
       const onDeleteClick = sinon.spy();
-      const result = shallowRender(PlainProject, {
+      const result = shallowRender(ProjectComponent, {
         pid: '99',
         onEditClick,
         onDeleteClick,
@@ -55,10 +55,10 @@ describe('Component: Project', () => {
     before(loadJSDOM);
     after(dropJSDOM);
 
-    it('deepRender PlainProject', () => {
+    it('deepRender ProjectComponent', () => {
       const onEditClick = sinon.spy();
       const onDeleteClick = sinon.spy();
-      const result = deepRender(PlainProject, Object.assign({},
+      const result = deepRender(ProjectComponent, Object.assign({},
         pick(data.projects[PID], 'pid', 'name', 'descr'),
         {
           onEditClick,
@@ -69,8 +69,8 @@ describe('Component: Project', () => {
       expect(heading.find('h1')).to.contain.text(data.projects[PID].name);
       expect(heading.find('h1').parent().last()).to.contain.text(data.projects[PID].descr);
       expect(heading.find('button')).to.have.lengthOf(2);
-      expect(result.find('Connect(TaskList)')).to.have.lengthOf(1);
-      expect(result.find('Connect(TaskList)')).to.have.prop('pid', String(PID));
+      expect(result.find('Connect(TaskListComponent)')).to.have.lengthOf(1);
+      expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', String(PID));
     });
 
     it('deepRender ConnectedProject with existing pid', () => {
@@ -84,8 +84,8 @@ describe('Component: Project', () => {
       expect(heading.find('h1')).to.contain.text(data.projects[PID].name);
       expect(heading.find('h1').parent().last()).to.contain.text(data.projects[PID].descr);
       expect(heading.find('button')).to.have.lengthOf(2);
-      expect(result.find('Connect(TaskList)')).to.have.lengthOf(1);
-      expect(result.find('Connect(TaskList)')).to.have.prop('pid', String(PID));
+      expect(result.find('Connect(TaskListComponent)')).to.have.lengthOf(1);
+      expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', String(PID));
     });
 
     it('ConnectedProject with non-existing pid via fake dispatch', () => {

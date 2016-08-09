@@ -1,20 +1,27 @@
-/* eslint-disable no-unused-vars */
+/* esli nt-disable no-unused-vars */
 import React from 'react';
+import thunk from 'redux-thunk';
+/* esli nt-enable no-unused-vars */
 import { Provider } from 'react-redux';
-/* eslint-enable no-unused-vars */
-const chai = require('chai');
+import configureStore from 'redux-mock-store';
+import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
+import { mount, shallow } from 'enzyme';
+import jsdom from 'jsdom';
+
+import data from './data.js';
+
+
 chai.use(chaiEnzyme());
 export const expect = chai.expect;
 
 const exposedProperties = ['window', 'navigator', 'document'];
-
-import jsdom from 'jsdom';
+/* global document:true */
 export const loadJSDOM = done => {
   global.document = jsdom.jsdom('<div id="container"></div>', {
     FetchExternalResources: false,
     ProcessExternalResources: false,
-    virtualConsole: jsdom.createVirtualConsole().sendTo(console)
+    virtualConsole: jsdom.createVirtualConsole().sendTo(console),
   });
   global.window = document.defaultView;
   Object.keys(document.defaultView).forEach(property => {
@@ -24,7 +31,7 @@ export const loadJSDOM = done => {
     }
   });
   global.navigator = {
-    userAgent: 'node.js'
+    userAgent: 'node.js',
   };
   done();
 };
@@ -32,33 +39,28 @@ export const loadJSDOM = done => {
 export const dropJSDOM = () => {
   exposedProperties.forEach(prop => delete global[prop]);
 };
-const data = require('./data.js');
 
-import configureStore from 'redux-mock-store';
-const fakeThunk = store => next => action => {
+const fakeThunk = () => next => action => {
   if (typeof action !== 'function') return next(action);
   next({
     type: 'thunkFunction',
-    func: action
+    func: action,
   });
   return Promise.resolve();
 };
 
-import thunk from 'redux-thunk';
 export const mockStore = configureStore([thunk]);
 export const fakeThunkStore = configureStore([fakeThunk]);
 
-import { mount, shallow } from 'enzyme';
-
 export const shallowRender = (Component, props) =>
-  shallow(<Component {...props}/>);
+  shallow(<Component {...props} />);
 
 export const deepRender = (Component, props = {}, store = mockStore(data)) =>
   mount(
     <Provider store={store}>
-      <Component {...props}/>
+      <Component {...props} />
     </Provider>,
     {
-      attachTo: document.getElementById('container')
+      attachTo: document.getElementById('container'),
     }
   );

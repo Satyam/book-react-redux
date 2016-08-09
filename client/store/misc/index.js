@@ -1,3 +1,5 @@
+import update from 'react-addons-update';
+
 export const EDIT_TID = 'misc/Set tid of task to be edited';
 
 export function setEditTid(tid) {
@@ -6,8 +8,6 @@ export function setEditTid(tid) {
     tid,
   };
 }
-
-import update from 'react-addons-update';
 
 export default (state = { editTid: null }, action) => {
   switch (action.type) {

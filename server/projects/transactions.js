@@ -1,6 +1,6 @@
 const { failRequest, dolarizeQueryParams } = require('server/utils');
 
-const prepared = {};
+let prepared = null;
 
 const sqlAllProjects =
   `select projects.*, count(tid) as pending from projects left join
@@ -11,22 +11,26 @@ const lastID = () => db.exec('select last_insert_rowid();')[0].values[0][0];
 
 module.exports = {
   init: () => {
-    prepared.selectAllProjects = db.prepare(sqlAllProjects);
-    prepared.selectProjectByPid = db.prepare('select * from projects where pid = $pid');
-    prepared.selectTasksByPid = db.prepare('select tid, descr, completed from tasks where pid = $pid');
-    prepared.selectTaskByTid = db.prepare('select * from tasks where tid = $tid');
-    prepared.createProject = db.prepare('insert into projects (name, descr) values ($name, $descr)');
-    prepared.createTask = db.prepare('insert into tasks (pid, descr, completed) values ($pid, $descr, $completed)');
-    prepared.deleteProject = db.prepare('delete from projects where pid = $pid');
-    prepared.deleteTasksInProject = db.prepare('delete from tasks where pid = $pid');
-    prepared.deleteTask = db.prepare('delete from tasks where pid = $pid and tid = $tid');
+    prepared = {
+      selectAllProjects: db.prepare(sqlAllProjects),
+      selectProjectByPid: db.prepare('select * from projects where pid = $pid'),
+      selectTasksByPid: db.prepare('select tid, descr, completed from tasks where pid = $pid'),
+      selectTaskByTid: db.prepare('select * from tasks where tid = $tid'),
+      createProject: db.prepare('insert into projects (name, descr) values ($name, $descr)'),
+      createTask: db.prepare(
+        'insert into tasks (pid, descr, completed) values ($pid, $descr, $completed)'
+      ),
+      deleteProject: db.prepare('delete from projects where pid = $pid'),
+      deleteTasksInProject: db.prepare('delete from tasks where pid = $pid'),
+      deleteTask: db.prepare('delete from tasks where pid = $pid and tid = $tid'),
+    };
   },
 
-  getAllProjects: (o) => {
+  getAllProjects: o => {
     const fields = o.options.fields;
     const search = o.options.search;
     const fetch = stmt => {
-      let projects = [];
+      const projects = [];
       let prj;
       while (stmt.step()) {
         prj = stmt.getAsObject();
@@ -36,22 +40,21 @@ module.exports = {
       stmt.reset();
       return projects;
     };
-    if (!(fields || search)) {
-      return fetch(prepared.selectAllProjects);
-    } else {
-      return fetch(db.prepare('select ' +
-        (fields || '*') +
-        ' from ( ' + sqlAllProjects + ' )' +
-         (search
-           ? ' where ' + search.replace(/([^=]+)=(.+)/, '$1 like "%$2%"')
+
+    return fetch(
+      (fields || search)
+      ? db.prepare(`select ${fields || '*'} from (${sqlAllProjects})
+         ${search
+           ? ` where ${search.replace(/([^=]+)=(.+)/, '$1 like "%$2%"')}`
            : ''
-         )
-       ));
-    }
+         }`
+       )
+       : prepared.selectAllProjects
+     );
   },
 
-  getProjectById: (o) => {
-    const prj = prepared.selectProjectByPid.getAsObject({$pid: o.keys.pid});
+  getProjectById: o => {
+    const prj = prepared.selectProjectByPid.getAsObject({ $pid: o.keys.pid });
     if (Object.keys(prj).length === 0) {
       prepared.selectProjectByPid.reset();
       return failRequest(404, 'Item(s) not found');
@@ -69,13 +72,12 @@ module.exports = {
       }
       stmt.reset();
       return prj;
-    } else {
-      stmt.reset();
-      return failRequest(500, 'Sql Statement binding failRequested');
     }
+    stmt.reset();
+    return failRequest(500, 'Sql Statement binding failRequested');
   },
 
-  getTaskByTid: (o) => {
+  getTaskByTid: o => {
     const task = prepared.selectTaskByTid.getAsObject(dolarizeQueryParams(o.keys));
     if (!task || task.pid !== o.keys.pid) {
       prepared.selectTaskByTid.reset();
@@ -87,77 +89,72 @@ module.exports = {
     return task;
   },
 
-  addProject: (o) => {
+  addProject: o => {
     prepared.createProject.run({
       $name: o.data.name || 'New Project',
-      $descr: o.data.descr || 'No description'
+      $descr: o.data.descr || 'No description',
     });
-    return {pid: String(lastID())};
+    return { pid: String(lastID()) };
   },
 
-  addTaskToProject: (o) => {
+  addTaskToProject: o => {
     if (prepared.selectProjectByPid.get(dolarizeQueryParams(o.keys)).length) {
       prepared.createTask.run({
         $descr: o.data.descr || 'No description',
         $completed: o.data.completed || 0,
-        $pid: o.keys.pid
+        $pid: o.keys.pid,
       });
       prepared.selectProjectByPid.reset();
-      return {tid: String(lastID())};
-    } else {
-      prepared.selectProjectByPid.reset();
-      return failRequest(404, 'Item(s) not found');
+      return { tid: String(lastID()) };
     }
+    prepared.selectProjectByPid.reset();
+    return failRequest(404, 'Item(s) not found');
   },
 
-  updateProject: (o) => {
-    const sql = 'update projects set ' +
-      Object.keys(o.data).map(field => `${field} = $${field}`) +
-     ' where pid = $pid';
+  updateProject: o => {
+    const sql = `update projects set ${
+      Object.keys(o.data).map(field => `${field} = $${field}`)
+    } where pid = $pid`;
     db.run(sql, dolarizeQueryParams(o.keys, o.data));
     if (db.getRowsModified()) {
-      return {pid: String(o.keys.pid)};
-    } else {
-      return failRequest(404, 'Item(s) not found');
+      return { pid: String(o.keys.pid) };
     }
+    return failRequest(404, 'Item(s) not found');
   },
 
-  updateTask: (o) => {
-    const sql = 'update tasks set ' +
-    Object.keys(o.data).map(field => `${field} = $${field}`) +
-    ' where pid = $pid and tid = $tid';
+  updateTask: o => {
+    const sql = `update tasks set ${
+      Object.keys(o.data).map(field => `${field} = $${field}`)
+    } where pid = $pid and tid = $tid`;
     db.run(sql, dolarizeQueryParams(o.keys, o.data));
     if (db.getRowsModified()) {
       return {
         pid: String(o.keys.pid),
-        tid: String(o.keys.tid)
+        tid: String(o.keys.tid),
       };
-    } else {
-      return failRequest(404, 'Item(s) not found');
     }
+    return failRequest(404, 'Item(s) not found');
   },
 
-  deleteProject: (o) => {
+  deleteProject: o => {
     prepared.deleteTasksInProject.run({
-      $pid: o.keys.pid
+      $pid: o.keys.pid,
     });
     prepared.deleteProject.run(dolarizeQueryParams(o.keys));
     if (db.getRowsModified()) {
-      return {pid: String(o.keys.pid)};
-    } else {
-      return failRequest(404, 'Item(s) not found');
+      return { pid: String(o.keys.pid) };
     }
+    return failRequest(404, 'Item(s) not found');
   },
 
-  deleteTask: (o) => {
+  deleteTask: o => {
     prepared.deleteTask.run(dolarizeQueryParams(o.keys));
     if (db.getRowsModified()) {
       return {
         pid: String(o.keys.pid),
-        tid: String(o.keys.tid)
+        tid: String(o.keys.tid),
       };
-    } else {
-      return failRequest(404, 'Item(s) not found');
     }
-  }
+    return failRequest(404, 'Item(s) not found');
+  },
 };

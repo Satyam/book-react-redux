@@ -4,7 +4,7 @@ const validators = require('./validators');
 
 const handleRequest = require('server/utils').handleRequest;
 
-module.exports = (dataRouter, branch) => new Promise((resolve, reject) => {
+module.exports = (dataRouter, branch) => new Promise((resolve /* , reject */) => {
   const projectsRouter = expressRouter();
   dataRouter.use(branch, projectsRouter);
 

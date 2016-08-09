@@ -5,6 +5,7 @@ import reduxThunk from 'redux-thunk';
 import { projects, tasks } from './projects';
 import requests from './requests';
 import misc from './misc';
+import remoteRequests from './requests/middleware';
 
 const reducers = combineReducers({
   projects,
@@ -13,8 +14,6 @@ const reducers = combineReducers({
   misc,
   routing: routerReducer,
 });
-
-import remoteRequests from './requests/middleware';
 
 export default (history, initialState) => {
   const mw = applyMiddleware(reduxThunk, remoteRequests, routerMiddleware(history));

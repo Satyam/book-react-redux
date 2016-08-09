@@ -16,7 +16,7 @@ module.exports = dataRouter => {
         event.sender.send(msg.channel, {
           status: statusCode,
           statusText: text,
-          data: {}
+          data: {},
         });
         return res;
       },
@@ -24,10 +24,10 @@ module.exports = dataRouter => {
         event.sender.send(msg.channel, {
           status: statusCode,
           statusText: 'OK',
-          data: obj
+          data: obj,
         });
         return res;
-      }
+      },
     };
     dataRouter(
       {
@@ -39,7 +39,7 @@ module.exports = dataRouter => {
         body: msg.data || {},
         query: parsedUrl.query,
         params: {},
-        res
+        res,
       },
       res,
       () => 0

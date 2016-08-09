@@ -1,6 +1,6 @@
-import ACTION_TYPES from './actionTypes';
-
 import restAPI from 'restAPI';
+
+import ACTION_TYPES from './actionTypes';
 
 const api = restAPI('projects');
 

@@ -1,12 +1,12 @@
+import update from 'react-addons-update';
+import omit from 'lodash/omit';
+
 import {
   PROJECT_BY_ID_SUCCESS,
   ADD_TASK_SUCCESS,
   UPDATE_TASK_SUCCESS,
   DELETE_TASK_SUCCESS,
 } from './actionTypes';
-
-const update = require('react-addons-update');
-import omit from 'lodash/omit';
 
 export default (state = {}, action) => {
   switch (action.type) {

@@ -1,8 +1,5 @@
-
-// const expect = require('chai').expect;
-
-const constants = require('client/store/projects/actionTypes.js').default;
-const testConstants = require('test/utils/testConstants');
+import constants from 'client/store/projects/actionTypes.js';
+import testConstants from 'test/utils/testConstants';
 
 describe('Store: projects constants', () => {
   it('constants', testConstants(constants, 'projects'));

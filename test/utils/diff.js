@@ -20,22 +20,20 @@ const diff = (oldState, newState) => {
           results.push({
             path: path.concat(key).join('/'),
             old: o,
-            new: n
+            new: n,
           });
           // console.log('not the same 2:', results);
         } else {
           diff1(o, n, path.concat(key));
         }
       });
-    } else {
-      if (oldValue !== newValue && path.length) {
-        results.push({
-          path: path.join('/'),
-          old: oldValue,
-          new: newValue
-        });
-        // console.log('not the same 1:', results);
-      }
+    } else if (oldValue !== newValue && path.length) {
+      results.push({
+        path: path.join('/'),
+        old: oldValue,
+        new: newValue,
+      });
+      // console.log('not the same 1:', results);
     }
   };
   diff1(oldState, newState, []);

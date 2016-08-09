@@ -1,11 +1,15 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import bindHandlers from 'utils/bindHandlers';
 import isPlainClick from 'utils/isPlainClick';
-import styles from './editTask.css';
 import classNames from 'classnames';
 import pick from 'lodash/pick';
 
-export class EditTask extends Component {
+import { updateTask, addTaskToProject, setEditTid } from 'store/actions';
+import { mapStateToProps } from './task';
+import styles from './editTask.css';
+
+export class EditTaskComponent extends Component {
   constructor(props) {
     super(props);
     this.state = pick(props, 'descr', 'completed');
@@ -18,7 +22,7 @@ export class EditTask extends Component {
     if (isPlainClick(ev)) {
       this.props.onSubmit(this.state)
       .then(() => {
-        if (! this.props.tid) this.setState({ descr: '' });
+        if (!this.props.tid) this.setState({ descr: '' });
       });
     }
   }
@@ -51,11 +55,11 @@ export class EditTask extends Component {
               className={edit ? styles.editButton : styles.addButton}
               disabled={this.state.descr.length === 0}
               onClick={this.onSubmitHandler}
-            ></button>
+            />
             <button
               className={styles.cancelButton}
               onClick={this.onCancelHandler}
-            ></button>
+            />
           </div>
         </div>
       </div>
@@ -63,7 +67,7 @@ export class EditTask extends Component {
   }
 }
 
-EditTask.propTypes = {
+EditTaskComponent.propTypes = {
   pid: PropTypes.string,
   tid: PropTypes.string,
   descr: PropTypes.string,
@@ -71,12 +75,6 @@ EditTask.propTypes = {
   onSubmit: PropTypes.func,
   onCancelEdit: PropTypes.func,
 };
-
-import { connect } from 'react-redux';
-
-import { mapStateToProps } from './task';
-
-import { updateTask, addTaskToProject, setEditTid } from 'store/actions';
 
 export const mapDispatchToProps = (dispatch, { pid, tid }) => ({
   onSubmit: ({ descr, completed }) => {
@@ -92,4 +90,4 @@ export const mapDispatchToProps = (dispatch, { pid, tid }) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(EditTask);
+)(EditTaskComponent);

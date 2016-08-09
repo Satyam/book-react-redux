@@ -1,9 +1,13 @@
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+
 import isPlainClick from 'utils/isPlainClick';
-import styles from './task.css';
 import classNames from 'classnames';
 
-export const Task = (
+import { completedChanged, setEditTid, deleteTask } from 'store/actions';
+import styles from './task.css';
+
+export const TaskComponent = (
   { pid, tid, descr, completed, onCompletedChange, onTaskEdit, onTaskDelete }
 ) => {
   const onClickHandler = ev => isPlainClick(ev) && onCompletedChange({
@@ -48,17 +52,17 @@ export const Task = (
         <span
           className={styles.editIcon}
           onClick={onTaskEditHandler}
-        ></span>
+        />
         <span
           className={styles.deleteIcon}
           onClick={onTaskDeleteHandler}
-        ></span>
+        />
       </div>
     </div>
   );
 };
 
-Task.propTypes = {
+TaskComponent.propTypes = {
   pid: PropTypes.string,
   tid: PropTypes.string,
   descr: PropTypes.string,
@@ -68,14 +72,11 @@ Task.propTypes = {
   onTaskDelete: PropTypes.func,
 };
 
-import { connect } from 'react-redux';
-
 export const mapStateToProps = (state, props) => state.tasks[props.tid] || {
   descr: '',
   completed: false,
 };
 
-import { completedChanged, setEditTid, deleteTask } from 'store/actions';
 
 export const mapDispatchToProps = (dispatch) => ({
   onCompletedChange:
@@ -87,4 +88,4 @@ export const mapDispatchToProps = (dispatch) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Task);
+)(TaskComponent);

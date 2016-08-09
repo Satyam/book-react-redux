@@ -1,8 +1,8 @@
-const chai = require('chai');
-const expect = chai.expect;
-const axios = require('axios');
+import { expect } from 'chai';
+import axios from 'axios';
 
-const server = require('server/server.js');
+
+import server from 'server/server.js';
 
 describe('Projects Data Server testing', () => {
   before('Starting server', server.start);
@@ -12,7 +12,7 @@ describe('Projects Data Server testing', () => {
   describe(`${REST_API_PATH} REST API test`, () => {
     const http = axios.create({
       baseURL: `${HOST}:${PORT}${REST_API_PATH}/projects`,
-      responseType: 'json'
+      responseType: 'json',
     });
 
     it('Get on /projects should return project list', () =>
@@ -102,7 +102,7 @@ describe('Projects Data Server testing', () => {
     it('SQL injection ', () =>
       http.get('/?fields=* from sqlite_master;select *')
         .then(
-          (response) => {
+          () => {
             throw new Error('Should not have let it go');
           },
           (response) => {
@@ -118,7 +118,9 @@ describe('Projects Data Server testing', () => {
           expect(response.headers['content-type']).to.contain('application/json');
           const data = response.data;
           expect(data.name).to.equal('Writing a Book on Web Dev Tools');
-          expect(data.descr).to.equal('Tasks required to write a book on the tools required to develop a web application');
+          expect(data.descr).to.equal(
+            'Tasks required to write a book on the tools required to develop a web application'
+          );
           const tasks = data.tasks;
           expect(tasks).to.be.an.array;
           expect(tasks).to.have.lengthOf(3);
@@ -126,14 +128,14 @@ describe('Projects Data Server testing', () => {
             {
               tid: '1',
               descr: 'Figure out what kind of application to develop',
-              completed: true
+              completed: true,
             },
             { tid: '2', descr: 'Decide what tools to use', completed: false },
             {
               tid: '3',
               descr: 'Create repositories for text and samples',
-              completed: false
-            }
+              completed: false,
+            },
           ]);
         })
     );
@@ -152,7 +154,7 @@ describe('Projects Data Server testing', () => {
     it('Get on /projects/99 should fail', () =>
       http.get('/99')
         .then(
-          (response) => {
+          () => {
             throw new Error('Should not have found it');
           },
           (response) => {
@@ -165,7 +167,7 @@ describe('Projects Data Server testing', () => {
     it('Get on /projects/34/99 should fail', () =>
       http.get('/34/99')
         .then(
-          (response) => {
+          () => {
             throw new Error('Should not have found it');
           },
           (response) => {
@@ -178,7 +180,7 @@ describe('Projects Data Server testing', () => {
     it('Get on /projects/99/99 should fail', () =>
       http.get('/99/99')
         .then(
-          (response) => {
+          () => {
             throw new Error('Should not have found it');
           },
           (response) => {
@@ -191,7 +193,7 @@ describe('Projects Data Server testing', () => {
     it('Post on /projects/99 should fail', () =>
       http.post('/99', { descr: '' })
        .then(
-         (response) => {
+         () => {
            throw new Error('Should not have found it');
          },
          (response) => {
@@ -204,7 +206,7 @@ describe('Projects Data Server testing', () => {
     it('Put on /projects/99 should fail', () =>
       http.put('/99', { descr: '' })
        .then(
-         (response) => {
+         () => {
            throw new Error('Should not have found it');
          },
          (response) => {
@@ -217,7 +219,7 @@ describe('Projects Data Server testing', () => {
     it('Put on /projects/34/99 should fail', () =>
       http.put('/34/99', { descr: '' })
        .then(
-         (response) => {
+         () => {
            throw new Error('Should not have found it');
          },
          (response) => {
@@ -230,7 +232,7 @@ describe('Projects Data Server testing', () => {
     it('Put on /projects/99/99 should fail', () =>
       http.put('/99/99', { descr: '' })
        .then(
-         (response) => {
+         () => {
            throw new Error('Should not have found it');
          },
          (response) => {
@@ -243,7 +245,7 @@ describe('Projects Data Server testing', () => {
     it('Delete on /projects/99 should fail', () =>
       http.delete('/99')
        .then(
-         (response) => {
+         () => {
            throw new Error('Should not have found it');
          },
          (response) => {
@@ -256,7 +258,7 @@ describe('Projects Data Server testing', () => {
     it('Delete on /projects/34/99 should fail', () =>
       http.delete('/34/99')
        .then(
-         (response) => {
+         () => {
            throw new Error('Should not have found it');
          },
          (response) => {
@@ -269,7 +271,7 @@ describe('Projects Data Server testing', () => {
     it('Delete on /projects/99/99 should fail', () =>
       http.delete('/99/99')
        .then(
-         (response) => {
+         () => {
            throw new Error('Should not have found it');
          },
          (response) => {
@@ -280,12 +282,12 @@ describe('Projects Data Server testing', () => {
     );
 
     describe('Creating and manipulating projects', () => {
-      var pid;
+      let pid;
 
       beforeEach('Create a new project', () =>
         http.post('/', {
           name: 'new project',
-          descr: 'new project for testing'
+          descr: 'new project for testing',
         })
           .then((response) => {
             expect(response.status).to.equal(200);
@@ -334,7 +336,7 @@ describe('Projects Data Server testing', () => {
             return http.get(`/${pid}`);
           })
           .then(
-            (response) => {
+            () => {
               throw new Error('Should not have found it');
             },
             (response) => {
@@ -345,7 +347,7 @@ describe('Projects Data Server testing', () => {
       );
 
       it('Change the project name', () =>
-        http.put(`/${pid}`, {name: 'changed name'})
+        http.put(`/${pid}`, { name: 'changed name' })
           .then((response) => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
@@ -365,7 +367,7 @@ describe('Projects Data Server testing', () => {
       );
 
       it('Change the project description', () =>
-        http.put(`/${pid}`, {descr: 'changed description'})
+        http.put(`/${pid}`, { descr: 'changed description' })
           .then((response) => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
@@ -385,11 +387,11 @@ describe('Projects Data Server testing', () => {
       );
 
       describe('Managing tasks within project', () => {
-        var tid;
+        let tid;
 
         beforeEach('Add a task', () =>
           http.post(`/${pid}`, {
-            descr: 'some task'
+            descr: 'some task',
           })
             .then((response) => {
               expect(response.status).to.equal(200);
@@ -424,7 +426,7 @@ describe('Projects Data Server testing', () => {
         );
 
         it('Mark the task completed', () =>
-          http.put(`/${pid}/${tid}`, {completed: true})
+          http.put(`/${pid}/${tid}`, { completed: true })
             .then((response) => {
               expect(response.status).to.equal(200);
               expect(response.headers['content-type']).to.contain('application/json');

@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { Link, routerShape, withRouter } from 'react-router';
 import styles from './projectItem.css';
 
-export const ProjectItem = ({ pid, name, pending, router }) => (
+export const ProjectItemComponent = ({ pid, name, pending, router }) => (
   <li className="project-item">
     <Link
       to={`/projects/${pid}`}
@@ -18,17 +19,15 @@ export const ProjectItem = ({ pid, name, pending, router }) => (
   </li>
 );
 
-ProjectItem.propTypes = {
+ProjectItemComponent.propTypes = {
   pid: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   pending: PropTypes.number.isRequired,
   router: routerShape,
 };
 
-import { connect } from 'react-redux';
-
 export const mapStateToProps = (state, props) => state.projects[props.pid];
 
 export default withRouter(connect(
   mapStateToProps
-)(ProjectItem));
+)(ProjectItemComponent));

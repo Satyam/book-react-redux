@@ -1,4 +1,5 @@
-const config = require('./webpack.common.config.js')('development')[1];
+const config = require('./webpack.common.config')('development')[1];
+
 config.entry = null;
 config.output = null;
 config.target = 'node';

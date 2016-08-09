@@ -1,8 +1,7 @@
-const chai = require('chai');
-const expect = chai.expect;
-const axios = require('axios');
+import { expect } from 'chai';
+import axios from 'axios';
 
-const server = require('server/server.js');
+import server from 'server/server.js';
 
 describe('Web Server testing', () => {
   before('Starting server', server.start);
@@ -11,7 +10,7 @@ describe('Web Server testing', () => {
 
   describe('Static pages test', () => {
     const http = axios.create({
-      baseURL: `${HOST}:${PORT}`
+      baseURL: `${HOST}:${PORT}`,
     });
 
     it('Get / should return home page', () =>

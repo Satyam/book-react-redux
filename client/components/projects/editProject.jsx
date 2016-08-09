@@ -1,11 +1,16 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import bindHandlers from 'utils/bindHandlers';
 import isPlainClick from 'utils/isPlainClick';
-import styles from './editProject.css';
 import classNames from 'classnames';
 import pick from 'lodash/pick';
 
-export class EditProject extends Component {
+import { addProject, updateProject, push, replace } from 'store/actions';
+import initialDispatcher from 'utils/initialDispatcher';
+import { mapStateToProps, initialDispatch } from './project';
+import styles from './editProject.css';
+
+export class EditProjectComponent extends Component {
   constructor(props) {
     super(props);
     this.state = pick(props, 'name', 'descr');
@@ -56,7 +61,7 @@ export class EditProject extends Component {
   }
 }
 
-EditProject.propTypes = {
+EditProjectComponent.propTypes = {
   pid: PropTypes.string,
   name: PropTypes.string,
   descr: PropTypes.string,
@@ -64,12 +69,7 @@ EditProject.propTypes = {
   onCancelEdit: PropTypes.func,
 };
 
-import { addProject, updateProject, push, replace } from 'store/actions';
-
-import { mapStateToProps, initialDispatch } from './project';
-
-EditProject.initialDispatch = initialDispatch;
-
+EditProjectComponent.initialDispatch = initialDispatch;
 
 export const mapDispatchToProps = (dispatch, { params: { pid } }) => ({
   onSubmit: ({ name, descr }) => {
@@ -89,11 +89,7 @@ export const mapDispatchToProps = (dispatch, { params: { pid } }) => ({
   },
 });
 
-import initialDispatcher from 'utils/initialDispatcher';
-
-import { connect } from 'react-redux';
-
 export default initialDispatcher(initialDispatch)(connect(
   mapStateToProps,
   mapDispatchToProps
-)(EditProject));
+)(EditProjectComponent));

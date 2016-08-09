@@ -1,10 +1,12 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
+import { connect } from 'react-redux';
 import isPlainClick from 'utils/isPlainClick';
-import styles from './app.css';
 import classNames from 'classnames';
+import { clearHttpErrors } from 'store/actions';
+import styles from './app.css';
 
-export const App = ({ children, pathname, loading, errors, onCloseErrors }) => (
+export const AppComponent = ({ children, pathname, loading, errors, onCloseErrors }) => (
   <div className="app">
     <div
       className={classNames(
@@ -24,7 +26,7 @@ export const App = ({ children, pathname, loading, errors, onCloseErrors }) => (
     <ul className={styles.tabs}>
       {
         /^\/projects/.test(pathname)
-        ? (<li className={styles.active}><a href="#">Projects</a></li>)
+        ? (<li className={styles.active}><a href="#Projects">Projects</a></li>)
         : (<li><Link to="/projects">Projects</Link></li>)
       }
     </ul>
@@ -32,7 +34,7 @@ export const App = ({ children, pathname, loading, errors, onCloseErrors }) => (
   </div>
 );
 
-App.propTypes = {
+AppComponent.propTypes = {
   children: PropTypes.node,
   pathname: PropTypes.string,
   loading: PropTypes.bool,
@@ -40,15 +42,11 @@ App.propTypes = {
   onCloseErrors: PropTypes.func,
 };
 
-import { connect } from 'react-redux';
-
 export const mapStateToProps = (state, props) => ({
   pathname: props.location.pathname,
   loading: !!state.requests.pending,
   errors: state.requests.errors,
 });
-
-import { clearHttpErrors } from 'store/actions';
 
 export const mapDispatchToProps = dispatch => ({
   onCloseErrors: ev => isPlainClick(ev) && dispatch(clearHttpErrors()),
@@ -57,4 +55,4 @@ export const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(App);
+)(AppComponent);

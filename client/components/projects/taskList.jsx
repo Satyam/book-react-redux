@@ -1,8 +1,10 @@
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+
 import Task from './task';
 import EditTask from './editTask';
 
-export const TaskList = ({ pid, tids, editTid }) => (
+export const TaskListComponent = ({ pid, tids, editTid }) => (
   <div className="task-list">{
     tids
     ? tids.map(tid => (
@@ -15,13 +17,11 @@ export const TaskList = ({ pid, tids, editTid }) => (
   </div>
 );
 
-TaskList.propTypes = {
+TaskListComponent.propTypes = {
   pid: PropTypes.string,
   tids: PropTypes.arrayOf(PropTypes.string),
   editTid: PropTypes.string,
 };
-
-import { connect } from 'react-redux';
 
 export const mapStateToProps = (state, props) => ({
   tids: state.projects[props.pid].tids,
@@ -30,4 +30,4 @@ export const mapStateToProps = (state, props) => ({
 
 export default connect(
   mapStateToProps
-)(TaskList);
+)(TaskListComponent);

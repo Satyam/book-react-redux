@@ -1,1 +1,1 @@
-module.exports = require('./webpack.common.config.js')('development');
+module.exports = require('./webpack.common.config')('development');

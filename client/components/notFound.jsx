@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react';
+import React, { PropTypes } from 'react'; // eslint-disable-line no-unused-vars
 
-export const NotFound = props => (
+const NotFound = props => (
   <div>
     <h1>Not found</h1>
     <p>Path: <code>{props.location.pathname}</code></p>
@@ -12,3 +12,5 @@ NotFound.propTypes = {
     pathname: PropTypes.string,
   }),
 };
+
+export default NotFound;

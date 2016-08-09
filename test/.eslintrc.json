@@ -9,5 +9,8 @@
         "config": "webpack.test.config.js"
       }
     }
+  },
+  "rules": {
+    "no-unused-expressions": 0
   }
 }

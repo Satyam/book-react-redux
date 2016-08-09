@@ -1,10 +1,11 @@
 {
-  "extends": "standard",
+  "extends": "airbnb",
   "env": {
     "node": true
   },
-  "rules": {
-    "semi": [1, "always"]
+  "settings": {
+    "import/resolver": "webpack",
+    "import/core-modules": [ "electron" ]
   },
   "globals": {
     "db": false,
@@ -13,5 +14,9 @@
     "PORT": false,
     "REST_API_PATH": false,
     "BUNDLE": false
+  },
+  "rules": {
+    "no-console": 0,
+    "import/no-extraneous-dependencies": [2, {"devDependencies": true}]
   }
 }

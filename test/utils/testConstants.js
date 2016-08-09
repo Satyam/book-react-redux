@@ -1,11 +1,12 @@
-const expect = require('chai').expect;
-const filter = require('lodash/filter');
-const unique = require('lodash/uniq');
+import { expect } from 'chai';
+import filter from 'lodash/filter';
+import unique from 'lodash/uniq';
 
 module.exports = (collection, prefix) => () => {
   const actions = filter(collection, (value, name) =>
     (typeof value === 'string' && name.toUpperCase() === name));
 
+  expect(actions).to.have.length.above(0);
   expect(unique(actions).length, 'no duplicates').to.equal(actions.length);
   actions.forEach(value => {
     const parts = value.split('/');

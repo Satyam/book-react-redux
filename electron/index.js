@@ -1,20 +1,25 @@
 const electron = require('electron');
+
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 const join = require('path').join;
+
 const absPath = relative => join(ROOT_DIR, relative);
 
 const expressRouter = require('express').Router;
 
 const fs = require('fs');
 const denodeify = require('denodeify');
+
 const readFile = denodeify(fs.readFile);
 const writeFile = denodeify(fs.writeFile);
 
 const sqlJS = require('sql.js');
 
-const htmlTpl = require('./index.html.js');
+const htmlTpl = require('./htmlTemplate');
+const projectsRoutes = require('server/projects/routes');
+
 const htmlFile = absPath('electron/index.html');
 
 let mainWindow;
@@ -30,7 +35,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('ready', () => {
-  mainWindow = new BrowserWindow({width: 800, height: 600});
+  mainWindow = new BrowserWindow({ width: 800, height: 600 });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -39,12 +44,9 @@ app.on('ready', () => {
   global.db = new sqlJS.Database();
   readFile(absPath('server/data.sql'), 'utf8')
   .then(data => db.exec(data))
-  .then(() => {
-    const projectsRoutes = require('server/projects/routes');
-    return Promise.all([
-      projectsRoutes(dataRouter, '/projects')
-    ]);
-  })
+  .then(() => Promise.all([
+    projectsRoutes(dataRouter, '/projects'),
+  ]))
   .then(() =>
     writeFile(
       htmlFile,

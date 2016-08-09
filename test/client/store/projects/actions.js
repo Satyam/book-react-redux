@@ -1,15 +1,16 @@
-const expect = require('chai').expect;
+import { expect } from 'chai';
 
 import { mockStore } from 'test/utils/renderers';
 // uncomment following for data to be used when testing update or delete
 // import data from 'test/utils/data';
 import nock from 'nock';
 
+import { getAllProjects, addProject } from 'store/projects/actions.js';
+import ACTION_TYPES from 'store/projects/actionTypes.js';
+
 const SERVER = `${HOST}:${PORT}`;
 const API = `${REST_API_PATH}/projects/`;
 
-const actions = require('store/projects/actions.js');
-import ACTION_TYPES from 'store/projects/actionTypes.js';
 
 describe('projects actions', () => {
   describe('action creators', () => {
@@ -31,7 +32,7 @@ describe('projects actions', () => {
           .query({ fields: 'pid,name,pending' })
           .reply(200, { body });
 
-        store.dispatch(actions.getAllProjects())
+        store.dispatch(getAllProjects())
           .then(() => {
             expect(store.getActions()).to.eql(
               [
@@ -51,7 +52,7 @@ describe('projects actions', () => {
           .query({ fields: 'pid,name,pending' })
           .reply(404, 'Not found');
 
-        store.dispatch(actions.getAllProjects())
+        store.dispatch(getAllProjects())
           .then(() => {
             const acts = store.getActions();
             expect(acts[0].type).to.equal(ACTION_TYPES.ALL_PROJECTS_REQUEST);
@@ -72,7 +73,7 @@ describe('projects actions', () => {
           .post(API)
           .reply(200, { pid: '45' });
 
-        store.dispatch(actions.addProject('name', 'descr'))
+        store.dispatch(addProject('name', 'descr'))
           .then(() => {
             expect(store.getActions()).to.eql(
               [
@@ -95,7 +96,7 @@ describe('projects actions', () => {
           .post(API)
           .reply(404, 'Not found');
 
-        store.dispatch(actions.addProject('name', 'descr'))
+        store.dispatch(addProject('name', 'descr'))
           .then(() => {
             const acts = store.getActions();
             expect(acts[0].type).to.equal(ACTION_TYPES.ADD_PROJECT_REQUEST);

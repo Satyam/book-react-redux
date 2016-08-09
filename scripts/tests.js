@@ -1,16 +1,22 @@
 const path = require('path');
-const root = process.cwd();
-const pathTo = folder => path.join(root, folder);
-
 const denodeify = require('denodeify');
 const webpack = denodeify(require('webpack'));
 const mkdirp = denodeify(require('mkdirp'));
 const rmdir = denodeify(require('rmdir'));
 const readdir = denodeify(require('recursive-readdir'));
-const exec = denodeify(require('child_process').exec, (err, stdout, stderr) => [err, stdout, stderr]);
-
 const Mocha = require('mocha');
+const sourceMapSupport = require('source-map-support');
+
+
+const root = process.cwd();
+const pathTo = folder => path.join(root, folder);
+
 const mocha = new Mocha();
+const exec = denodeify(
+  require('child_process').exec,
+  (err, stdout, stderr) => [err, stdout, stderr]
+);
+
 
 const testDir = pathTo('test');
 const tmpDir = pathTo('tmp');
@@ -18,8 +24,8 @@ const testUtils = pathTo('test/utils/*');
 
 // This adds source line numbers to error reports
 mocha.suite.addTest(new Mocha.Test('Enabling source code line mapping', () =>
-  require('source-map-support').install({
-    environment: 'node'
+  sourceMapSupport.install({
+    environment: 'node',
   })
 ));
 
@@ -41,8 +47,8 @@ rmdir(tmpDir)
               entry: file,
               output: {
                 path: outDir,
-                filename: fileName
-              }
+                filename: fileName,
+              },
             }
           ))
         )
@@ -62,10 +68,10 @@ rmdir(tmpDir)
         {
           env: process.env,
           cwd: root,
-          encoding: 'utf8'
+          encoding: 'utf8',
         }
       ).then(console.log);
     }
-    mocha.run(failures => console.log(`${failures} failure(s)`));
+    return mocha.run(failures => console.log(`${failures} failure(s)`));
   })
   .catch(console.error);

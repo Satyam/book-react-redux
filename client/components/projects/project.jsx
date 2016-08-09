@@ -1,10 +1,15 @@
 import React, { PropTypes } from 'react';
-import TaskList from './taskList';
-import styles from './project.css';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 import isPlainClick from 'utils/isPlainClick';
 
-export const Project = ({ pid, name, descr, onEditClick, onDeleteClick }) => {
+import initialDispatcher from 'utils/initialDispatcher';
+import { deleteProject, getProjectById, push } from 'store/actions';
+
+import TaskList from './taskList';
+import styles from './project.css';
+
+export const ProjectComponent = ({ pid, name, descr, onEditClick, onDeleteClick }) => {
   const editClickHandler = ev => isPlainClick(ev) && onEditClick({ pid });
   const deleteClickHandler = ev =>
     isPlainClick(ev) &&
@@ -34,7 +39,7 @@ export const Project = ({ pid, name, descr, onEditClick, onDeleteClick }) => {
   ;
 };
 
-Project.propTypes = {
+ProjectComponent.propTypes = {
   pid: PropTypes.string.isRequired,
   name: PropTypes.string,
   descr: PropTypes.string,
@@ -42,7 +47,6 @@ Project.propTypes = {
   onDeleteClick: PropTypes.func,
 };
 
-import { connect } from 'react-redux';
 
 export const mapStateToProps = (state, props) => {
   const pid = props.params.pid;
@@ -53,8 +57,6 @@ export const mapStateToProps = (state, props) => {
   };
 };
 
-import { deleteProject, getProjectById, push } from 'store/actions';
-
 export const mapDispatchToProps = dispatch => ({
   onEditClick: ({ pid }) => dispatch(push(`/projects/editProject/${pid}`)),
   onDeleteClick: ({ pid }) =>
@@ -62,9 +64,7 @@ export const mapDispatchToProps = dispatch => ({
       .then(() => dispatch(push('/projects'))),
 });
 
-import initialDispatcher from 'utils/initialDispatcher';
-
-export const initialDispatch = Project.initialDispatch =
+export const initialDispatch = ProjectComponent.initialDispatch =
   (dispatch, nextProps, currentProps, state) => {
     const pid = nextProps.params.pid;
     if (!pid) return undefined;
@@ -78,4 +78,4 @@ export const initialDispatch = Project.initialDispatch =
 export default initialDispatcher(initialDispatch)(connect(
   mapStateToProps,
   mapDispatchToProps
-)(Project));
+)(ProjectComponent));

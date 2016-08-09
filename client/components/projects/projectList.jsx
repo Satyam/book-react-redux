@@ -1,10 +1,16 @@
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+
 import isPlainClick from 'utils/isPlainClick';
-import styles from './projectList.css';
 import classNames from 'classnames';
+import isEmpty from 'lodash/isEmpty';
+
+import initialDispatcher from 'utils/initialDispatcher';
+import { getAllProjects, push } from 'store/actions';
+import styles from './projectList.css';
 import ProjectItem from './projectItem';
 
-export const ProjectList = ({ children, projects, isNewProject, onNewProject }) => {
+export const ProjectListComponent = ({ children, projects, isNewProject, onNewProject }) => {
   const addProjectHandler = ev => isPlainClick(ev) && onNewProject();
   return (
     <div className={classNames('project-list', styles.projectList)}>
@@ -33,25 +39,21 @@ export const ProjectList = ({ children, projects, isNewProject, onNewProject }) 
   );
 };
 
-ProjectList.propTypes = {
+ProjectListComponent.propTypes = {
   children: PropTypes.node,
   projects: PropTypes.object,
   isNewProject: PropTypes.bool,
   onNewProject: PropTypes.func,
 };
 
-import initialDispatcher from 'utils/initialDispatcher';
-import { getAllProjects, push } from 'store/actions';
-import isEmpty from 'lodash/isEmpty';
 
-export const initialDispatch = ProjectList.initialDispatch =
+export const initialDispatch = ProjectListComponent.initialDispatch =
   (dispatch, nextProps, currentProps, state) => {
     if (isEmpty(state.projects)) {
       return dispatch(getAllProjects());
     }
     return undefined;
   };
-import { connect } from 'react-redux';
 
 export const mapStateToProps = (state, params) => ({
   projects: state.projects,
@@ -65,4 +67,4 @@ export const mapDispatchToProps = dispatch => ({
 export default initialDispatcher(initialDispatch)(connect(
   mapStateToProps,
   mapDispatchToProps
-)(ProjectList));
+)(ProjectListComponent));
