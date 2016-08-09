@@ -20,16 +20,15 @@ module.exports = version => [
     client: absPath('client'),
     server: absPath('server'),
     test: absPath('test'),
-    restAPI: absPath(`client/utils/${
-      bundle === 'electronClient'
-        ? 'IPC'
-        : 'http'
-      }`
-    ),
   };
   return {
     entry: {
-      [bundle]: absPath(`${bundle === 'electronClient' ? 'client' : bundle}/index.js`),
+      [bundle]: absPath({
+        client: 'client/index.jsx',
+        server: 'server/index.js',
+        electron: 'electron/index.js',
+        electronClient: 'client/index.jsx',
+      }[bundle]),
     },
     output: {
       path: absPath('public/bundles'),
@@ -92,6 +91,8 @@ module.exports = version => [
               break;
             }
           }
+        } else if (request === 'electron') {
+          return callback(null, `commonjs ${request}`);
         }
         return callback();
       },

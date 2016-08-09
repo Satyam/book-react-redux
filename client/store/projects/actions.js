@@ -1,4 +1,4 @@
-import restAPI from 'restAPI';
+import restAPI from 'utils/restAPI';
 
 import ACTION_TYPES from './actionTypes';
 
