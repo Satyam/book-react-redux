@@ -1,30 +1,29 @@
 import http from 'http';
 import { join } from 'path';
-import express from 'express';
+import express, { Router as expressRouter } from 'express';
 import bodyParser from 'body-parser';
 import fs from 'fs';
 import denodeify from 'denodeify';
 import sqlJS from 'sql.js';
-import iso from 'server/isomorphic/index';
+import isomorphic from 'server/isomorphic';
 
 import projectsRoutes from './projects/routes';
 
-const readFile = denodeify(fs.readFile);
 const absPath = relPath => join(ROOT_DIR, relPath);
-const app = express();
 
+const app = express();
 const server = http.createServer(app);
+
+const readFile = denodeify(fs.readFile);
 const listen = denodeify(server.listen.bind(server));
 
-app.use('/data', bodyParser.json());
-
-const dataRouter = express.Router(); // eslint-disable-line new-cap
-app.use(REST_API_PATH, dataRouter);
+const dataRouter = expressRouter();
+app.use(REST_API_PATH, bodyParser.json(), dataRouter);
 
 app.use('/bootstrap', express.static(absPath('node_modules/bootstrap/dist')));
 app.use(express.static(absPath('public')));
 
-iso(app);
+isomorphic(app);
 
 app.get('*', (req, res) => res.sendFile(absPath('server/index.html')));
 

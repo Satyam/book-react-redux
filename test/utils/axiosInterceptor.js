@@ -7,7 +7,9 @@ let originalAdapter = null;
 let api = null;
 
 const adapter = (resolve, reject, config) => {
+  /* eslint-disable no-cond-assign */
   if (!redirects.some(redirect => {
+    /* eslint-enable no-cond-assign */
     let bodyCheck = true;
     if (redirect.body) {
       bodyCheck = (

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 /* eslint-disable import/no-duplicates, no-duplicate-imports */
-import misc, { setEditTid, EDIT_TID } from 'store/misc/index.js';
-import * as miscLib from 'store/misc/index.js';
+import misc, { setEditTid, EDIT_TID } from 'store/misc';
+import * as miscLib from 'store/misc';
 /* eslint-enable import/no-duplicates, no-duplicate-imports */
 import testConstants from 'test/utils/testConstants';
 
