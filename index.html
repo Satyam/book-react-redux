@@ -176,15 +176,37 @@
 <li><a href="#chapter18-dispatching-initial-loading-actions">Dispatching initial loading actions</a></li>
 <li><a href="#chapter18-writing-our-own-middleware">Writing our own middleware</a></li>
 <li><a href="#chapter18-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter19-styling">Styling</a></li>
+<ul class="level-h1"><li><a href="#chapter19-including-css-files">Including CSS files.</a></li>
+<li><a href="#chapter19-css-modules">CSS Modules</a></li>
+<li><a href="#chapter19-composing-styles">Composing styles</a></li>
+<li><a href="#chapter19-summary">Summary</a></li>
+</ul>
+<li><a href="#chapter20-editing">Editing</a></li>
+<ul class="level-h1"><li><a href="#chapter20-dispatching-the-new-actions">Dispatching the new actions</a></li>
+<li><a href="#chapter20-rendering-a-stateful-form">Rendering a stateful form</a></li>
 </ul></li></ul></div>
-    <div class="contents unfolded"><div class="close">&lt; close</div><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
+    <div class="contents unfolded"><div class="close">&lt; close</div><section id="_preface"><h1><a class="self-ref" id="_preface-introduction" href="#_preface-introduction"># </a>Introduction</h1>
 <p>With the rapid pace of progress in the creation of libraries and tools for web development, most information comes in brief articles and blog posts.  There are not very many comprehensive guides to all that may be needed from A to Z.</p>
 <p>This book intends to fill that gap. We will go step by step gathering the tools and utilities we need for each step and explaining how to use them and coding a full, modern single page application.</p>
-<p>We will avoid dumping a whole suite of tools and sample code all at once. There are many full-stack solutions available, however, they are often quite hard to assimilate all at once. They contain too many pieces all strung together without much explanation.  We prefer to go one step at a time.  You may jump ahead and go to the end but then you wouldn't know why we did things the way we did and wouldn't know how to fix it if you disagree.</p>
+<p>We will avoid dumping a whole suite of tools and sample code all at once. There are many <a href="https://github.com/facebook/react/wiki/Complementary-Tools#full-stack-starter-kits">full-stack solutions</a> or 'boilerplates' available, however, they are often quite hard to assimilate all at once. They contain too many pieces all strung together without much explanation.  We prefer to go one step at a time.  You may jump ahead and go to the end but then you wouldn't know why we did things the way we did and wouldn't know how to fix it if you disagree.</p>
 <p>We will make many mistakes in the way.  <strong>Don't take a sample from any chapter blindly</strong>.  The purpose of this book is to learn, not to provide recipes. We get to a working solution towards the end but we hope you would have learned enough while getting there to devise your own. Beyond using React and Redux, we are not selling a particular way of doing things, we want you to be able to decide on which one out of the many available out there.</p>
 <p>We won't cover all the alternatives -that would be impossible- but we will present a very good one. We will use Facebook's <a href="https://facebook.github.io/react/index.html">React</a> coupled with <a href="http://redux.js.org/index.html">Redux</a> for data handling.</p>
-<p>We will write both server and client code and keep track of its development via <a href="https://github.com/">GitHub</a>.  We will lint, test, check its performance and package it for faster delivery and automate all these processes.  We will turn our app isomorphic, that is, able to render fully formed pages straight from the server for faster rendering on slow devices or for SEO purposes.  We will also internationalize it.</p>
-<p>A brief itinerary of what we will go through follows, however, you may skip straight into chapter 1.</p>
+<p>We will write both server and client code and keep track of its development via <a href="https://github.com/">GitHub</a>.  We will lint, test, check its performance and package it for faster delivery and automate all these processes.  We will turn our app isomorphic, that is, able to render fully formed pages straight from the server for faster rendering on slow devices or for SEO purposes.</p>
+<p>Sample code showing each feature as it is described within the book are available for download. The <a
+  href="https://github.com/Satyam/book-react-redux/archive/chapter-00-00.zip"
+  class="download"
+><img
+  title="Download Chapter 00-00 from GitHub"
+  src="octocat.png"
+/>&dArr;</a> icon points to ZIP files containing the code. It can be downloaded and expanded anywhere. Then the code can be installed and made ready to run by doing:</p>
+<pre><code class="language-sh">npm install
+npm run build
+npm start
+</code></pre>
+<p>We will explain the purpose of those commands <a href="#chapter03">later on</a>.</p>
+<p>A brief itinerary of what we will go through follows, however, you may skip straight into <a href="#chapter01">chapter 1</a>.</p>
 <h2><a class="self-ref" id="_preface-base-software" href="#_preface-base-software"># </a>Base software</h2>
 <p>There is some software we need to make sure we have installed.  You might already have it or not.  We'll check that in the first chapter.  To begin with we will need NodeJS, which gives us the ability to leverage our knowledge of JavaScript at both ends.  It is fair to say that JavaScript is not the only alternative on the server side, you might have already used or heard about PHP or Java but unless you have any legacy system and/or experience, nowadays JavaScript is the way to go, one single language across all the application.</p>
 <p>Then, we need to create a repository on <a href="http://github.com">GitHub</a>. A repository is the place up in the cloud where all the development team can store and share their work.  GitHub is one major provider of such shared space. Even if we work alone, GitHub will help us to keep track of the progress of the project, report and respond to issues and keep a nice set of safe copies of our job up there in the cloud. It not only works with code, documentation can be stored there as well; after all both this book and the accompanying code are up there in GitHub.</p>
@@ -213,7 +235,7 @@
 <p>Finally we will deal with internationalization, the ability of an application to show up in different languages and using regional conventions to display numbers or dates.</p>
 <p>All along we will make an aside on writing the code to check it by linting and testing it.</p>
 <p>It is unfortunate that we will not be able to show any utility to provide automated documentation.  The existing utilities lag behind the tools we will be using, the docs they provide fall quite short of really describing the code.  The best ones analyze the code itself to fill in part of the documentation.  While this is a good idea to reduce the work of the programmer, many of these are unable to understand ES6 or JSX (more on JSX later) so they get totally confused.  The results are quite unsatisfactory so we will not cover them.  We will just hold on to the basic principle of writing small modules in separate files with sensible names placed in a logical folder structure and providing self-describing identifiers to any named thing.</p>
-<h1><a class="self-ref" id="chapter01-initial-software-setup" href="#chapter01-initial-software-setup"># </a>Initial software setup</h1>
+</section><section id="chapter01"><h1><a class="self-ref" id="chapter01-initial-software-setup" href="#chapter01-initial-software-setup"># </a>Initial software setup</h1>
 <h2><a class="self-ref" id="chapter01-nodejs" href="#chapter01-nodejs"># </a>NodeJS</h2>
 <p>For a long time, Web developers had to learn one of several languages to code on the server, usually PHP, Python, Java or whatever your company had available.  Shyly, some developers started adding some interactivity to web pages using JavaScript.  JavaScript started to grow with sophisticated web applications such as Google Maps or fancy email clients. Thus, developers ended up having to use two different languages, one for the client, JavaScript, and another for the server.</p>
 <p>All that changed in 2009 when Ryan Dahl adapted Google's open source V8 JavaScript engine to work in Linux. With later versions made to work in all popular platforms, NodeJS allowed web developers to use one single language everywhere: JavaScript.</p>
@@ -277,7 +299,7 @@
 <p>We have learned how to install several of the tools we will need to develop our application: NodeJS, NPM and optionally some JavaScript editors written in JavaScript.</p>
 <p>We have also installed GIT which allows us to work with GitHub, a place where we can store our code, keep track of the changes, share it with others, track bugs and issues and, in general, manage much of the process of creating an application.</p>
 <p>Finally, we created a <em>repository</em> within GitHub to test these tools.</p>
-<h1><a class="self-ref" id="chapter02-creating-a-simple-web-server" href="#chapter02-creating-a-simple-web-server"># </a>Creating a simple web server</h1>
+</section><section id="chapter02"><h1><a class="self-ref" id="chapter02-creating-a-simple-web-server" href="#chapter02-creating-a-simple-web-server"># </a>Creating a simple web server</h1>
 <p>NodeJS has been designed to be used primarily in web sites so creating a web server is pretty easy. In many other languages such as PHP we would need to have a web server, such as <a href="https://httpd.apache.org/">Apache</a> plus the interpreter for <a href="http://www.php.net/">PHP</a>. Not so in NodeJS. The following code is all we need to start with:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-02-01/server/index.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -486,7 +508,7 @@ http.createServer((req, res) =&gt; {
 <h2><a class="self-ref" id="chapter02-summary" href="#chapter02-summary"># </a>Summary</h2>
 <p>We have seen how easy it is to have a web server up and running using plain NodeJS without any extras, which is due to several features built into NodeJS, such as its <em>module</em> system, and, most important of all, the <em>event loop</em>.</p>
 <p>We have also seen some standard coding practices such as the use of <em>callbacks</em> and <em>chaining</em>.</p>
-<h1><a class="self-ref" id="chapter03-npm-packages" href="#chapter03-npm-packages"># </a>NPM Packages</h1>
+</section><section id="chapter03"><h1><a class="self-ref" id="chapter03-npm-packages" href="#chapter03-npm-packages"># </a>NPM Packages</h1>
 <p>So far we have written a very primitive web server and we could go on and make it really useful, but that would be a real waste of effort to repeat standard behavior and we don't want to re-invent the wheel.  Instead, we will use one of NPM's most popular packages, <a href="https://www.npmjs.com/package/express">Express</a>.</p>
 <p>We also want to keep a record of what packages we install for our application so that anyone else can set it up in the same way.  NPM uses a file called <code>package.json</code> to do that.</p>
 <p>To create our <code>package.json</code> file, we go to the root of our project and type <code>npm init</code> and answer a few questions.  It is not crucial that we answer them right the first time, the file is editable and we can change much of it later on.  NPM will offer defaults for each answer which we might accept by pressing <kbd>Enter</kbd> so, if you are not sure about something, simply accept what NPM offers.</p>
@@ -697,7 +719,7 @@ node_modules</code></pre></div>
 <p>NPM uses the <code>package.json</code> file to store its configuration and it also allows us to use it to store our own application configuration and the commands to start, test and run any script we might need to help in developing or running our application.</p>
 <p>There are tools both to run our application as well as to help us develop it.  A <em>linter</em> is one such development tool.  It helps us check our code statically, that is just looking at the source without running it. We installed ESLint and some associated plugins and configurations, saw how this was recorded in <code>package.json</code> and added a script to run it.</p>
 <p>Finally, we had a look at <code>.gitignore</code> and how it spares us from uploading unnecessary large volumes of data to GitHub.</p>
-<h1><a class="self-ref" id="chapter04-creating-an-express-web-server" href="#chapter04-creating-an-express-web-server"># </a>Creating an Express Web Server</h1>
+</section><section id="chapter04"><h1><a class="self-ref" id="chapter04-creating-an-express-web-server" href="#chapter04-creating-an-express-web-server"># </a>Creating an Express Web Server</h1>
 <p>We will modify our previous web server <a href="https://github.com/Satyam/book-react-redux/blob/chapter-02-03/server/index.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> to use Express:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-04-01/server/index.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -901,7 +923,7 @@ app.get('/naughtyChild', (req, res) =&gt; {
 <p>We have seen how to create an Express server and tell it how to respond to various URLs and how to read extra query parameters.</p>
 <p>We have also learned about <em>middleware</em> how to load it and use it in our web server.  We've seen how to load and use the body and cookie parser middleware besides the built int <em>static</em> middleware.</p>
 <p>We have used the body parser middleware to be able to decode information received from an HTML form and manipulated information in <em>cookies</em> via the cookie parser.</p>
-<h1><a class="self-ref" id="chapter05-rest" href="#chapter05-rest"># </a>REST</h1>
+</section><section id="chapter05"><h1><a class="self-ref" id="chapter05-rest" href="#chapter05-rest"># </a>REST</h1>
 <p>Representational State Transfer, <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">REST</a> is the standard way in which plain data, that is, not formatted for human consumption, is requested and transfered in the Web.</p>
 <p>Every piece of data in the web can have an URL (or more precisely an URI, but we won't dwell on the difference) and from previous chapters, we know how we can respond to any URL our server receives.</p>
 <p>Once we identified the data, we need to tell the server what to do with it. We have the HTTP request codes for that.  In data handling terms we have four basic operations known by their initials: Create, Read, Update and Delete (CRUD).  These map one to one with the HTTP request methods we've already mentioned though, unfortunately, they don't result in any acronym we could use:</p>
@@ -1215,7 +1237,7 @@ app.get('/naughtyChild', (req, res) =&gt; {
 <p>We have loaded a sample of data and showed how we can read it via suitable URLs.</p>
 <p>We have learned how to write our own modules which we can use as well as the ones loaded via NPM.  We wrote one such module to  handle our REST request.</p>
 <p>By separating our code into various modules we keep each modules small, focused and thus easy to understand and maintain.</p>
-<h1><a class="self-ref" id="chapter06-testing-our-server" href="#chapter06-testing-our-server"># </a>Testing our server</h1>
+</section><section id="chapter06"><h1><a class="self-ref" id="chapter06-testing-our-server" href="#chapter06-testing-our-server"># </a>Testing our server</h1>
 <p>So far we've tested the server we wrote in a very primitive and limited manner.  We can issue some HTTP GET requests from any browser and get a few responses from our server.  We can even test the REST API, at least the <code>get</code> requests but we can't test much else unless we create actual HTML pages with <code>&lt;form&gt;</code> tags for any of the other methods and input fields with suitable values.  Still, browsers transmit the form's contents url-encoded, not JSON-encoded which is what we will be using, so we can't really do much.</p>
 <p>We can just keep going ahead, hoping for the best, and use the client, the one we haven't written so far, to do the testing.  The problem is, we would be testing two previously un-tested elements at once.  If we find something doesn't work, which of them is at fault?  This can be harder if development is split in between two teams.</p>
 <p>Testing the REST API is like verifying the deliverables of a contract.  The server-side developers know what is required of their code and they can show it complies.  The client-side developers know that, once tested, the server-code can be trusted.</p>
@@ -1539,7 +1561,7 @@ after('Closing the server', (done) =&gt; {
 <p>We have modified our server code to enable it to be automatically started when run directly and to control when to start and stop it when run from other code, such as our test scripts.</p>
 <p>We have modified our ESLint environment to accept Mocha's globals.</p>
 <p>We have also started using Axios, the HTTP client library that we will eventually use in the actual client-side production code. After all, our test code is acting as a client would so it is better to use the same modules our client would.</p>
-<h1><a class="self-ref" id="chapter07-code-coverage" href="#chapter07-code-coverage"># </a>Code coverage</h1>
+</section><section id="chapter07"><h1><a class="self-ref" id="chapter07-code-coverage" href="#chapter07-code-coverage"># </a>Code coverage</h1>
 <p>In the previous chapter, we made a brief list of some of the things we had not checked in our test script.  Those are the <em>known unknowns</em> which is bad enough, but then, as expected, there are the <em>unknown unknowns</em>.</p>
 <p>As exhausting as writing all those tests might have been, they are not yet as exhaustive as they should be. That is because we have not covered all the alternatives.  There are two great subsets of errors, the application logic errors, most of which we have checked and others we haven't, such as those we listed towards the end of the last chapter.</p>
 <p>Then, there are coding errors, most of which we have already checked, but several might lay hidden in code that rarely executes, which not even our tests have exercised.  In a compiled language, most of those are discovered at compilation time, but in an interpreted language, if one particular piece of code is never reached, it might never cause the application to fail.  A Linter certainly helps but, as compilers, they are only static checkers, they can't know what the value of the variables are going to be at the time of execution. So, the best alternative is to actually exercise each and every part of the code.</p>
@@ -1646,7 +1668,7 @@ Lines        : 95% ( 76/80 )
 <p>If we now run our linter, we will get thousands of errors, all of them from the folder used for the output of Istanbul. The <code>.gitignore</code> file that GitHub produced for us already knows about Istanbul and similar tools <a href="https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.gitignore#L14">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> so GIT won't bother uploading those files.  We need to do something similar for ESLint.  By providing a <code>.eslintignore</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-07-01/.eslintignore">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> listing the file and folder patterns of files we don't want checked, we can tell ESLint to ignore those files.</p>
 <h2><a class="self-ref" id="chapter07-summary" href="#chapter07-summary"># </a>Summary</h2>
 <p>Hopefully, these few examples have shown how code coverage can help us improve the quality of our code.  Istanbul is very easy to set up once we have our tests in place and it provides us with plenty of information.  It allows us to be confident that we have every alternative covered as well as strip unnecessary code that will never be executed.</p>
-<h1><a class="self-ref" id="chapter08-switching-to-sql" href="#chapter08-switching-to-sql"># </a>Switching to SQL</h1>
+</section><section id="chapter08"><h1><a class="self-ref" id="chapter08-switching-to-sql" href="#chapter08-switching-to-sql"># </a>Switching to SQL</h1>
 <p>Our server has been working from data stored in memory, a solution workable only for the smallest data set.  To go any further we should go to some more serious data management system. We have to switch to SQL.</p>
 <p>Why not a NoSQL database? The information we have been using so far looks pretty much like the hierarchical information that is usually stored in NoSQL databases so it should be easy to store it in one such.</p>
 <p>One reason to go the way of SQL is that it is, indeed, a challenge. We must support the agreed interface so we might as well prove that it can still be supported with any technology.  As long as it complies with the test suite we have written to validate our API, it really doesn't matter what is behind.</p>
@@ -2080,7 +2102,7 @@ if (req.query.search &amp;&amp; !/^\s*\w+\s*=\s*\w[\w\s]*$/.test(req.query.searc
 <p>In doing so we have found that our original definition of our REST API had some expensive features. This required us to change the agreed interface causing a compatibility issue.  We indicated that by incrementing our version number of our code in <code>package.json</code>.</p>
 <p>It was our tests that allowed us to discover this issue.  We should always write tests.</p>
 <p>We have also shown how SQL injection can be done and how to prevent it by validating the requests.  And, of course, we tested for it.</p>
-<h1><a class="self-ref" id="chapter09-separating-concerns" href="#chapter09-separating-concerns"># </a>Separating Concerns</h1>
+</section><section id="chapter09"><h1><a class="self-ref" id="chapter09-separating-concerns" href="#chapter09-separating-concerns"># </a>Separating Concerns</h1>
 <p>Our <code>projects.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-08-04/server/projects.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> file is a real mess.  It was useful so far because it allowed us to see in just one glimpse how a request could be handled but it mixed two separate concerns, those of handling the HTTP and the database connections.  As more complexity was added to the routes in some of the examples, they became really difficult to follow.</p>
 <p>We fix this mess by separating the concerns.  To start with, it seems our server software will only deal with projects.  This is probably shortsighted, we would eventually have to tackle other concerns, such as user login, which will also require us to manage users.</p>
 <p>Our server has already hard-coded a root route to deal with projects:</p>
@@ -2451,7 +2473,7 @@ const processPrj = (op) =&gt; (req, res) =&gt; {
     processPrj('deleteTask')
   )
 ;</code></pre></div>
-<h1><a class="self-ref" id="chapter10-client-side" href="#chapter10-client-side"># </a>Client side</h1>
+</section><section id="chapter10"><h1><a class="self-ref" id="chapter10-client-side" href="#chapter10-client-side"># </a>Client side</h1>
 <h2><a class="self-ref" id="chapter10-the-way-not-to-do-it" href="#chapter10-the-way-not-to-do-it"># </a>The way not to do it</h2>
 <p>Perhaps the best way to learn why we do things in a certain way is to see what would happen if we did it otherwise.  This is our new <code>index.html</code> file that shows the list of projects in the database.</p>
 <div class="code-insert"><div class="header">
@@ -2668,7 +2690,7 @@ app.use(express.static(path.join(__dirname, '../public')));</code></pre></div>
   }
 }</code></pre></div>
 <p>When starting the server via <code>npm start</code> and then pointing the browser to <code>http://localhost:8080</code>, the pages will show up immediately.  Instead of wasting time having the browser load Babel and then letting it transpile the code for us, we did that off-line via <code>npm run build</code> so the transpiled version is immediately available.  All browsers, even modern ones supporting ES2015, will get the old-style JavaScript code which doesn't use the new features.</p>
-<h1><a class="self-ref" id="chapter11-modules-imports-and-exports" href="#chapter11-modules-imports-and-exports"># </a>Modules, Imports and Exports</h1>
+</section><section id="chapter11"><h1><a class="self-ref" id="chapter11-modules-imports-and-exports" href="#chapter11-modules-imports-and-exports"># </a>Modules, Imports and Exports</h1>
 <p>Only recently, with ECMAScript-2015 has JavaScript has built-in support for modules, at least in its syntax since no platform actually knows what to do with it.  Babel helpfully transpiles <code>import x from 'myModule'</code> into <code>const x = require('myModule')</code> which NodeJS understands but no browser would.</p>
 <p>The only mechanism to load external modules into a browser is via the <code>&lt;script&gt;</code> tag which is far from perfect.  The biggest issue is that whatever gets loaded goes into the same global namespace as everything else. If we had complete control of what goes into the browser we could be careful of what gets loaded and avoid any name collisions, however, with applications getting ever more complex, this is hard. What if we are using <a href="https://lodash.com/">Lodash</a> and some widget loads <a href="http://underscorejs.org/">Underscore</a> both of which load as <code>window._</code> in the browser? The one that loads last would end up overwriting the other and, though they are more or less compatible, Lodash is a superset of Underscore and whatever incompatibility there might be in between them might ruin our application.</p>
 <p>The beauty of the way NodeJS modules load, is that when we <code>require</code> a certain module, we tell it where we want it, both in name and scope; we say <code>const axios = require('axios');</code> because we want it to be called <code>axios</code> in whichever scope that <code>axios</code> variable is being declared and, if we wanted it called something else, we could do, say, <code>const http = require('axios');</code>.  In browser-land, we don't have that option, we load Axios via <code>&lt;script&gt;</code> and it goes into <code>window.axios</code>, we have no control of name (axios) or scope (global).</p>
@@ -2930,7 +2952,7 @@ if (/^\/(index\.html)?$/i.test(location.pathname)) {
 <h2><a class="self-ref" id="chapter11-summary" href="#chapter11-summary"># </a>Summary</h2>
 <p>We've seen how we can benefit from the same module-loading capability of NodeJS in the browser by using a bundler such as WebPack or Browserify.</p>
 <p>By using a primitive router, we have managed to put our two earlier JS files into a single bundle and by configuring our server, we can deliver our application using only one set of files.</p>
-<h1><a class="self-ref" id="chapter12-client-side-routing" href="#chapter12-client-side-routing"># </a>Client-side Routing</h1>
+</section><section id="chapter12"><h1><a class="self-ref" id="chapter12-client-side-routing" href="#chapter12-client-side-routing"># </a>Client-side Routing</h1>
 <p>In our latest version of <code>router.js</code> we used regular expressions to match the URL of the page requested to the routes we are handling so as to run either of our rendering scripts.  Basically, it is the equivalent of what we've been doing in the server thanks to Express.  There is client software to do the same on the client.  This is our routes configuration</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-01/client/router.js#L10-L18"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -3293,7 +3315,7 @@ module.exports = Object.assign(require('./webpack.config.js'), {
 <p>Finally, we have added a configuration option to our <code>webpack.production.config.js</code>  <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-03/webpack.production.config.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> so it will not print those hundreds of warning messages when generating the production version.</p>
 <h2><a class="self-ref" id="chapter12-summary" href="#chapter12-summary"># </a>Summary</h2>
 <p>We have modified our basic application to run on React, JSX and React Router.</p>
-<h1><a class="self-ref" id="chapter13-events" href="#chapter13-events"># </a>Events</h1>
+</section><section id="chapter13"><h1><a class="self-ref" id="chapter13-events" href="#chapter13-events"># </a>Events</h1>
 <p>Our simple App shows existing information but does not allow us to change it in any way.  To do that we first have to respond to events from the UI.</p>
 <p>Regular DOM events provide us with information about the DOM element involved and additional information such as which mouse button was used in a click, which key was pressed with which modifiers, the cursor coordinates and much more.  However, when we develop our own components we should define what information might be of interest to the developer who is using that component and satisfy those expectations.</p>
 <p>Take our Task component <a href="https://github.com/Satyam/book-react-redux/blob/chapter-12-03/client/project.js#L4-L8">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  Could anyone possibly care the precise [x,y] coordinates of the cursor within that component when the item is clicked? Or weather the element was clicked, touched, stared at or thought about?  It would be far more important to provide the <code>tid</code> of the task and its new completion status.  Thus, we might define our <code>onCompletedChange</code> custom event object having just a couple of properties, the <code>tid</code> and the new value for <code>completed</code>. In this way we translate a DOM event closely related to the browser environment into an abstract application-oriented event with information suitable to higher level components.</p>
@@ -3622,7 +3644,7 @@ map(data, (prj, pid) =>
   /&gt;)
 )</code></pre></td></tr></table>
 <p>It is worth noting that <a href="https://lodash.com/docs#map"><code>map</code></a> and <a href="https://lodash.com/docs#filter"><code>filter</code></a> work indistinctly in both Array and Objects or, as they are called in Lodash, <em>Collections</em>.</p>
-<h1><a class="self-ref" id="chapter14-actions-stores-flux-and-redux" href="#chapter14-actions-stores-flux-and-redux"># </a>Actions, Stores, Flux and Redux</h1>
+</section><section id="chapter14"><h1><a class="self-ref" id="chapter14-actions-stores-flux-and-redux" href="#chapter14-actions-stores-flux-and-redux"># </a>Actions, Stores, Flux and Redux</h1>
 <p>Allowing each React component to deal directly with its own data turns out to be impractical except in the simplest cases.  As we have seen in the previous chapter, when two different components show the same data, there is the problem of how they can notify each other of changes.  If the data resides in a remote server, as is often the case, sharing responsibility on those remote operations further complicates the matter.</p>
 <p>A possible solution to these issues comes in the form of <em>actions</em>, <em>stores</em> and a consistent direction in the flow of information.  These ideas were presented by Facebook as the <a href="https://facebook.github.io/flux/">Flux</a> architecture.</p>
 <p>Basically, the idea is that all data should reside in a <em>store</em>. Components will always show information from this store. Any external event that might affect the data should trigger an <em>action</em>, a sort of custom event, which broadcasts the request for any change along with the new data and enough context information to figure out where that new data should go. Stores receive these actions and change the data accordingly and then notify the components that subscribed to these notifications.</p>
@@ -3891,7 +3913,7 @@ componentWillUnmount() {
 <p>The examples in this chapter have been mainly focused on the basics of Redux, however, Redux is rarely used like this, and we will improve on this shortly. It
 was meant as an introduction to the principles behind Redux.</p>
 <p>The code in version 14-02 has a minor problem that pops up occasionally: in a certain sequence of clicks, none of the names of the projects becomes clickable. We will come to that shortly.</p>
-<h1><a class="self-ref" id="chapter14a-rearranging-the-files" href="#chapter14a-rearranging-the-files"># </a>Rearranging the files</h1>
+</section><section id="chapter14a"><h1><a class="self-ref" id="chapter14a-rearranging-the-files" href="#chapter14a-rearranging-the-files"># </a>Rearranging the files</h1>
 <p>Our <code>/client</code> folder <a href="https://github.com/Satyam/book-react-redux/tree/chapter-14-02/client">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> is in a quite sorry state.  It has been handy so far to have everything under the same roof, but it has no future.</p>
 <p>How to arrange the various source files in an application is always a matter of much discussion.  This is not helped by the fact that the otherwise excellent <a href="http://redux.js.org/index.html">Redux</a> documentation uses an arrangement that is clear for learning Redux but is not useful for a production environment.  Developers start with that structure and soon get stuck, even though the Redux FAQ <a href="http://redux.js.org/docs/FAQ.html#structure-file-structure">clearly states</a> that Redux &quot;... has no direct opinion on how your project should be structured&quot; and refers to several such discussions. The following is just one of those alternatives.</p>
 <h2><a class="self-ref" id="chapter14a-the-components-folder" href="#chapter14a-the-components-folder"># </a>The components folder</h2>
@@ -4178,7 +4200,7 @@ export default render((
 <p>We have broken down our single store into sub-stores and combined the reducers to make a single overall store, even though at the moment we have only one sub-store.  It is easy to add other sub-stores under this mechanism.</p>
 <p>We have learned to configure WebPack resolver to accept aliases to make it easy to refer to our source files in various locations and told ESLint to recognize those aliases as well.</p>
 <p>By dropping the <code>.js</code> extensions in the <code>import</code> statements we gain some liberty in moving our files into separate folders should they grow large or require other assets.</p>
-<h1><a class="self-ref" id="chapter15-react-and-redux" href="#chapter15-react-and-redux"># </a>React and Redux</h1>
+</section><section id="chapter15"><h1><a class="self-ref" id="chapter15-react-and-redux" href="#chapter15-react-and-redux"># </a>React and Redux</h1>
 <p>We have used Redux in our React application but in a very basic way.  Actually, Redux is not a part of React at all and it might very well be used with other application frameworks.  It would be good if we could integrate them in a better way.</p>
 <p>From our small application, we can see that there are certain parts that are repeated over and over.  We've seen that both <code>ProjectItem</code> and <code>Task</code> which were originally simple stateless components had to be turned into stateful ones ato be able to override three lifecyle methods provided by <code>React.Component</code>, namely <code>componentDidMount</code>, <code>componentWillUnmount</code> and <code>shouldComponentUpdate</code> and use the internal <code>state</code> and in both cases in very much the same way:</p>
 <pre><code class="language-js">componentDidMount() {
@@ -4451,7 +4473,7 @@ export default connect(
 <p>We have used React-Redux to simplify access to the data in our store. By letting the <code>connect</code> method to deal with the store, we have greatly simplified our components which are, once again, stateless functions.</p>
 <p>Though the main, default export for each of the source files is now the wrapped component which, for any parent component using it should be indistinguishable from the original one, we have also provided plenty of named exports to many elements within such as the original, unwrapped stateless component, <code>mapStateToProps</code> and <code>mapDispatchToProps</code>.</p>
 <p>These exports should allow us to test those parts of the separately from the whole wrapped component, which would require us to actually have a store.  To test the mappers, we only need simple stubs to stand in for the store.  If we test the unwrapped component and the mappers, we can be very certain the whole would work as the <code>connect</code> method is already thoroughly tested elsewhere.</p>
-<h1><a class="self-ref" id="chapter16-tools-and-helpers" href="#chapter16-tools-and-helpers"># </a>Tools and helpers</h1>
+</section><section id="chapter16"><h1><a class="self-ref" id="chapter16-tools-and-helpers" href="#chapter16-tools-and-helpers"># </a>Tools and helpers</h1>
 <p>With abstractions such as React and Redux, it gets hard to figure out what is actually happening when something goes wrong using a regular JavaSript debugger.  That is when we most need debugging tools.  There are developer tools available for both.</p>
 <h2><a class="self-ref" id="chapter16-react-developer-tools" href="#chapter16-react-developer-tools"># </a>React Developer Tools</h2>
 <p>Available for <a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi">Google Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/react-devtools/">Firefox</a> it adds a <code>React</code> tab to the debugging pane which allows us to see the rendered components, their properties and the state of stateful components. If a component has references to DOM elements, the <a href="https://facebook.github.io/react/docs/more-about-refs.html">ref</a> pseudo-attribute, it will also list those.</p>
@@ -4744,7 +4766,7 @@ export const completedChanged = makeActionCreator(TASK_COMPLETED_CHANGE, pid, ti
 <li>How to cache calculated values with <code>reselect</code></li>
 <li>Tips on reducing boilerplate</li>
 </ul>
-<h1><a class="self-ref" id="chapter17-data-normalization" href="#chapter17-data-normalization"># </a>Data Normalization</h1>
+</section><section id="chapter17"><h1><a class="self-ref" id="chapter17-data-normalization" href="#chapter17-data-normalization"># </a>Data Normalization</h1>
 <p>Our data is structured as a hierarchy of <em>projects</em> containing <em>tasks</em>.  This kind of structure has become more frequent with the popularity of No-SQL databases.  Deep hierarchical collections of data are found all too frequently.  The data stored in such databases is often not normalized.  Data normalization is an important concept in data management, we can even learn from <a href="https://en.wikipedia.org/wiki/Database_normalization">Wikipedia</a>.</p>
 <p>The problem with databases which are not normalized can be seen, for example, in our projects reducer <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/reducer.js#L16-L32">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  It's complexity is, to a certain point, the consequence of it being too deep.  Instead of having just one collection of data as we had up to now <a href="https://github.com/Satyam/book-react-redux/blob/chapter-16-03/client/store/projects/data.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> with a collection of projects each containing a collection of tasks, we may have two separate tables, one for projects and another for tasks <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-01/client/store/projects/data.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
 <h2><a class="self-ref" id="chapter17-data" href="#chapter17-data"># </a>Data</h2>
@@ -4972,7 +4994,7 @@ expect(data.tids).to.eql(['1', '2', '3']);</code></pre></div>
 <p>We have taken the data for the tasks as a separate collection within our <code>data.js</code> file.  This is called database normalization and is common practice.  Our application has been simplified as a result.  Though it might not be immediately obvious right now, this simplification will make our lives easier as the application grows.</p>
 <p>We have seen how a reducer can be split and later combined in a couple of ways.</p>
 <p>We have also applied the same normalization principles to our REST API.  We have discussed a few alternatives on how to respond to requests for hierarchical data.  For our particular set of data, with a <em>one-to-many</em> relation and not so many on the <em>many</em> side, we decided to send all the tasks along the project they belong two.  We simply changed the format of the returned data.</p>
-<h1><a class="self-ref" id="chapter18-asynchronous-operations" href="#chapter18-asynchronous-operations"># </a>Asynchronous operations</h1>
+</section><section id="chapter18"><h1><a class="self-ref" id="chapter18-asynchronous-operations" href="#chapter18-asynchronous-operations"># </a>Asynchronous operations</h1>
 <p>Though we started this book developing the server-side part of the application and even as recently as in the last chapter we reviewed the REST API, since we started with React, we reverted to our <code>data.js</code> file loaded in memory on the client side for all our operations.  This was done to decouple the issues of handling the UI from handling the communication with the server, but it is high time we connected both sides.</p>
 <p>While we were dealing with data loaded on the client-side, all our operations have been synchronous, whenever we did something, it happened everywhere all at once, <em>everywhere</em> here meaning all within the client.  This is hardly the case in real life.  The client will deal with information that is stored in a remote server and reaching it will always require asynchronous operations.</p>
 <p>Currently, our client-side application loads the two collections within <code>data.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/client/store/projects/data.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> as the default state in our two reducers, <code>projectsReducer</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/client/store/projects/projectsReducer.js#L15">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and <code>tasksReducer</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-17-03/client/store/projects/tasksReducer.js#L6">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>. From then on, all the information is permanently available in the client.</p>
@@ -5445,40 +5467,857 @@ export default (history) =&gt; {
     <div class="to">To: 10</div>
   </div>
   <pre><code class="language-js">export { CLEAR_HTTP_ERRORS, clearHttpErrors } from './actions';</code></pre></div>
-<p>Finally, since our store now has a count of pending HTTP requests and communication errors, if any, we should show them. We can do that in the <code>App</code> component:</p>
+<p>We will modify the <code>App</code> component to display the new inforation and also to clear the errors:</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L6-L7"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L5-L14"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-18-03</div>
     <div class="filename">File: client/components/app.js</div>
-    <div class="from">From: 6</div>
-    <div class="to">To: 7</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 14</div>
   </div>
-  <pre><code class="language-html">&lt;p className="loading" style={{ display: loading ? 'block' : 'none' }}&gt;loading&lt;/p&gt;
-&lt;pre className="errors" style={{ display: errors.length ? 'block' : 'none' }}&gt;</code></pre></div>
-<p>So far, <code>App</code> had no data to read from the store.  Now, it uses <code>pending</code> and <code>errors</code> from the <code>requests</code> sub-store so we must now wrap it with Redux <code>connect</code> HoC:</p>
+  <pre><code class="language-js">export const App = ({ children, pathname, loading, errors, onCloseErrors }) =&gt; (
+  &lt;div className="app"&gt;
+    &lt;p className="loading" style={{ display: loading ? 'block' : 'none' }}&gt;loading&lt;/p&gt;
+    &lt;pre
+      className="errors"
+      style={{ display: errors.length ? 'block' : 'none' }}
+      onClick={onCloseErrors}
+    &gt;
+      {errors.join('\n')}
+    &lt;/pre&gt;</code></pre></div>
+<p>We will provide the <code>App</code> component with the <code>loading</code> status, the <code>errors</code> array and the <code>onCloseErrors</code> function.  We use <code>loading</code> to show and hide a simple sign. The <code>errors</code> are displayed in a pre-formatted box in successive lines that will show if there are any errors.  Finally, we will use the <code>onCloseErrors</code> function as the <code>onClick</code> handler for this error listing.</p>
+<p>All those new properties are produced by Redux <code>connect</code> wrapper:</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L26-L36"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L32-L49"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: chapter-18-03</div>
     <div class="filename">File: client/components/app.js</div>
-    <div class="from">From: 26</div>
-    <div class="to">To: 36</div>
+    <div class="from">From: 32</div>
+    <div class="to">To: 49</div>
   </div>
   <pre><code class="language-js">import { connect } from 'react-redux';
 
-const mapStateToProps = (state, props) =&gt; ({
+export const mapStateToProps = (state, props) =&gt; ({
   pathname: props.location.pathname,
   loading: !!state.requests.pending,
   errors: state.requests.errors,
 });
 
+import { clearHttpErrors } from 'store/actions';
+
+export const mapDispatchToProps = dispatch =&gt; ({
+  onCloseErrors: ev =&gt; isPlainClick(ev) &amp;&amp; dispatch(clearHttpErrors()),
+});
+
 export default connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(App);</code></pre></div>
+<p><code>mapStateToProps</code> extracts the data from the store, assuming <code>loading</code> to be true whenever there are any <code>pending</code> operations. Since it receives the properties, it unwraps the <code>pathname</code> from the location.  This is not simply for convenience.  Since the wrapper does a shallow compare of the resulting properties to decide whether to redraw itself, it is always good to bring up to the surface any values nested deep inside.</p>
+<p><code>mapDispatchToProps</code> provides the <code>onCloseErrors</code> function. To ensure that the click is with the left button and no modifier keys, we have extracted the function we used earlier into <code>isPlainClick</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/utils/isPlainClick.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  If it is a plain click, we <code>dispatch</code> the <code>clearHttpErrors</code> action <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/components/app.js#L43">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>We export the wrapped function as the default but we also export by name both mapping functions and the unwrapped component, for testing purposes.</p>
+<p>To see it all working, the easiest way is to place a breakpoint whenever a reply from the server is received and before the SUCCESS action is dispatched <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/projects/actions.js#L33">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> or <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/projects/actions.js#L54">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and to force an error, the easiest is to force a syntax error on the request, for example, inserting some funny character in between the field names or replacing a comma with a semicolon  <a href="https://github.com/Satyam/book-react-redux/blob/chapter-18-03/client/store/projects/actions.js#L31">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
 <h2><a class="self-ref" id="chapter18-summary" href="#chapter18-summary"># </a>Summary</h2>
 <p>We have learned how to handle asynchronous operations from the client by requesting data from the server via the REST API we had designed earlier.</p>
 <p>We have used the <code>redux-thunk</code> middleware to handle those asynchronous actions.</p>
 <p>We have also written a simple Redux middleware.</p>
-</div>
+<p>We modified the <code>App</code> component to handle the HTTP status information.</p>
+</section><section id="chapter19"><h1><a class="self-ref" id="chapter19-styling" href="#chapter19-styling"># </a>Styling</h1>
+<p>Our application is not looking good. As a working example on the technologies behind the screen, it shouldn't matter much, but it is really starting to strain the eyes.</p>
+<p>There are many well-known UI libraries and some of them have their active components ported to React, such as Twitter's <a href="http://react-bootstrap.github.io/">Bootstrap</a>, Google's <a href="http://www.material-ui.com/#/">Material Design</a> or Thinkmill's <a href="http://elemental-ui.com/">Elemental</a>.  Using their active React components is quite easy, we would simply have to follow the recipes give in their documentation. There is no general rule as to how active UI components should work, be configured or respond so, we cannot cover it in this book.</p>
+<p>We will only use some of their styles and icons. Besides the fancy coloring and shading, the most useful thing we will use is the grid system.  This allows us to distribute our components more efficiently across the page.  In the early days, we would use <code>&lt;table&gt;</code> elements to help us distribute UI elements.  With the ample variety of screen sizes we have to plan for nowadays, tables don't work any longer.  CSS grids, on the other hand, allow for more fluid layouts that can fit both the widest screen of a desktop and a narrow one in a smart phone.</p>
+<p>Iconography has also transitioned from small image files in <code>.png</code> or <code>.gif</code> format to fully scalable fonts that represent images instead of characters.  There are plenty to select from here as well, <a href="https://design.google.com/icons/">Material Icons</a>, <a href="http://getbootstrap.com/components/#glyphicons">Bootstrap Glyphicons</a> or the excellent <a href="http://fontawesome.io/icons/">Font Awesome</a>.  Icons are very useful in reducing the clutter of text in our pages by providing easily recognizable elements to interact with, saving on explanatory captions for buttons and such.</p>
+<p>We will use the very popular Bootstrap just because it is, indeed, very popular. To have it available to our application, we have to include a couple of CSS files in our single HTML file:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-01/public/index.html#L6-L7"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-01</div>
+    <div class="filename">File: public/index.html</div>
+    <div class="from">From: 6</div>
+    <div class="to">To: 7</div>
+  </div>
+  <pre><code class="language-html">&lt;link rel="stylesheet" href="/css/bootstrap.min.css" /&gt;
+&lt;link rel="stylesheet" href="/css/bootstrap-theme.min.css" /&gt;</code></pre></div>
+<p>We have opted to download a copy of the distribution files and extract the <code>/css</code> and <code>/fonts</code> folders into our <code>/public</code> folder.  Neither of those folders show up in GitHub because it would be abusive to upload them there so we have excluded them in our <code>.gitignore</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-01/.gitignore#L29-L31">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> thus, from now on, when downloading and running any of the samples for this book, if things look messy, it might be because those two folders are missing.  It is important that the <code>/fonts</code> folder be side-by-side with the <code>/css</code> folder since the CSS files contain relative references to the fonts.  Otherwise, Bootstrap can be loaded from several CDNs as their own site <a href="http://getbootstrap.com/getting-started/#download-cdn">explains</a>.</p>
+<p>We have improved on our HTTP errors box in the <code>App</code> component:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-01/client/components/app.js#L8-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-01</div>
+    <div class="filename">File: client/components/app.js</div>
+    <div class="from">From: 8</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">&lt;pre
+  className="alert alert-warning alert-dismissible"
+  style={{ display: errors.length ? 'block' : 'none' }}
+&gt;
+  &lt;button onClick={onCloseErrors} className="close pull-right"&gt;
+    &lt;span&gt;&amp;times;&lt;/span&gt;
+  &lt;/button&gt;
+  {errors.join('\n')}
+&lt;/pre&gt;</code></pre></div>
+<p>Instead of our own <code>errors</code> className, we have switched to using some of Bootstrap's built-in styles.  We have also added a <code>close</code> button to the box by following one of their simple <a href="http://getbootstrap.com/css/#helper-classes-close">recipes</a>.  We have moved the <code>onClick</code> handler from the whole error box to just this button.</p>
+<p>Instead of having a simple <code>Projects</code> link at the top of the screen, we have moved to a tabbed interface:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-01/client/components/app.js#L17-L23"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-01</div>
+    <div class="filename">File: client/components/app.js</div>
+    <div class="from">From: 17</div>
+    <div class="to">To: 23</div>
+  </div>
+  <pre><code class="language-js">&lt;ul className="nav nav-tabs"&gt;
+  {
+    /^\/projects/.test(pathname)
+    ? (&lt;li className="active"&gt;&lt;a href="#"&gt;Projects&lt;/a&gt;&lt;/li&gt;)
+    : (&lt;li&gt;&lt;Link to="/projects"&gt;Projects&lt;/Link&gt;&lt;/li&gt;)
+  }
+&lt;/ul&gt;</code></pre></div>
+<p>By using the <code>nav nav-tabs</code> classNames on an enclosing <code>&lt;ul&gt;</code> element, and turing each entry into a <code>&lt;li&gt;</code> we have now a tab that can grow across the top of the page.</p>
+<p>Since we no longer use the <code>errors</code> className, we have deleted it from the <code>index.css</code> file <a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-01/public/index.css">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.   If we hadn't done so, nothing would have happened.  If the styles in it aren't used, they are just wasting space.  This is often a problem, stylesheets getting out of sync with the code that supposedly uses them.  CSS files often grow endlessly because nobody feels comfortable deleting a style that might be in use who-knows-where. It often is less risky to leave the style behind than risk breaking a layout because deleting too much.</p>
+<p>We have been careful to fully qualify the styles with a whole hierarchy of classNames, like <code>.app .project .task-list .completed</code> so that it clearly states the component it belongs to.  The <code>.completed</code> className would have worked just as well without so much qualifying, but it would be very easy to lose control.  The best, however, is to keep each component with its own stylesheet. WebPack can help.</p>
+<h2><a class="self-ref" id="chapter19-including-css-files" href="#chapter19-including-css-files"># </a>Including CSS files.</h2>
+<p>We know that WebPack allows us to pre-process a file before it gets included in the final bundle.  We've been doing that all along since we've told WebPack to use Babel to process the files as they are loaded <a href="https://github.com/Satyam/book-react-redux/blob/master/webpack.config.js#L12-L18">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>. We can do something very much alike with CSS files.</p>
+<p>To tell WebPack to handle CSS files we need to add an entry to the list of loaders:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-02/webpack.config.js#L18-L21"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-02</div>
+    <div class="filename">File: webpack.config.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 21</div>
+  </div>
+  <pre><code class="language-js">{
+  test: /\.css$/,
+  loader: 'style!css'
+}</code></pre></div>
+<p>Just as we told it to use Babel for those files ending with <code>.js</code> or <code>.jsx</code>, we are now telling it to use <code>style!css</code> for those ending with <code>.css</code>.  Actually, that setting represents two separate but chained loaders, <a href="https://www.npmjs.com/package/style-loader">style-loader</a> and <a href="https://www.npmjs.com/package/css-loader">css-loader</a> which, as usual, we have to install first:</p>
+<pre><code class="language-bash">npm i -D css-loader style-loader
+</code></pre>
+<p>WebPack assumes the <code>-loader</code> ending so that <code>babel</code> actually looks for <code>babel-loader</code> and uses the <code>!</code> sigh to chain loaders together.  If, instead of using plain CSS we used some pre-processor such as <a href="http://lesscss.org/">Less</a> or <a href="http://sass-lang.com/">Sass</a> we might have added an entry like these:</p>
+<pre><code class="language-js">{ test: /\.less$/, loader: 'style!css!less' },
+{ test: /\.scss$/, loaders: [&quot;style&quot;, &quot;css&quot;, &quot;sass&quot;] }
+</code></pre>
+<p>Loaders can be listed in a string, separated by <code>!</code> using the <code>loader</code> property name or listed in an array with <code>loaders</code> (notice the plural).</p>
+<p>Now we can take the global style definitions out from <code>index.css</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-01/public/index.css">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and place the along their respective component.  We will do that for <code>App</code>.  We create a file <code>app.css</code> in the same folder as <code>app.js</code> containing the single style definition used there:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-02/client/components/app.css"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-02</div>
+    <div class="filename">File: client/components/app.css</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-css">.app .loading {
+  position: absolute;
+  top: 10px;
+  left: 200px;
+  z-index: 2;
+  border: thin solid blue;
+  background-color: silver;
+  padding: 3px;
+}</code></pre></div>
+<p>To use that style definition, we simply need to import it into <code>app.js</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-02/client/components/app.js#L4"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-02</div>
+    <div class="filename">File: client/components/app.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 4</div>
+  </div>
+  <pre><code class="language-js">import './app.css';</code></pre></div>
+<p>That is all that needs to be done.  We use the plainest form of <code>import</code> since we don't really need to have access to whatever <code>app.css</code> might export.  It is important to explicitly include the <code>.css</code>, <code>.less</code>, <code>.scss</code> or whichever extension your style files are because otherwise WebPack, following NodeJS rules, will default to look for files ending in <code>.js</code>.</p>
+<p>Once we moved all the component styles to their separate <code>component.css</code> files <a href="https://github.com/Satyam/book-react-redux/tree/chapter-19-02/client/components/projects">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, we may delete the now empty <code>index.css</code> file and drop the reference in <code>index.html</code> <a href="https://github.com/Satyam/book-react-redux/tree/chapter-19-02/public">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>We have solved the management issue of keeping the styles in sync with the components that use them in order to avoid having an ever-growing global CSS file. Or at least we are on our way to solving it, for example, <code>taskList.css</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-02/client/components/projects/taskList.css">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> has a single style that actually should belong to <code>task.css</code> which does not exist yet.  The application works and it looks fine, which comes to prove how difficult it is to find these kind of errors. We might have done the very same by several other means, for example, by creating a script to concatenate the files following a particular naming pattern.</p>
+<p>We are still forced to keep the convention to assign the enclosing element in each component a className, and use that className to qualify the styles, for example, in <code>App</code>, we have:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-02/client/components/app.js#L6-L8"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-02</div>
+    <div class="filename">File: client/components/app.js</div>
+    <div class="from">From: 6</div>
+    <div class="to">To: 8</div>
+  </div>
+  <pre><code class="language-js">export const App = ({ children, pathname, loading, errors, onCloseErrors }) =&gt; (
+  &lt;div className="app"&gt;
+    &lt;p className="loading" style={{ display: loading ? 'block' : 'none' }}&gt;loading&lt;/p&gt;</code></pre></div>
+<p>so that in <code>app.css</code> we do:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-02/client/components/app.css#L1"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-02</div>
+    <div class="filename">File: client/components/app.css</div>
+    <div class="from">From: 1</div>
+    <div class="to">To: 1</div>
+  </div>
+  <pre><code class="language-css">.app .loading {</code></pre></div>
+<p>This discipline of reserving a className for each component so as to qualify its styles is difficult to maintain and hard to enforce is we are to use third party components.   Since the <code>.app</code> className goes into the overall frame for the whole application, any children or deeper descendant having an element with the  <code>.loading</code> className will get a spillover from <code>.app .loading</code>.   This could be solved by applying the <code>.app</code> className to anything but the children:</p>
+<pre><code class="language-js">export const App = ({ children, pathname, loading, errors, onCloseErrors }) =&gt; (
+  &lt;div&gt;
+    &lt;div className=&quot;app&quot;&gt;
+      &lt;p className=&quot;loading&quot; style={{ display: loading ? 'block' : 'none' }}&gt;loading&lt;/p&gt;
+      &lt;!--  .... --&gt;
+    &lt;/div&gt;
+    {children}
+    &lt;div className=&quot;app&quot;&gt;
+      &lt;!--  .... --&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+);
+</code></pre>
+<p>The outside <code>&lt;div&gt;</code> has no className and it encloses two further <code>&lt;div&gt;</code>s that do have the <code>.app</code> className and <code>{children}</code> which doesn't.  Another alternative is to enable WebPack support for <a href="https://github.com/css-modules/css-modules">CSS Modules</a>.</p>
+<h2><a class="self-ref" id="chapter19-css-modules" href="#chapter19-css-modules"># </a>CSS Modules</h2>
+<p>CSS Modules is a proposed mechanism to be able to do with CSS what we already do with JavaScript via NodeJS <code>module.export</code>/<code>require</code> or ES6 <code>export</code>/<code>import</code>, that is, to keep information in separate modules instead of getting everything mixed up in a global context.</p>
+<p>To enable CSS modules in WebPack we simply need to add a configuration option to the entry for loading css files:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-03/webpack.config.js#L18-L21"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-03</div>
+    <div class="filename">File: webpack.config.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 21</div>
+  </div>
+  <pre><code class="language-js">{
+  test: /\.css$/,
+  loader: 'style!css?modules&amp;camelCase'
+}</code></pre></div>
+<p>The <code>loader</code> setting in WebPack is written as a series of URL-like style series of loader specs, separated by <code>!</code>.  For each of the loaders listed, a series of configuration options can be given as in the query parameters of a URL, with the query string after a <code>?</code> and successive setings separated by <code>&amp;</code>. Each setting might be <code>options=value</code> or <code>option</code>, which is equivalent to <code>option=true</code>.</p>
+<p>In the above case, we are telling the <code>css-loader</code> module to use CSS modules and to convert to camel-case.  We will soon see why the latter.</p>
+<p>Using CSS modules we don't need to use qualifiers in our CSS files since now the declarations within don't got into the global namespace and they can only be accessed by the modules that explicitly import them. In reality they do go into the only global namespace that the DOM provides, but they are wrapped in such a way as to make it look as if they aren't.</p>
+<p>The <code>app.css</code> file looks very much the same, but without the leading <code>.app</code> qualifier:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-03/client/components/app.css"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-03</div>
+    <div class="filename">File: client/components/app.css</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-css">.loading {
+  position: absolute;
+  top: 10px;
+  left: 200px;
+  z-index: 2;
+  border: thin solid blue;
+  background-color: silver;
+  padding: 3px;
+}</code></pre></div>
+<p>To use that style, <code>app.js</code> needs to import them into a variable and then use it like this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-03/client/components/app.js#L4-L8"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-03</div>
+    <div class="filename">File: client/components/app.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 8</div>
+  </div>
+  <pre><code class="language-js">import styles from './app.css';
+
+export const App = ({ children, pathname, loading, errors, onCloseErrors }) =&gt; (
+  &lt;div className="app"&gt;
+    &lt;p className={styles.loading} style={{ display: loading ? 'block' : 'none' }}&gt;loading&lt;/p&gt;</code></pre></div>
+<p>The css file is imported into the <code>styles</code> variable which will then contain an object.  To use any of the styles in the css file, we access it by name within that object: <code>{styles.loading}</code>.</p>
+<p>We still keep the <code>app</code> className on the enclosing <code>&lt;div className=&quot;app&quot;&gt;</code> mostly as an aid for us when debugging the application and trying to find which component produced which HTML and, perhaps, for some global styling, but otherwise, there is no longer any need for these component classNames.</p>
+<p>Any number of styles can be defined in a single CSS file:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-03/client/components/projects/task.css"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-03</div>
+    <div class="filename">File: client/components/projects/task.css</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-css">.task {
+  cursor: pointer;
+}
+.completed {
+  text-decoration: line-through;
+  color: silver;
+}</code></pre></div>
+<p>And combined, even on the same element:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-03/client/components/projects/task.js#L14"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-03</div>
+    <div class="filename">File: client/components/projects/task.js</div>
+    <div class="from">From: 14</div>
+    <div class="to">To: 14</div>
+  </div>
+  <pre><code class="language-js">className={`task ${completed ? styles.completed : styles.pending} ${styles.task}`}</code></pre></div>
+<p>The <code>camelCase</code> option on the <code>css-loader</code> is to convert CSS-style identifiers to JS-style ones, like with <code>disguise-link</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-03/client/components/projects/projectItem.css"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-03</div>
+    <div class="filename">File: client/components/projects/projectItem.css</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-css">.disguise-link, .disguise-link:focus, .disguise-link:hover {
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+  cursor: default;
+}</code></pre></div>
+<p>This allows us to use it like this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-03/client/components/projects/projectItem.js#L9"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-03</div>
+    <div class="filename">File: client/components/projects/projectItem.js</div>
+    <div class="from">From: 9</div>
+    <div class="to">To: 9</div>
+  </div>
+  <pre><code class="language-js">activeClassName={styles.disguiseLink}</code></pre></div>
+<p>The <code>css-loader</code> provides us with the <code>disguiseLink</code> alias but also gives us the original <code>disguise-link</code> though, the original is harder to use:</p>
+<pre><code class="language-js">activeClassName={styles['disguise-link']}
+</code></pre>
+<p>Notice how the <code>css-loader</code> does not get confused by code like this:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-03/client/components/projects/projectList.js#L8"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-03</div>
+    <div class="filename">File: client/components/projects/projectList.js</div>
+    <div class="from">From: 8</div>
+    <div class="to">To: 8</div>
+  </div>
+  <pre><code class="language-js">&lt;div className={`project-list ${styles.projectList}`}&gt;</code></pre></div>
+<p>It is quite able to distinguish between the global <code>project-list</code> className and the local <code>style['project-list']</code> (or <code>style.projectList</code>) className.</p>
+<p>Somehow, the <a href="https://www.npmjs.com/package/classnames">classnames</a> module we mentioned <a href="#chapter16-class-names">earlier</a> starts making much more sense.  It even allows us to simplify <code>app.js</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-04/client/components/app.js#L9-L17"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-04</div>
+    <div class="filename">File: client/components/app.js</div>
+    <div class="from">From: 9</div>
+    <div class="to">To: 17</div>
+  </div>
+  <pre><code class="language-js">&lt;p className={classNames(styles.loading, { hide: !loading })}&gt;loading&lt;/p&gt;
+&lt;pre
+  className={classNames(
+    'alert',
+    'alert-warning',
+    'alert-dismissible',
+    { hide: !errors.length }
+  )}
+&gt;</code></pre></div>
+<p>Instead of conditionally setting the <code>display</code> style to <code>block</code> or <code>none</code> to show or hide the loading indicator and the errors list, <code>classnames</code> makes it easy to apply Bootstrap's <a href="http://getbootstrap.com/css/#helper-classes-show-hide">hide</a> helper className.</p>
+<h2><a class="self-ref" id="chapter19-composing-styles" href="#chapter19-composing-styles"># </a>Composing styles</h2>
+<p>The styling of the HTTP errors list above is not right.  It uses too many of Bootstrap's ready-made styles right from the <code>.js</code> file, instead of the CSS file where it should.  As a matter of fact, the whole <code>App</code> component has too many styling features.  Why would it have a <code>&lt;pre&gt;</code> tag to enclose the errors list?  Wouldn't it be better to have a plain <code>&lt;div&gt;</code> and let the graphic designer how should it look?  That is what we've done in this version:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-05/client/components/app.js#L7-L33"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-05</div>
+    <div class="filename">File: client/components/app.js</div>
+    <div class="from">From: 7</div>
+    <div class="to">To: 33</div>
+  </div>
+  <pre><code class="language-js">export const App = ({ children, pathname, loading, errors, onCloseErrors }) =&gt; (
+  &lt;div className="app"&gt;
+    &lt;div
+      className={classNames(
+        styles.loading,
+        { hide: !loading }
+      )}
+    &gt;loading&lt;/div&gt;
+    &lt;div
+      className={classNames(
+        styles.errorsList,
+        { hide: !errors.length }
+      )}
+    &gt;
+      &lt;button onClick={onCloseErrors} className={styles.closeButton} /&gt;
+      {errors.join('\n')}
+    &lt;/div&gt;
+    &lt;ul className={styles.tabs}&gt;
+      {
+        /^\/projects/.test(pathname)
+        ? (&lt;li className={styles.active}&gt;&lt;a href="#"&gt;Projects&lt;/a&gt;&lt;/li&gt;)
+        : (&lt;li&gt;&lt;Link to="/projects"&gt;Projects&lt;/Link&gt;&lt;/li&gt;)
+      }
+    &lt;/ul&gt;
+    {children}
+  &lt;/div&gt;
+);</code></pre></div>
+<p>Now it has only two sets of tags which are not <code>&lt;div&gt;</code>s, a <code>&lt;button&gt;</code> and a set of <code>&lt;ul&gt;</code>-<code>&lt;li&gt;</code> tags, both of which are exactly what they are semantically meant to be.  In the end, the button will not look like a regular button and the list is going to look like a set of tabs but as for the component, the it simply describes the content, not how it will look.</p>
+<p>In all cases, most elements have their <code>className</code> set to styles taken from the <code>app.css</code> import.</p>
+<p>The <code>.errors-list</code> style is particularly interesting:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-05/client/components/app.css#L11-L17"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-05</div>
+    <div class="filename">File: client/components/app.css</div>
+    <div class="from">From: 11</div>
+    <div class="to">To: 17</div>
+  </div>
+  <pre><code class="language-css">.errors-list {
+  composes: global(alert);
+  composes: global(alert-warning);
+  composes: global(alert-dismissible);
+  white-space: pre;
+  font-family: monospace;
+}</code></pre></div>
+<p>The <code>css-loader</code> accepts the <code>composes</code> pseudo-attribute that allows a style definition to import the settings from another style. They should always precede any other setting and they can be overridden by later settings.  In this case, we are importing the definitions for <code>alert</code>, <code>alert-warning</code> and <code>alert-dismissible</code>, the very same ones we were using so far, taken from Bootstrap.  Since we are loading Bootstrap's CSS files globally, we enclose their names in <code>global()</code> so <code>css-loader</code> knows where they are.  Then we are making the <code>&lt;div&gt;</code> look like our earlier <code>&lt;pre&gt;</code>.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-05/client/components/app.css#L28-L34"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-19-05</div>
+    <div class="filename">File: client/components/app.css</div>
+    <div class="from">From: 28</div>
+    <div class="to">To: 34</div>
+  </div>
+  <pre><code class="language-css">.closeButton {
+  composes: global(close);
+  composes: global(pull-right);
+}
+.closeButton::before {
+  content: "\00D7";
+}</code></pre></div>
+<p>For the <code>&lt;button&gt;</code> we are using the same classNames from Bootstrap and we are setting the contents via CSS to the Unicode for the <code>&amp;times;</code> HTML entity we had before.  The graphics designer might have as well used an image or icon.</p>
+<p>Still, we have Bootstrap loaded globally.  We may avoid this.  The <code>composes</code> pseudo-attribute allows us to reference styles in other files, for example, in <code>bootstrap.css</code>.  For example, it would have been possible to do:</p>
+<pre><code class="language-css">.closeButton {
+  composes: close from &quot;bootstrap.css&quot;;
+  composes: pull-right from &quot;bootstrap.css&quot;;
+}
+</code></pre>
+<p>This assumes that we have created an alias for <code>bootstrap.css</code> in our WebPack configuration file.   If we imported all the styles we compose ours with, we would no longer need to link to them in <code>index.html</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-19-05/public/index.html#L6-L7">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  However, the Bootstrap files are large and even if we import a couple of styles from them, WebPack will load the whole file.  Worst still is that it will try to load the font file for the <em>glyphicons</em> and fail because WebPack doesn't know how to do that.</p>
+<p>We have to specify the loaders WebPack has to use for fonts whether the ones from Bootstrap or Font Awesome:</p>
+<pre><code class="language-js">{ test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: &quot;url&quot; },
+{ test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/, loader: 'file' },
+</code></pre>
+<p>And then install them:</p>
+<pre><code class="language-bash">npm i -D file-loader url-loader
+</code></pre>
+<p>It is, however, a bad idea to load the whole of Bootstrap in this way. The size of our bundle will increase significantly.  It is better if done with a smaller, customized version, which is quite easy to produce following Bootstrap <a href="http://getbootstrap.com/customize/#less">instructions</a> or even better to load it globally as we are doing right now.</p>
+<p>WebPack can also load and bundle images in various formats provided of the suitable loaders.</p>
+<h2><a class="self-ref" id="chapter19-summary" href="#chapter19-summary"># </a>Summary</h2>
+<p>We have seen how we can improve the looks of our application by using any of many UI libraries available for free.</p>
+<p>We learned how we can deliver a full component, JavaScript, markup and style using WebPack to import CSS files as it does with regular modules and how to keep their definitions private to the module importing them, avoiding conflicts with overlapping selectors.</p>
+<p>This has freed us to use plenty more CSS styles than before, certain that we don't risk messing up with other components, packing each component with its own private style definitions.</p>
+<p>We have also been able to import css styles from either globally loaded CSS files or external sources.</p>
+</section><section id="chapter20"><h1><a class="self-ref" id="chapter20-editing" href="#chapter20-editing"># </a>Editing</h1>
+<p>So far we have mostly displayed information with no inserting or deleting and little editing, we have only changed the task completion status and even that was local, it didn't update the database. Basically, we were doing just queries.</p>
+<p>We already have our server side REST API so to do all the possible operations on our database, we only need to call them from the client. So far, in <code>projects/actions.js</code> we only have <code>getAllProjects</code> and <code>getProjectById</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/actions.js#L18-L49">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>, we need to add one method for each of the other REST API operations <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/actions.js#L51-L167">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  It is too long and repetitive to show it here, but they all follow the pattern we've seen already.  They all return a function so they get detected by <code>redux-thunk</code> as asynchronous operations.  Each dispatches an initial action ending suffixed with <code>REQUEST</code> and then do the actual request with whatever parameters each one needs.  The Axios request returns a promise which we use to detect its success, upon which we dispatch the action suffixed with <code>SUCCESS</code> with the required data.</p>
+<p>Since each of the actions requires three action types and they all follow a pretty similar pattern, we have separated the creation of the action types into a separate file:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/actionTypes.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/store/projects/actionTypes.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">const NAME = 'projects';
+
+const constants = {
+  TASK_COMPLETED_CHANGE: 'projects/Task completed changed',
+};
+
+[
+  'ALL_PROJECTS',
+  'PROJECT_BY_ID',
+  'ADD_PROJECT',
+  'UPDATE_PROJECT',
+  'DELETE_PROJECT',
+  'ADD_TASK',
+  'UPDATE_TASK',
+  'DELETE_TASK',
+].forEach(operation =&gt; {
+  [
+    'REQUEST',
+    'SUCCESS',
+    'FAILURE',
+  ].forEach(stage =&gt; {
+    constants[`${operation}_${stage}`] = `${NAME}/${operation}/${stage}`;
+  });
+});
+
+module.exports = constants;</code></pre></div>
+<p>We compose both the named constants and the string they represent out of the prefix for the sub-store <code>projects</code>, the operation and the suffix for the stage.  We played a little trick when exporting the constants.  Since the ES6 <code>export</code> statement only allows for static exports, it is not possible to use it to generate named export dynamically so we collected all the exports into an object <code>constants</code> and then used NodeJS-style <code>module.exports</code> because that is what it happens internally.  The following two pieces of code are equivalent:</p>
+<pre><code class="language-js">export const foo = 1;
+export const bar = 2;
+</code></pre>
+<pre><code class="language-js">module.exports = {
+  foo: 1,
+  bar: 2
+};
+</code></pre>
+<p>Since we created the action types dynamically, it is worth considering if we could not create the action creators dynamically as well, after all, they all look very much alike. This is discussed in the <a href="http://redux.js.org/docs/recipes/ReducingBoilerplate.html#async-action-creators">Redux documentation</a> with an example of a possible implementation.  There are many possible implementations and none would teach us anything new.  We have already seen how to dispatch asynchronous actions and how to write middleware so we wouldn't be learning much by showing our own version nor by installing someone else's.</p>
+<p>We made one noticeable change, the <code>completedChanged</code> action creator is significantly changed:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/actions.js#L169-L180"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 169</div>
+    <div class="to">To: 180</div>
+  </div>
+  <pre><code class="language-js">export const completedChanged = (pid, tid, descr, completed) =&gt;
+  dispatch =&gt;
+    dispatch(updateTask(pid, tid, descr, completed))
+      .then(() =&gt;
+        dispatch({
+          type: ACTION_TYPES.TASK_COMPLETED_CHANGE,
+          pid,
+          tid,
+          completed,
+        })
+      )
+  ;</code></pre></div>
+<p>The original one dated to when we worked all synchronously on the client side.  It didn't update anything in the server.  We have now changed it to an asynchronous one, one the returns a function instead of an object. What sets this one apart from the rest is that instead of handling the REST API itself, it dispatches a separate action, <code>updateTask</code> to do the actual updating.  Since all our asynchronous action creators return a Promise, the one that Axios itself returns, we wait for that Promise to be resolved successfully and only then we dispatch our original action object.  We do this so we can keep an updated <code>pending</code> count locally, without being forced to recalculate it by querying all the tasks in the affected project <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/projectsReducer.js#L18-L28">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.</p>
+<p>Both our <code>projectsReducer.js</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/projectsReducer.js#L61-L82">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and <code>tasksReducer</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/tasksReducer.js#L23-L30">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> have grown to process the results of these extra actions. Our <code>projectsReducer</code> benefits from receiving some task-related actions <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/projectsReducer.js#L69-L82">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> since it allows it to update its own list of child <code>tids</code> as well as the <code>pending</code> count.   Redux always sends all the actions to all the reducers.  At first glance, this might seem a waste of processing time, however, this is a clear example of the benefits of that feature.</p>
+<h2><a class="self-ref" id="chapter20-dispatching-the-new-actions" href="#chapter20-dispatching-the-new-actions"># </a>Dispatching the new actions</h2>
+<p>The <code>Project</code> component has grown from passively displaying information about the project and containing its list of tasks to have two buttons to edit the header information or delete the whole project.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/project.js#L13-L30"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/project.js</div>
+    <div class="from">From: 13</div>
+    <div class="to">To: 30</div>
+  </div>
+  <pre><code class="language-js">return name
+  ? (
+  &lt;div className={classNames('project', styles.project)}&gt;
+    &lt;div className="row"&gt;
+      &lt;div className="col-md-9"&gt;
+        &lt;h1&gt;{name}&lt;/h1&gt;
+        &lt;div className={styles.descr}&gt;{descr}&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div className="col-md-3"&gt;
+        &lt;button className={styles.editButton} onClick={editClickHandler}&gt;Edit Project&lt;/button&gt;
+        &lt;button className={styles.deleteButton} onClick={deleteClickHandler}&gt;Delete Project&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;TaskList
+      pid={pid}
+    /&gt;
+  &lt;/div&gt;)
+  : (&lt;p&gt;Project {pid} not found&lt;/p&gt;)</code></pre></div>
+<p>We have used Bootstrap's <a href="http://getbootstrap.com/css/#grid">grid system</a> to help with the layout.  A <code>&lt;div&gt;</code> element with className <code>row</code> encloses elements that are to go side by side.  Each child element has a <code>col-xs-</code><em>n</em> className to distribute the space in that row.  Each row has 12 slots and the <em>n</em> says how many of those 12ths each section can use.  The virtue of the grid system over using <code>&lt;table&gt;</code> elements as we had to use in earlier times is that it responds much better to screens of different sizes, from large desktop screens to small smartphones.  When the screen gets too narrow, the row folds into multiple lines in a much predictable way.  This is determined by the two letters following the <code>col-</code> prefix, <code>xs</code>, <code>sm</code>,<code>md</code> or <code>lg</code>, with <code>xs</code> never folding.</p>
+<p>The project information is now held in the left cell while the right cell is taken by two buttons to edit or delete the project.  Each of them calls its own handler.  A project is expected to have a <code>name</code> so that field is used to signal the project does exist. It might seem the <code>pid</code> would be a better choice but a user might use a saved URL with a <code>pid</code> that points to a project that no longer exists, hence, the page would have a <code>pid</code>, taken from the URL.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/project.js#L7-L12"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/project.js</div>
+    <div class="from">From: 7</div>
+    <div class="to">To: 12</div>
+  </div>
+  <pre><code class="language-js">export const Project = ({ pid, name, descr, onEditClick, onDeleteClick }) =&gt; {
+  const editClickHandler = ev =&gt; isPlainClick(ev) &amp;&amp; onEditClick({ pid });
+  const deleteClickHandler = ev =&gt;
+    isPlainClick(ev) &amp;&amp;
+    window.confirm('Are you sure?') &amp;&amp; // eslint-disable-line no-alert
+    onDeleteClick({ pid });</code></pre></div>
+<p>The two action handlers are very much the same.  Both check whether it is a plain click (left button, no modifier keys) and then call the custom component action with the corresponding <code>pid</code>. The <code>pid</code> is passed as an object instead of a single value.  The reason to do that is mostly standardization, DOM events carry the event information in objects so it makes sense for custom events to do the same.  An object also leaves room for growth, extra properties can be added at any time without affecting existing listeners.  Others merge the component properties with the DOM event object:</p>
+<pre><code class="language-js">const editClickHandler = ev =&gt;
+  isPlainClick(ev) &amp;&amp; onEditClick(Object.assign({ pid }, ev));
+</code></pre>
+<p>This is fine for a UI component that is meant to be a better DOM element, for example, a <code>&lt;SuperButton&gt;</code> component that enhances the regular <code>&lt;button&gt;</code>, however, is not a good design for an application-oriented component. The rest of the application should not know about the DOM. It is the component that renders the DOM and it is the component that should take care of anything related to it, such as the DOM event.  If there is any other information in the DOM event object that might be of interest to the rest of the application, the component should extract, possibly pre-process any such values and then add them to the custom event object.  Or it might even fire a completely separate custom event, for example, a mouse click with the right button on a task might fire an <code>onContextMenu</code> custom event instead of <code>onCompletedChange</code> as it currently does.</p>
+<p>The delete handler uses <code>window.confirm</code> which is quite an awful thing to do.  This is in no way recommended at all, but using any of the available modal overlay alternatives such as the one provided by <a href="http://react-bootstrap.github.io/components.html#overlays">React-Bootstrap</a> would have required loading lots of extra packages and adding code that would not have provided any particular benefit for the purpose of this book.</p>
+<p>We now have a <code>mapDispatchToProps</code> object:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/project.js#L56-L61"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/project.js</div>
+    <div class="from">From: 56</div>
+    <div class="to">To: 61</div>
+  </div>
+  <pre><code class="language-js">onEditClick: ({ pid }) =&gt; dispatch(push(`/projects/editProject/${pid}`)),
+  onDeleteClick: ({ pid }) =&gt;
+    dispatch(deleteProject(pid))
+      .then(() =&gt; dispatch(push('/projects'))),
+});</code></pre></div>
+<p>Editing a project requires a completely different page so it dispatches the <code>push</code> action from <code>react-router-redux</code> to navigate to that page.  As a matter of fact, the same could have been achieved by using a <code>&lt;Link&gt;</code> instead of a button:</p>
+<pre><code class="language-html">&lt;Link className=&quot;btn btn-default&quot; to={`/project/editProject/${p.pid}`}&gt;
+  Edit Project
+&lt;/Link&gt;
+</code></pre>
+<p>The <code>&lt;Link&gt;</code>, however, would have limited our options to just navigating, going through the dispatcher in <code>mapDispatchToProps</code> allows for more flexibility as shown in the <code>onDeleteClick</code> callback.   We have pointed out earlier that all our asynchronous action creators return a Promise, the very same one that Axios returns. Redux doesn't really care about any such returned value, but it lets <code>dispatch</code> return it.  That is what allows us to chain a <code>.then</code> after we <code>dispatch</code> the <code>deleteProject</code> action:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/project.js#L58-L60"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/project.js</div>
+    <div class="from">From: 58</div>
+    <div class="to">To: 60</div>
+  </div>
+  <pre><code class="language-js">dispatch(deleteProject(pid))
+      .then(() =&gt; dispatch(push('/projects'))),
+});</code></pre></div>
+<p>Since the project has just been deleted, it would make little sense to return to this very same page to tell the user that the project is missing.  Of course it is missing, it has just been deleted!  So, on a successful <code>deleteProject</code>, we just navigate away from this page. If there had been any error with the <code>deleteProject</code> action, it would have been caught in the action itself <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/actions.js#L93-L103">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and this <code>.then</code> would have not been called.  We might have used this or any Promise returned from the async actions to issue notifications to the user such as a <a href="http://www.material-ui.com/#/components/snackbar">snakcbar</a>.</p>
+<p>To handle editing a project, we have added a couple of routes:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/routes.js#L8-L14"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/routes.js</div>
+    <div class="from">From: 8</div>
+    <div class="to">To: 14</div>
+  </div>
+  <pre><code class="language-js">export default (
+  &lt;Route path="projects" component={ProjectList}&gt;
+    &lt;Route path="newProject" component={EditProject} /&gt;
+    &lt;Route path="editProject/:pid" component={EditProject} /&gt;
+    &lt;Route path=":pid" component={Project} /&gt;
+  &lt;/Route&gt;
+);</code></pre></div>
+<p>We will use the same <code>EditProject</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> component to both add, when the route is <code>/projects/newProject</code> or edit an existing one for <code>/projects/editProject/:pid</code>.
+After so much insistence on the benefits of stateless components over stateful ones, it seems strange that both editing components are stateful. There is a good reason for that to be so. Input elements such as <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code> and <code>&lt;select&gt;</code> keep the user input within the DOM, however, in a dynamic application, the page could be refreshed at any time, perhaps due to an asynchronous action elsewhere.  If these elements are redrawn, they lose whatever the user might have entered so far. Since the DOM is volatile, they need their values to be preserved elsewhere and a stateful component is the perfect place for that.</p>
+<h2><a class="self-ref" id="chapter20-rendering-a-stateful-form" href="#chapter20-rendering-a-stateful-form"># </a>Rendering a stateful form</h2>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L24-L57"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/editProject.js</div>
+    <div class="from">From: 24</div>
+    <div class="to">To: 57</div>
+  </div>
+  <pre><code class="language-js">render() {
+    return (
+      &lt;div className={classNames('edit-project', styles.editProject)}&gt;
+        &lt;div className={styles.formGroup}&gt;
+          &lt;label htmlFor="name"&gt;Name&lt;/label&gt;
+          &lt;input
+            className={styles.formControl}
+            name="name"
+            onChange={this.onChangeHandler}
+            value={this.state.name}
+          /&gt;
+        &lt;/div&gt;
+        &lt;div className={styles.formGroup}&gt;
+          &lt;label htmlFor="descr"&gt;Description&lt;/label&gt;
+          &lt;textarea
+            className={styles.formControl}
+            name="descr"
+            onChange={this.onChangeHandler}
+            value={this.state.descr}
+          /&gt;
+        &lt;/div&gt;
+        &lt;button
+          className={styles.okButton}
+          disabled={this.state.name.length === 0}
+          onClick={this.onSubmitHandler}
+        &gt;Ok&lt;/button&gt;
+        &lt;button
+          className={styles.cancelButton}
+          onClick={this.onCancelHandler}
+        &gt;Cancel&lt;/button&gt;
+      &lt;/div&gt;
+    );
+  }
+}</code></pre></div>
+<p>We use a couple of input fields and a couple of buttons with classNames imported from <code>editProject.css</code> <a href="">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which in turn point to Bootstrap's styles for form elements and buttons.  We must use the pseudo-attribute <code>htmlFor</code> instead of <code>for</code> in the <code>&lt;label&gt;</code> elements because <code>for</code> is a reserved word in JavaScript and it confuses the JSX pre-compiler (the same happens with <code>className</code> instead of <code>class</code>, another reserved word).</p>
+<p>Each <code>&lt;input&gt;</code> element has its <code>name</code> set to the value they represent.  They both have their <code>onChange</code> event set to a listener to detect any changes.  Their <code>value</code>s are taken from <code>this.state.</code><em>whatever</em>.  The <code>onChangeHandler</code> constantly preserves any change in either input element in the component state using the element <code>name</code> property to identify each:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L14-L17"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/editProject.js</div>
+    <div class="from">From: 14</div>
+    <div class="to">To: 17</div>
+  </div>
+  <pre><code class="language-js">onChangeHandler(ev) {
+  const target = ev.target;
+  this.setState({ [target.name]: target.value });
+}</code></pre></div>
+<p>By preserving the values of the input elements in the component <code>state</code> we ensure that they are not lost if the page is accidentally refreshed.  Admittedly, a change in one section of the page should not refresh components elsewhere, but it may still happen.</p>
+<p>Saving the input values in the state has other benefits.  Values could be formatted on the fly, for example, a space could be added every fourth digit in a credit card number. Values could be validated on each keystroke as well, before saving them into the state, for example, a message text could be truncated to the first 140 characters.  Values can be transformed in between their formatted representation to show to the user and the internal representation to be used internally within the application. That is why, on submitting the form, we are sending the values from <code>this.state</code> and not from the input fields:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L18-L20"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/editProject.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 20</div>
+  </div>
+  <pre><code class="language-js">onSubmitHandler(ev) {
+  if (isPlainClick(ev)) this.props.onSubmit(this.state);
+}</code></pre></div>
+<p>The rest of the application should not be concerned about which kind of element we have used to request the information, whether it is a simple text box or a full-blown calendar component that returns a Date object, it is important that, when the entered values are send out from the component, they are in an application-oriented format.</p>
+<p>In our form, we disable the submit button when the <code>name</code> field is empty:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L45-L49"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/editProject.js</div>
+    <div class="from">From: 45</div>
+    <div class="to">To: 49</div>
+  </div>
+  <pre><code class="language-html">&lt;button
+  className={styles.okButton}
+  disabled={this.state.name.length === 0}
+  onClick={this.onSubmitHandler}
+&gt;Ok&lt;/button&gt;</code></pre></div>
+<p>The component is declared as a new class which extends <code>React.Component</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L8-L13"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/editProject.js</div>
+    <div class="from">From: 8</div>
+    <div class="to">To: 13</div>
+  </div>
+  <pre><code class="language-js">export class EditProject extends Component {
+  constructor(props) {
+    super(props);
+    this.state = pick(props, 'name', 'descr');
+    bindHandlers(this);
+  }</code></pre></div>
+<p>In the <code>constructor</code> we call <code>super</code> to pass on the <code>props</code> to <code>Component</code> and then set the initial <code>state</code> to the <code>name</code> and <code>descr</code> properties which we <code>pick</code> from <code>props</code> with the <code>lodash</code> utility of that name.  The <code>props</code> contain other values, but we don't want to pointlessly fill up <code>this.state</code> with information we don't really need. For example, since this component is a direct child of a <code>&lt;Route&gt;</code>, it will receive very many properties so we must be choosy.  We only pick the values needed for our input elements.</p>
+<p>Calling <code>bindHandlers</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/utils/bindHandlers.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> comes next. The problem is that event handlers such as <code>onChangeHandler</code> are not called in the context of the component, that is, the <code>this</code> for an event handler is usually useless. To solve this, event handlers need to be bound to the context of the component. This should <strong>never</strong> be done in the <code>render</code> method, where the event handler is assigned, because the <code>render</code> method may be called many times (in this example, at least once per keystroke) and on each execution a new bound copy would be created quickly trashing the browser memory with these bound functions until the garbage collector kicks in.</p>
+<p><code>bindHandlers</code> is just one of many recipes we can find out there. It looks for any own methods (not inherited) that start with <code>on</code> and end with <code>Handler</code> and binds them all to <code>this</code> just once when the object instance is created.  Thus, it will bind <code>onChangeHandler</code>, <code>onSubmitHandler</code> and <code>onCancelHandler</code>.  Actually, <code>bindHandlers</code> takes a second, optional argument that should be a regular expression with the pattern of the method names to be bound and it defaults to <code>on</code><em>XXXX</em><code>Handler</code> if none is specified.</p>
+<p>To submit or quit editing we have the following as handlers for the corresponding buttons:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L18-L23"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/editProject.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 23</div>
+  </div>
+  <pre><code class="language-js">onSubmitHandler(ev) {
+  if (isPlainClick(ev)) this.props.onSubmit(this.state);
+}
+onCancelHandler(ev) {
+  if (isPlainClick(ev)) this.props.onCancelEdit();
+}</code></pre></div>
+<p>In both cases we are checking it is a plain left-mouse button click and calling the corresponding custom event listener with the current state if it corresponds.  This is the place to do any final conversion of the data from its external representation, for example, a string representing a date, to its internal one, such as a Date object.</p>
+<p>Though <code>EditProject</code> is a stateful React component and it could deal with the store directly, it is still quite convenient to rely on the <code>connect</code> method of <code>react-redux</code>.  Both, <code>EditProject</code> and <code>Project</code> use the same data so it should not be surprising that instead of copying them, we import <code>mapStateToProps</code> and <code>initialDispatch</code> straight from <code>project.js</code> <a href="">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  We modified the originals just a little bit to allow them to provide defaults when a project is about to be added and does not yet exist, but it gives us the benefit of testing and maintaining just one set of functions.</p>
+<p>We do have to define a new <code>mapDispatchToProps</code> because the actions to be dispatched from <code>EditProject</code> are clearly different from those in <code>Project</code>.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editProject.js#L71-L87"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/editProject.js</div>
+    <div class="from">From: 71</div>
+    <div class="to">To: 87</div>
+  </div>
+  <pre><code class="language-js">export const mapDispatchToProps = (dispatch, { params: { pid } }) =&gt; ({
+  onSubmit: ({ name, descr }) =&gt; {
+    if (pid) {
+      return dispatch(updateProject(pid, name, descr))
+        .then(() =&gt; dispatch(push(`/projects/${pid}`)));
+    }
+    return dispatch(addProject(name, descr))
+      .then(response =&gt; dispatch(push(`/projects/${response.data.pid}`)));
+  },
+  onCancelEdit: () =&gt; {
+    dispatch(replace(
+      pid
+      ? `/projects/${pid}`
+      : '/projects'
+    ));
+  },
+});</code></pre></div>
+<p>Both have to branch of to different actions depending on whether <code>pid</code> has a value or not.  The first implies an update, the second, an addition.  When canceling, on an update we return to the project that was to be updated, otherwise we simply go to the project list.  We use the <code>replace</code> action from <code>react-router-redux</code> instead of <code>push</code> because, since we canceled, we don't want the browser history to remember we wanted to edit.</p>
+<p>In the <code>onSubmit</code> handler we dispatch either <code>updateProject</code> or <code>addProject</code> and upon a successful return we go to show the updated or newly added project.  For the added project, since we didn't have a <code>pid</code>, we read it from <code>respose.data.pid</code> as it is the database that will provide the <code>pid</code> from the newly added record.</p>
+<p>The <code>Task</code> component has grown to handle two more actions besides toggling the <code>completed</code> flag. It has two new event handlers, <code>onTaskEditHandler</code> and <code>onTaskDeleteHandler</code></p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/task.js#L6-L23"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/task.js</div>
+    <div class="from">From: 6</div>
+    <div class="to">To: 23</div>
+  </div>
+  <pre><code class="language-js">export const Task = (
+  { pid, tid, descr, completed, onCompletedChange, onTaskEdit, onTaskDelete }
+) =&gt; {
+  const onClickHandler = ev =&gt; isPlainClick(ev) &amp;&amp; onCompletedChange({
+    pid,
+    tid,
+    descr,
+    completed: !completed,
+  });
+  const onTaskEditHandler = ev =&gt; isPlainClick(ev) &amp;&amp; onTaskEdit({ pid, tid });
+  const onTaskDeleteHandler = ev =&gt; {
+    if (
+      isPlainClick(ev) &amp;&amp;
+      window.confirm(`Delete: \n${descr}\nAre you sure?`)  // eslint-disable-line no-alert
+    ) {
+      onTaskDelete({ pid, tid, completed });
+    }
+  };</code></pre></div>
+<p>The new events are fired by clicking on a couple of icons added to each task.  Since tasks can be numerous, it seemed better to use small icons instead of a full-size buttons.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/task.js#L48-L55"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/task.js</div>
+    <div class="from">From: 48</div>
+    <div class="to">To: 55</div>
+  </div>
+  <pre><code class="language-html">&lt;span
+  className={styles.editIcon}
+  onClick={onTaskEditHandler}
+&gt;&lt;/span&gt;
+&lt;span
+  className={styles.deleteIcon}
+  onClick={onTaskDeleteHandler}
+&gt;&lt;/span&gt;</code></pre></div>
+<p>The event handlers call the dispatchers in <code>mapDispatchToProps</code>.  <code>onCompletedChange</code> now sends all the information for the task because it eventually will have to call <code>updateTask</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/actions.js#L169-L180">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and has to give it all the information.</p>
+<p><code>onTaskDelete</code> simply dispatches <code>deleteTask</code>.  It has to give it the <code>pid</code> so <code>projectsReducer</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/projects/projectsReducer.js#L76-L82">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> can delete the <code>tid</code> for this task from its <code>tids</code> array. It also needs to provide <code>completed</code> so it can update the <code>pending</code> count.</p>
+<p><code>onTaskEdit</code> dispatches <code>setEditTid</code> which is a new action acting on a new reducer:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/misc/index.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/store/misc/index.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">export const EDIT_TID = 'Set tid of task to be edited';
+
+export function setEditTid(tid) {
+  return {
+    type: EDIT_TID,
+    tid,
+  };
+}
+
+import update from 'react-addons-update';
+
+export default (state = { editTid: null }, action) =&gt; {
+  switch (action.type) {
+    case EDIT_TID:
+      return update(state, { editTid: { $set: action.tid } });
+    default:
+      return state;
+  }
+};</code></pre></div>
+<p>It all adds up to simply adding a <code>editTid</code> property into a new sub-store we call <code>misc</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/store/createStore.js#L7">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> for <em>miscellaneous</em> which eventually might collect some other minor status information that doesn't deserve a whole sub-store.  <code>editTid</code> either contains <code>null</code> if no task is being edited, or the <code>tid</code> of the one being edited. This works along <code>TaskList</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/taskList.js#L5-L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/taskList.js</div>
+    <div class="from">From: 5</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">export const TaskList = ({ pid, tids, editTid }) =&gt; (
+  &lt;div className="task-list"&gt;{
+    tids
+    ? tids.map(tid =&gt; (
+        tid === editTid
+        ? &lt;EditTask key={tid} pid={pid} tid={tid} /&gt;
+        : &lt;Task key={tid} pid={pid} tid={tid} /&gt;
+      ))
+    : null}
+    {editTid ? null : &lt;EditTask pid={pid} /&gt;}
+  &lt;/div&gt;
+);</code></pre></div>
+<p>If the <code>tid</code> of the task to be listed matches <code>editTid</code>, it uses <code>EditTask</code>, otherwise, it uses <code>Task</code>.  Also, if not task is currently being edited, it adds an <code>EditTask</code> with no <code>tid</code> attribute which allows adding new tasks.</p>
+<p>It is important when creating multiple instances of a control such as the <code>Task</code>s in <code>TaskList</code> that each should have a <code>key</code> pseudo-attribute set to a unique value within the list to identify each instance.  React users this <code>key</code> to know whether it needs refreshing.  In <code>TaskList</code> we can clearly see the advantage.  As any of the <code>Task</code> instances can be replaced by <code>EditTask</code>, if they were not individually identified with the <code>key</code>, React would have little alternative but to redraw them all.  With the <code>key</code> it can know which <code>Task</code> instance has been replaced by <code>EditTask</code> and which ones remain and don't need redrawing.</p>
+<p>This brings us to <code>EditTask</code> <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which follows the same basic structure as <code>EditProject</code>, even to the point of sharing <code>mapStateToProps</code> with <code>Task</code>.  Just a few details deserve highlighting.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js#L81-L90"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/editTask.js</div>
+    <div class="from">From: 81</div>
+    <div class="to">To: 90</div>
+  </div>
+  <pre><code class="language-js">export const mapDispatchToProps = (dispatch, { pid, tid }) =&gt; ({
+  onSubmit: ({ descr, completed }) =&gt; {
+    if (tid) {
+      return dispatch(updateTask(pid, tid, descr, completed))
+        .then(() =&gt; dispatch(setEditTid(null)));
+    }
+    return dispatch(addTaskToProject(pid, descr, completed));
+  },
+  onCancelEdit: () =&gt; dispatch(setEditTid(null)),
+});</code></pre></div>
+<p>We use the <code>tid</code> property to determine if it should update an existing task or add a new one.  It dispatches either <code>updateTask</code> or <code>addTaskToProject</code> depending on that.  We use the same <code>tid</code> to determine if we are in edit mode <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js#L29">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and change the style of the submit button <a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js#L51">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> to show either a check-mark or a plus sign (or whatever the graphics designer might choose).</p>
+<p>After dispatching any of the actions, we dispatch <code>setEditTid</code> sending it back to <code>null</code> so the edit box goes away.</p>
+<p>Finally, in the <code>onSubmitHandler</code> we have:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/chapter-20-01/client/components/projects/editTask.js#L17-L24"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: chapter-20-01</div>
+    <div class="filename">File: client/components/projects/editTask.js</div>
+    <div class="from">From: 17</div>
+    <div class="to">To: 24</div>
+  </div>
+  <pre><code class="language-js">onSubmitHandler(ev) {
+  if (isPlainClick(ev)) {
+    this.props.onSubmit(this.state)
+    .then(() =&gt; {
+      if (! this.props.tid) this.setState({ descr: '' });
+    });
+  }
+}</code></pre></div>
+<p>Here it is worth highlighting how important it is to keep returning the Promises returned by the actions dispatched.  We have already chained to the <code>.then</code> part of the Promises to navigate one place or another or to make the task edit box disappear.  Here, we are going one step further.  We have returned the Promise all the way back to the even handler, not just in <code>mapDispatchToProps</code> as we've done so far.  The reason for doing so is that when adding a task, the same instance of <code>EditTask</code> is used over and over again so we want to empty the input box to have it ready for a new task.  We do that with <code>this.setState</code> but  <code>mapDispatchToProps</code> has no access to <code>this</code> so it had to go all the way back to the event handler.</p>
+<p>There are two points to make here:</p>
+<ul>
+<li>Use Promises, you can keep chaining and chaining plenty of useful code into them</li>
+<li>Always return Promises in asynchronous actions and keep returning them.  The <code>dispatch</code> method returns them for our benefit and we should keep returning them higher up.</li>
+</ul>
+<p>Whenever we call <code>dispatch</code> on an asynchronous action we are either explicitly returning whatever it returns or leveraging the <em>fat arrow function</em> implicit return.</p>
+</section></div>
   </body>
   <script type="text/javascript" src="index.js"></script>
 </html>
