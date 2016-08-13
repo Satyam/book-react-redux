@@ -1,44 +1,29 @@
-# Step by step with React and Redux
+# Annotated Single Page Application using React and Redux
 
-The purpose of this book is to provide a step-by-step guide on how to develop a single page application with modern tools such as React and Redux with all the associated tooling.
+This repository contains two books, one of them unfinished the other a work in progress.
 
-It is like setting up a carpentry workshop.  You know how to hit a nail, turn a screw or saw a piece of timber, but when you want to actually set up your workshop you start to find out that there are lots of ancillaries that are required, the more so if you are going to work with other people and for other people.
+## The unfinished book
 
-We won't dump a ready-made setup on you from the start, we will go one step at a time explaining why each one is needed.  Do not take a sample from any chapter blindly, some contain mistakes or suboptimal solutions meant to show the way.  We won't cover absolutely all the possibilities that exist, there are too many, but if you know why we choose a particular option, you will have a base to compare it with the alternatives and decide for yourself.
+The readme file for the old book is still there in [README.old.md](https://github.com/Satyam/book-react-redux/blob/master/README.old.md) and the book itself is still available [here](http://satyam.github.io/book-react-redux/).
 
-This book is available as a single HTML page at [http://satyam.github.io/book-react-redux/](http://satyam.github.io/book-react-redux/). At some point I will provide other formats. Most browsers allow printing to PDF.  The stylesheet is already set so that it prints nicely. The original can also be read directly from this very same [GitHub repository](https://github.com/Satyam/book-react-redux/tree/master/manuscript).
+The text goes for 20 chapters (the repository contains a separate branch for each of the chapters and sections within the chapter). The code goes up to chapter 23, but it has no associated text in the book.  It shall remain so. It was thanks to [Iliyan Peychev](https://github.com/ipeychev) that I finally realized I was taking the wrong path.
 
-## Sample code for each chapter
+I attempted to develop the full application in successive chapters, explaining why I made each step, going from the most primitive to the more elaborate.  All along the way, I explored many alternatives just to show why they were dead ends. In the chapters that followed, I would correct that. I meant to make it a novel instead of a manual.  That was not a good idea.  
 
-The book has links to the ZIP file containing the sample code for each chapter and section. The downloaded ZIP can be expanded anywhere and 
-Sample code for each successive chapter can be displayed by selecting it from the <kbd>Branch: **master**</kbd> dropdown list at the top left of the file listing box.
+Besides boring the reader to death, nobody could open it in a random chapter and be sure the solution presented there was the good one. Perhaps it is just a wrong path, the wrong *suspected murderer* in the detective story. In the end, all would be solved and the culprit found. As a matter of fact, the code in the later chapters in this book is good so you might just want to jump there.  However, if you go there and want to understand why something was done in a certain way, you would have to go back to who-knows-where to find out why.
 
-Once a chapter (branch) is selected, the full code for that chapter can be downloaded as a compressed `.zip` file with the <kbd>Download ZIP</kbd> button.
+Clearly, this was not good. Thus, I dropped it.
 
-The whole repository can be cloned, provided you have a local git client software installed by doing:
+## The new book
 
-`git clone https://github.com/Satyam/book-react-redux.git`
+What I did instead is to develop a sample app as I think it would be best done and the new book will explain what each part does and why it is done that way.  It will not contain simple in-line comments, instead it will try to explain how each part works within the whole.  In that, I mean to depart from the usual boilerplates.  Instead of presenting a solution for you to adopt wholesale, I mean to explain why I picked one alternative or another so you can make your own decisions.
 
-That will create a `book-react-redux` folder under your current working directory.  Change to that directory
+## What it contains
 
-`cd book-react-redux`.
+The application is a Single Page Application (SAP) done using [React](https://facebook.github.io/react/index.html) and [Redux](http://redux.js.org/index.html) and it also contains the server code based on [Express](http://expressjs.com/) which is capable of delivering server-side rendered pages as well, that is, it is an isomorphic web app.
 
-For your local copy to be aware of the material in each chapter, do
+Finally, since I liked the concept of [Electron](http://electron.atom.io/), I decided to give it a try and transform it into a desktop Electron app using, basically, the same code.
 
-`git pull`
+All this, however, is in the future.  The code is there, you can check it out in the [master](https://github.com/Satyam/book-react-redux/tree/master) branch but the annotations are a work in progress.
 
-That will retrieve the information about all the branches (chapters) available.
-
-To list the chapters and their stages available, do
-
-`git branch`
-
-You can see all the work at any stage for any chapter just by doing:
-
-`git checkout chapter-nn`
-
-## Suggestions and Feedback
-
-This being a collaboration site, it makes sense to use its very own tools to get feedback.  Just go to the [Issues](https://github.com/Satyam/book-react-redux/issues) tab and file any comment or suggestion.  The repository is also open to accept edits right into GitHub which can then be revised, discussed and merged into successive editions.
-
-Thanks in advance for any such help.
+I hope you'll like it.  Cheers.
