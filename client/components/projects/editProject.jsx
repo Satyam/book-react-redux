@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import bindHandlers from 'utils/bindHandlers';
-import isPlainClick from 'utils/isPlainClick';
+import bindHandlers from '_utils/bindHandlers';
+import isPlainClick from '_utils/isPlainClick';
 import classNames from 'classnames';
 import pick from 'lodash/pick';
 
-import { addProject, updateProject, push, replace } from 'store/actions';
-import initialDispatcher from 'utils/initialDispatcher';
+import { addProject, updateProject, push, replace } from '_store/actions';
+import initialDispatcher from '_utils/initialDispatcher';
 import { mapStateToProps, initialDispatch } from './project';
 import styles from './editProject.css';
 

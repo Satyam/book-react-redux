@@ -1,5 +1,5 @@
 import { Router as expressRouter } from 'express';
-import { handleRequest } from 'server/utils';
+import { handleRequest } from '_server/utils';
 import transactions from './transactions';
 import validators from './validators';
 

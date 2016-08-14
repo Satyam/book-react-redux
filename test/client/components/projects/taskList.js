@@ -1,8 +1,8 @@
-import { TaskListComponent, mapStateToProps } from 'components/projects/taskList';
+import { TaskListComponent, mapStateToProps } from '_components/projects/taskList';
 
-import { expect, loadJSDOM, dropJSDOM, shallowRender } from 'test/utils/renderers';
+import { expect, loadJSDOM, dropJSDOM, shallowRender } from '_test/utils/renderers';
 
-import data from 'test/utils/data';
+import data from '_test/utils/data';
 
 describe('Component: taskList', () => {
   before('create JSDOM', loadJSDOM);

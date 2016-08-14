@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 /* eslint-disable import/no-duplicates, no-duplicate-imports */
-import misc, { setEditTid, EDIT_TID } from 'store/misc';
-import * as miscLib from 'store/misc';
+import misc, { setEditTid, EDIT_TID } from '_store/misc';
+import * as miscLib from '_store/misc';
 /* eslint-enable import/no-duplicates, no-duplicate-imports */
-import testConstants from 'test/utils/testConstants';
+import testConstants from '_test/utils/testConstants';
 
-import { mockStore } from 'test/utils/renderers';
-import data from 'test/utils/data';
+import { mockStore } from '_test/utils/renderers';
+import data from '_test/utils/data';
 
 describe('Store: misc', () => {
   describe('actions', () => {

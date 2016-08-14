@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
-import isPlainClick from 'utils/isPlainClick';
+import isPlainClick from '_utils/isPlainClick';
 import classNames from 'classnames';
-import { clearHttpErrors } from 'store/actions';
+import { clearHttpErrors } from '_store/actions';
 import styles from './app.css';
 
 export const AppComponent = ({ children, pathname, loading, errors, onCloseErrors }) => (

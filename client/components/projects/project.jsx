@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
-import isPlainClick from 'utils/isPlainClick';
+import isPlainClick from '_utils/isPlainClick';
 
-import initialDispatcher from 'utils/initialDispatcher';
-import { deleteProject, getProjectById, push } from 'store/actions';
+import initialDispatcher from '_utils/initialDispatcher';
+import { deleteProject, getProjectById, push } from '_store/actions';
 
 import TaskList from './taskList';
 import styles from './project.css';

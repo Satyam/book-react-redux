@@ -1,12 +1,12 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import isPlainClick from 'utils/isPlainClick';
+import isPlainClick from '_utils/isPlainClick';
 import classNames from 'classnames';
 import isEmpty from 'lodash/isEmpty';
 
-import initialDispatcher from 'utils/initialDispatcher';
-import { getAllProjects, push } from 'store/actions';
+import initialDispatcher from '_utils/initialDispatcher';
+import { getAllProjects, push } from '_store/actions';
 import styles from './projectList.css';
 import ProjectItem from './projectItem';
 

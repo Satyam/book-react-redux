@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import axios from 'axios';
 
 
-import server from 'server/server.js';
+import server from '_server/server.js';
 
 describe('Projects Data Server testing', () => {
   before('Starting server', server.start);

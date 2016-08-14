@@ -1,5 +1,5 @@
-import NotFound from 'components/notFound';
-import { expect, shallowRender } from 'test/utils/renderers';
+import NotFound from '_components/notFound';
+import { expect, shallowRender } from '_test/utils/renderers';
 
 describe('Component: NotFound', () => {
   it('Simple render', () => {

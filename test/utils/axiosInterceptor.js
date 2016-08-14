@@ -1,4 +1,4 @@
-import restAPI from 'utils/restAPI';
+import restAPI from '_utils/restAPI';
 import eq from 'lodash/eq';
 import path from 'path';
 

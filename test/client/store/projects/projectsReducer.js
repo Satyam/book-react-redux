@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 
 import { diff as deepDiff } from 'deep-diff';
-import diff from 'test/utils/diff.js';
-import data from 'test/utils/data';
+import diff from '_test/utils/diff.js';
+import data from '_test/utils/data';
 
-import reducer from 'store/projects/projectsReducer';
+import reducer from '_store/projects/projectsReducer';
 import {
   TASK_COMPLETED_CHANGE,
   ALL_PROJECTS_SUCCESS,
@@ -14,7 +14,7 @@ import {
   DELETE_PROJECT_SUCCESS,
   ADD_TASK_SUCCESS,
   DELETE_TASK_SUCCESS,
-} from 'store/projects/actionTypes';
+} from '_store/projects/actionTypes';
 
 const projects = data.projects;
 

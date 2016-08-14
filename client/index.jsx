@@ -4,9 +4,9 @@ import { Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { Provider } from 'react-redux';
 
-import createStore from 'store/createStore';
+import createStore from '_store/createStore';
 
-import routes from 'components/routes';
+import routes from '_components/routes';
 
 if (process.env.NODE_ENV !== 'production') {
   /* eslint-disable import/no-extraneous-dependencies, global-require */

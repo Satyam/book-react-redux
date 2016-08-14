@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 
-import { mockStore } from 'test/utils/renderers';
+import { mockStore } from '_test/utils/renderers';
 // uncomment following for data to be used when testing update or delete
-// import data from 'test/utils/data';
+// import data from '_test/utils/data';
 import nock from 'nock';
 
-import { getAllProjects, addProject } from 'store/projects/actions.js';
-import ACTION_TYPES from 'store/projects/actionTypes.js';
+import { getAllProjects, addProject } from '_store/projects/actions.js';
+import ACTION_TYPES from '_store/projects/actionTypes.js';
 
 const SERVER = `${HOST}:${PORT}`;
 const API = `${REST_API_PATH}/projects/`;

@@ -4,8 +4,8 @@ import { createMemoryHistory, match, RouterContext } from 'react-router';
 import { Provider } from 'react-redux';
 import { syncHistoryWithStore } from 'react-router-redux';
 
-import createStore from 'store/createStore';
-import clientRoutes from 'components/routes';
+import createStore from '_store/createStore';
+import clientRoutes from '_components/routes';
 
 import htmlTemplate from './htmlTemplate';
 

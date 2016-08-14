@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import bindHandlers from 'utils/bindHandlers';
-import isPlainClick from 'utils/isPlainClick';
+import bindHandlers from '_utils/bindHandlers';
+import isPlainClick from '_utils/isPlainClick';
 import classNames from 'classnames';
 import pick from 'lodash/pick';
 
-import { updateTask, addTaskToProject, setEditTid } from 'store/actions';
+import { updateTask, addTaskToProject, setEditTid } from '_store/actions';
 import { mapStateToProps } from './task';
 import styles from './editTask.css';
 

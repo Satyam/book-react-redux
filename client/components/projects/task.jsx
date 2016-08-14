@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import isPlainClick from 'utils/isPlainClick';
+import isPlainClick from '_utils/isPlainClick';
 import classNames from 'classnames';
 
-import { completedChanged, setEditTid, deleteTask } from 'store/actions';
+import { completedChanged, setEditTid, deleteTask } from '_store/actions';
 import styles from './task.css';
 
 export const TaskComponent = (

@@ -6,7 +6,7 @@ import fs from 'fs';
 import denodeify from 'denodeify';
 import sqlJS from 'sql.js';
 
-import projectsRoutes from 'server/projects/routes';
+import projectsRoutes from '_server/projects/routes';
 import serverIPC from './serverIPC';
 import htmlTpl from './htmlTemplate';
 
@@ -51,7 +51,7 @@ app.on('ready', () => {
   .then(() =>
     writeFile(
       htmlFile,
-      htmlTpl(absPath('public/bundles'), absPath('node_modules'))
+      htmlTpl(absPath('bundles'), absPath('node_modules'))
     )
   )
   .then(() => mainWindow.loadURL(`file://${htmlFile}`))

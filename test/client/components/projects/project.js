@@ -6,7 +6,7 @@ import ConnectedProject, {
   mapStateToProps,
   mapDispatchToProps,
   initialDispatch,
-} from 'components/projects/project';
+} from '_components/projects/project';
 
 import {
   expect,
@@ -16,9 +16,9 @@ import {
   deepRender,
   mockStore,
   fakeThunkStore,
-} from 'test/utils/renderers';
-import setIntercept from 'test/utils/axiosInterceptor';
-import data from 'test/utils/data';
+} from '_test/utils/renderers';
+import setIntercept from '_test/utils/axiosInterceptor';
+import data from '_test/utils/data';
 
 const PID = 25;
 

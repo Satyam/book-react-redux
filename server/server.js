@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 import fs from 'fs';
 import denodeify from 'denodeify';
 import sqlJS from 'sql.js';
-import isomorphic from 'server/isomorphic';
+import isomorphic from '_server/isomorphic';
 
 import projectsRoutes from './projects/routes';
 

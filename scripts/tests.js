@@ -9,7 +9,7 @@ const sourceMapSupport = require('source-map-support');
 
 
 const root = process.cwd();
-const pathTo = folder => path.join(root, folder);
+const absPath = folder => path.join(root, folder);
 
 const mocha = new Mocha();
 const exec = denodeify(
@@ -18,9 +18,9 @@ const exec = denodeify(
 );
 
 
-const testDir = pathTo('test');
-const tmpDir = pathTo('tmp');
-const testUtils = pathTo('test/utils/*');
+const testDir = absPath('test');
+const tmpDir = absPath('tmp');
+const testUtils = absPath('test/utils/*');
 
 // This adds source line numbers to error reports
 mocha.suite.addTest(new Mocha.Test('Enabling source code line mapping', () =>
@@ -29,7 +29,7 @@ mocha.suite.addTest(new Mocha.Test('Enabling source code line mapping', () =>
   })
 ));
 
-const wpConfig = require(pathTo('webpack.test.config.js'));
+const wpConfig = require(absPath('webpack.config/test.js'));
 
 rmdir(tmpDir)
   .then(() => mkdirp(tmpDir))
