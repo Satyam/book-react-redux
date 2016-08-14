@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import filter from 'lodash/filter';
 import unique from 'lodash/uniq';
 
-module.exports = (collection, prefix) => () => {
+export default (collection, prefix) => () => {
   const actions = filter(collection, (value, name) =>
     (typeof value === 'string' && name.toUpperCase() === name));
 

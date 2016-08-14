@@ -1,6 +1,6 @@
-import server from './server';
+import { start } from './server';
 
-server.start()
+start()
 .catch(err => {
   console.error(err);
   process.exit(1);

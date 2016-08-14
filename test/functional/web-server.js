@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import axios from 'axios';
 
-import server from '_server/server.js';
+import { start, stop } from '_server/server.js';
 
 describe('Web Server testing', () => {
-  before('Starting server', server.start);
+  before('Starting server', start);
 
-  after('Closing the server', server.stop);
+  after('Closing the server', stop);
 
   describe('Static pages test', () => {
     const http = axios.create({

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   projects: {
     25: {
       pid: '25',

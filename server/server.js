@@ -10,12 +10,13 @@ import isomorphic from '_server/isomorphic';
 import projectsRoutes from './projects/routes';
 
 const absPath = relPath => join(ROOT_DIR, relPath);
+const readFile = denodeify(fs.readFile);
 
 const app = express();
 const server = http.createServer(app);
 
-const readFile = denodeify(fs.readFile);
 const listen = denodeify(server.listen.bind(server));
+const close = denodeify(server.close.bind(server));
 
 const dataRouter = expressRouter();
 app.use(REST_API_PATH, bodyParser.json(), dataRouter);
@@ -27,19 +28,17 @@ isomorphic(app);
 
 app.get('*', (req, res) => res.sendFile(absPath('server/index.html')));
 
-module.exports = {
-  start: () => {
-    global.db = new sqlJS.Database();
-    return readFile(absPath('server/data.sql'), 'utf8')
-    .then(data => db.exec(data))
-    .then(() => Promise.all([
-      projectsRoutes(dataRouter, '/projects'),
-    ]))
-    .then(() => listen(PORT))
-    .then(() => console.log(`Server running at http://localhost:${PORT}/`));
-  },
-  stop: () => {
-    console.log(`Closing server at http://localhost:${PORT}/`);
-    server.close();
-  },
-};
+export function start() {
+  global.db = new sqlJS.Database();
+  return readFile(absPath('server/data.sql'), 'utf8')
+  .then(data => db.exec(data))
+  .then(() => Promise.all([
+    projectsRoutes(dataRouter, '/projects'),
+  ]))
+  .then(() => listen(PORT))
+  .then(() => console.log(`Server running at http://localhost:${PORT}/`));
+}
+export function stop() {
+  console.log(`Closing server at http://localhost:${PORT}/`);
+  return close();
+}

@@ -9,7 +9,7 @@ import clientRoutes from '_components/routes';
 
 import htmlTemplate from './htmlTemplate';
 
-module.exports = app => app.use((req, res, next) => {
+export default app => app.use((req, res, next) => {
   const memoryHistory = createMemoryHistory(req.url);
   const store = createStore(memoryHistory);
   const history = syncHistoryWithStore(memoryHistory, store);

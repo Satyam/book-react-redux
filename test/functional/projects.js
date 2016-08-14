@@ -2,12 +2,12 @@ import { expect } from 'chai';
 import axios from 'axios';
 
 
-import server from '_server/server.js';
+import { start, stop } from '_server/server.js';
 
 describe('Projects Data Server testing', () => {
-  before('Starting server', server.start);
+  before('Starting server', start);
 
-  after('Closing the server', server.stop);
+  after('Closing the server', stop);
 
   describe(`${REST_API_PATH} REST API test`, () => {
     const http = axios.create({

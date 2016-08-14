@@ -1,7 +1,7 @@
 import electron from 'electron';
 import url from 'url';
 
-module.exports = dataRouter => {
+export default dataRouter => {
   electron.ipcMain.on('restAPI', (event, msg) => {
     const parsedUrl = url.parse(msg.url, true);
     const originalUrl = msg.url.replace(`${HOST}:${PORT}`, '');

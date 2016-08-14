@@ -1,4 +1,4 @@
-module.exports = (bundles, nodeModules) => `<!DOCTYPE html>
+export default (bundles, nodeModules) => `<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
