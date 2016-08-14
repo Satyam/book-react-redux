@@ -3,7 +3,7 @@ const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const join = path.join;
-const root = __dirname;
+const root = process.cwd();
 const absPath = relative => join(root, relative);
 
 
@@ -14,12 +14,11 @@ module.exports = version => [
   'electronClient',
 ].map(bundle => {
   const aliases = {
-    store: absPath('client/store'),
-    components: absPath('client/components'),
-    utils: absPath('client/utils'),
-    client: absPath('client'),
-    server: absPath('server'),
-    test: absPath('test'),
+    _store: absPath('client/store'),
+    _components: absPath('client/components'),
+    _utils: absPath('client/utils'),
+    _server: absPath('server'),
+    _test: absPath('test'),
   };
   return {
     entry: {
@@ -31,7 +30,7 @@ module.exports = version => [
       }[bundle]),
     },
     output: {
-      path: absPath('public/bundles'),
+      path: absPath(bundle === 'client' ? 'public/bundles' : 'bundles'),
       filename: '[name].js',
     },
     target: {

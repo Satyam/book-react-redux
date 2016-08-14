@@ -1,4 +1,4 @@
-const config = require('./webpack.common.config')('development')[1];
+const config = require('./common')('development')[1];
 
 config.entry = null;
 config.output = null;
