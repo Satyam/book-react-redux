@@ -3,13 +3,6 @@
     "node": true,
     "mocha": true
   },
-  "settings": {
-    "import/resolver": {
-      "webpack": {
-        "config": "webpack.test.config.js"
-      }
-    }
-  },
   "rules": {
     "no-unused-expressions": 0
   }
