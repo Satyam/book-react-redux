@@ -227,7 +227,11 @@ readFile('book.txt', 'utf8')
   </head>
   <body>
     <div class="toc">${values.toc}</div>
-    <div class="contents unfolded"><div class="close">&lt; close</div>${values.contents}</div>
+    <div class="contents unfolded">
+      <div class="close">&lt; close</div>
+      <h1 class="title">An annotated single page app using React and Redux</h1>
+      ${values.contents}
+    </div>
   </body>
   <script type="text/javascript" src="index.js"></script>
 </html>
