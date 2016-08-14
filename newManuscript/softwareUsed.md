@@ -16,6 +16,8 @@ We are using EcmaScript-2015 or ES6 syntax for most of the code and Babel to tra
 
 We are using [WebPack](http://webpack.github.io/) to pack our modules into bundles that a browser can load. However, since we are using ES6 syntax not yet supported by Node.js and a few other WebPack features that turn out to be quite handy, we are using WebPack to create server-side bundles as well. This is partly due to implementing isomorphism, which requires the server to be able to run the very same code that the client does so as to create the static image that the browser will download.  So, it is easier if both sides use exactly the same environment.
 
-Finally, we are using the [ESLint](http://eslint.org/) linter with the [Airbnb](https://www.npmjs.com/package/eslint-config-airbnb) rules set and [Mocha](https://mochajs.org/) with `expect` assertions from [chai](http://chaijs.com/api/bdd/) for testing.  
+Finally, we are using the [ESLint](http://eslint.org/) linter with the [Airbnb](https://www.npmjs.com/package/eslint-config-airbnb) rules set and [Mocha](https://mochajs.org/) with `expect` assertions from [Chai](http://chaijs.com/api/bdd/) for testing.  
 
 There are plenty of other modules used here and there, but these are the main dependencies that most influence the code.
+
+Something sorely lacking in this app are API docs. Unfortunately, none of the tools reviewed work as would be desired.  Most are confused by either the JSX syntax used by React or don't support ES6 syntax or have no means to describe modules or document their exports.  In the end, the resulting docs were of very little help so no effort was put into adding doc-comments to the code.

@@ -1,2 +1,6 @@
-basics.md
+preface.md
+softwareUsed.md
 folders.md
+installation.md
+conventions.md
+server.md
