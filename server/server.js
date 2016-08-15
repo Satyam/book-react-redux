@@ -24,7 +24,7 @@ app.use(REST_API_PATH, bodyParser.json(), dataRouter);
 app.use('/bootstrap', express.static(absPath('node_modules/bootstrap/dist')));
 app.use(express.static(absPath('public')));
 
-isomorphic(app);
+app.use(isomorphic);
 
 app.get('*', (req, res) => res.sendFile(absPath('server/index.html')));
 
@@ -35,10 +35,8 @@ export function start() {
   .then(() => Promise.all([
     projectsRoutes(dataRouter, '/projects'),
   ]))
-  .then(() => listen(PORT))
-  .then(() => console.log(`Server running at http://localhost:${PORT}/`));
+  .then(() => listen(PORT));
 }
 export function stop() {
-  console.log(`Closing server at http://localhost:${PORT}/`);
   return close();
 }

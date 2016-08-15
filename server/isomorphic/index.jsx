@@ -9,7 +9,7 @@ import clientRoutes from '_components/routes';
 
 import htmlTemplate from './htmlTemplate';
 
-export default app => app.use((req, res, next) => {
+export default function isomorphic(req, res, next) {
   const memoryHistory = createMemoryHistory(req.url);
   const store = createStore(memoryHistory);
   const history = syncHistoryWithStore(memoryHistory, store);
@@ -50,4 +50,4 @@ export default app => app.use((req, res, next) => {
       }
     }
   );
-});
+}

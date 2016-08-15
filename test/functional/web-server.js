@@ -4,9 +4,13 @@ import axios from 'axios';
 import { start, stop } from '_server/server.js';
 
 describe('Web Server testing', () => {
-  before('Starting server', start);
+  before('Starting server', () => start()
+    .then(() => console.log(`Server running at http://localhost:${PORT}/`))
+  );
 
-  after('Closing the server', stop);
+  after('Closing the server', () => stop()
+    .then(() => console.log(`Closing server at  http://localhost:${PORT}/`))
+  );
 
   describe('Static pages test', () => {
     const http = axios.create({
