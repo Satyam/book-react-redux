@@ -1,6 +1,6 @@
 import http from 'http';
 import { join } from 'path';
-import express, { Router as expressRouter } from 'express';
+import express, { Router as createRouter } from 'express';
 import bodyParser from 'body-parser';
 import fs from 'fs';
 import denodeify from 'denodeify';
@@ -18,7 +18,7 @@ const server = http.createServer(app);
 const listen = denodeify(server.listen.bind(server));
 const close = denodeify(server.close.bind(server));
 
-const dataRouter = expressRouter();
+const dataRouter = createRouter();
 app.use(REST_API_PATH, bodyParser.json(), dataRouter);
 
 app.use('/bootstrap', express.static(absPath('node_modules/bootstrap/dist')));

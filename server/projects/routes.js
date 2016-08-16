@@ -1,11 +1,11 @@
-import { Router as expressRouter } from 'express';
+import { Router as createRouter } from 'express';
 import { handleRequest } from '_server/utils';
 import * as transactions from './transactions';
 import * as validators from './validators';
 
 
 export default (dataRouter, branch) => new Promise((resolve /* , reject */) => {
-  const projectsRouter = expressRouter();
+  const projectsRouter = createRouter();
   dataRouter.use(branch, projectsRouter);
 
   projectsRouter
