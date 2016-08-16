@@ -1,6 +1,6 @@
 # What is where
 
-The application [(:octocat:)](https://github.com/Satyam/book-react-redux) contains five main folders plus those for the book itself (manuscript).
+The application [(:octocat:)](https://github.com/Satyam/book-react-redux) contains six main folders plus those for the book itself (manuscript).
 
 ## The client folder
 
@@ -32,11 +32,11 @@ It contains various utility modules for both the React components and the Redux 
 
 ## The electron folder
 
-Turning our client/server application into a Electron desktop application isn't hard, the proof being that we've done it with just three files [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/master/electron).  Admittedly, we haven't used any desktop-specific features such as the application menu, but doing so wouldn't be that big of an issue, and we'll see that in a separate chapter.
+Turning our client/server application into a Electron desktop application isn't hard, the proof being that we've done it with just three files [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/master/electron).  Admittedly, we haven't used any desktop-specific features such as the application menu, but doing so wouldn't be that big of an issue.
 
 ## The scripts folder
 
-Most commands to compile, run or lint are simple enough to be contained within the `package.json` `scripts` entry so they can be run via the `npm run` command.  A few might require an extra hand.  This folder might contain bash scripts or, in this case, plain JavaScript files for Node.js.
+Most commands to compile, run or lint are simple enough to be contained within the `package.json` `scripts` entry so they can be run via the `npm run` command.  A few might require some extra help.  This folder might contain bash scripts or, in this case, plain JavaScript files for Node.js.
 
 ## The server folder
 
