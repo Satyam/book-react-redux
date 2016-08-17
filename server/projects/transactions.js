@@ -23,6 +23,7 @@ export function init() {
     deleteTasksInProject: db.prepare('delete from tasks where pid = $pid'),
     deleteTask: db.prepare('delete from tasks where pid = $pid and tid = $tid'),
   };
+  return Promise.resolve();
 }
 
 export function getAllProjects(o) {
