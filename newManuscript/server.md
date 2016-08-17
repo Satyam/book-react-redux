@@ -20,7 +20,7 @@ On importing Express [(:octocat:)](https://github.com/Satyam/book-react-redux/bl
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/package.json#L17-L21)
 
-We will use those other `host` and `port` constants elsewhere as `HOST` and `PORT`.
+We will use those other `host` and `port` constants elsewhere as `HOST` and `PORT`. We usually try to respect the customary naming conventions for each type of file, that is why we use `host` in the `package.json` file and `HOST` in the JavaScript code, but that is a matter of preference.
 
 Thus `dataRouter` handles the paths starting with `/data/v2`.  Since the data will expected to be in JSON format, before letting it reach `dataRouter`, we pass it through `bodyParser.json()`.
 
@@ -89,7 +89,23 @@ disconnect().then( /* .... */ );
 
 Back to our SQL.js database, we have an empty database right now so we read the  SQL statements that will create the tables and fill them with data [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/server/data.sql) and then execute the whole set of statements at once.
 
-Now we jump a little ahead in our explanation to get the easier part out of the way before dealing with the REST API server modules.
+#### Data handlers
+
+An application server might have to handle different sets of data for various parts of the client application. We will call them data handlers.  We only have one such data handler, `projects`:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L10).
+
+Don't bother looking for a `server/projects.js` file.  We have pretended our sample data handler to be more complex than it actually is so we broke it into several source files and placed them under the `server/projects` folder [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/master/server/projects) and, within it, we have an `index.js` which is what actually gets imported.
+
+Once the database connection is established and before we allow the web server to start accepting requests, we initialize each of those data set handlers. We will assume that such initialization might be asynchronous and that each will be independent of any other thus we use `Promise.all` to start them all at once. The chain of promises will only continue when all of them succeed or any of them fails.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L35-L37)
+
+In our simple example application, we only have one set of data for a projects/tasks application.  In a real-life app, the argument to `Promise.all` would contain a larger array of initializers.
+
+Each data handler will resolve to an Express router instance. In the `then` part, we tell `dataRouter` to use that router instance when the path starts with `/projects`.  `dataRouter` itself is called on routes starting with `/data/v2` so our `projects` data handler will respond to `/data/v2/projects`. All requests received by `dataRouter` have already passed through the JSON `bodyParser`.
+
+#### Start listening
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L38)
 
@@ -104,22 +120,6 @@ Stopping the web server is trivial in our case since the database is an in-memor
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L40-L42)
 
 As it is, we simply close the connection using the denodeified version of `server.close`.  We might have simply exported the `close` function, but in a real app, there will be more things to attend to when closing so we opted to make the `stop` function a placeholder for them, though right now it holds just one simple function call.
-
-## Data handlers
-
-In our simple example application, we only have one set of data for a projects/tasks application.  In a real-life app, it is quite possible to have several such data sets, each handled through a different sets of routes.
-
-We have a main root for all our data sets, the `REST_API_PATH` constant, which equals `/data/v2`.  We will give each set of data a *folder* under this route, in this case, it will be `/projects` so, the whole path to our projects data set will be `/data/v2/projects`.  There might be other data sets, and each will have its own separate path.
-
-Each of those data sets might require initialization, which might be asynchronous.  That is the part that we skipped over earlier in this chapter.
-
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L35-L37)
-
-Once the database connection is established and before we allow the web server to start accepting requests, we initialize each of those data set handlers. Since they are likely to be independent of one another, they can all be initialized in parallel.  That is why we use `Promise.all` to start them all at once.  The chain of promises will only continue when all of them succeed or any of them fails.
-
-With only one data set handler for `/project`, using `Promise.all` seems redundant but it is a placeholder for any number of such data set handlers that a real application would most likely have.
-
-Each handler supports certain actions on specific routes so what they expose is a router, to dispatch the different operations.  That is why it is called `projectsRoutes`, it contains all the routes for all possible operations.  It gets an instance of `dataRouter` so it can attach itself to that particular router.  It also receives the final part of the path it will listen to, in this case `/projects`.  This allows the data set handlers to be attached to any path and, at the same time, have all those paths together so it is visually easy to ensure that there are no duplicates.
 
 ## The CLI
 

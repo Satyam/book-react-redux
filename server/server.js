@@ -7,7 +7,7 @@ import denodeify from 'denodeify';
 import sqlJS from 'sql.js';
 import isomorphic from '_server/isomorphic';
 
-import projectsRoutes from './projects/routes';
+import projects from './projects';
 
 const absPath = relPath => join(ROOT_DIR, relPath);
 const readFile = denodeify(fs.readFile);
@@ -33,7 +33,7 @@ export function start() {
   return readFile(absPath('server/data.sql'), 'utf8')
   .then(data => db.exec(data))
   .then(() => Promise.all([
-    projectsRoutes(dataRouter, '/projects'),
+    projects().then(router => dataRouter.use('/projects', router)),
   ]))
   .then(() => listen(PORT));
 }

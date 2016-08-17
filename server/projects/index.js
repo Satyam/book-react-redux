@@ -4,11 +4,9 @@ import * as transactions from './transactions';
 import * as validators from './validators';
 
 
-export default (dataRouter, branch) => new Promise((resolve /* , reject */) => {
-  const projectsRouter = createRouter();
-  dataRouter.use(branch, projectsRouter);
-
-  projectsRouter
+export default () =>
+  transactions.init()
+  .then(() => createRouter()
     .get('/', handleRequest(
       validators.validateOptions,
       transactions.getAllProjects
@@ -51,6 +49,4 @@ export default (dataRouter, branch) => new Promise((resolve /* , reject */) => {
       validators.validateTid,
       transactions.deleteTask
     ))
-  ;
-  resolve(transactions.init());
-});
+  );
