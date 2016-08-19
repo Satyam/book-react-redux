@@ -21,3 +21,4 @@ Once in the root folder of the project, the following commands are available.
 * `npm t` Runs tests on the code.
 * `npm run coverage` Runs the tests with code coverage via Istanbul.
 * `npm run electron` Runs the Electron desktop version of this application.  Requires the application to be built.
+* `npm run updateModules` Updates NPM modules to their latest versions.

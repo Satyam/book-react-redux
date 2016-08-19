@@ -18,13 +18,15 @@ The same server will both provide regular HTML, style sheets, images, icons or w
 
 On importing Express [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L3) we renamed `express.Router` as `createRouter` which, when called, returns a new router.  `dataRouter` will handle all the routes that start with the `REST_API_PATH` path which is a constant that via some WebPack magic which we'll see later, comes from `package.json`:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/package.json#L17-L21)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/package.json#L18-L22)
 
 We will use those other `host` and `port` constants elsewhere as `HOST` and `PORT`. We usually try to respect the customary naming conventions for each type of file, that is why we use `host` in the `package.json` file and `HOST` in the JavaScript code, but that is a matter of preference.
 
-Thus `dataRouter` handles the paths starting with `/data/v2`.  Since the data will expected to be in JSON format, before letting it reach `dataRouter`, we pass it through `bodyParser.json()`.
+Thus `dataRouter` handles the paths starting with `/data/v2`.  Since the data will be expected to be in JSON format but it comes as a serialized string of data, before letting it reach `dataRouter`, we pass it through `bodyParser.json()`.
 
 > It is somewhat obvious why the `/data` part of the route, after all it is meant to manipulate simple data.  It might not be so obvious why the `/v2`.  Over time, the API may change in incompatible ways, however, during the transition time, both versions will be required to coexist.  We could actually have a `dataRouterV2` and an older `dataRouterV1` running from the same server responding to different APIs.  We control what is running on the server, but we cannot fully control what is installed or cached in the client system so it is always a good idea to tag the API with, at least, the major version number.
+
+Another piece of middleware we might also chain before anything reaches `dataRouter` is one to check the user authorization to request the execution of such operation. User authentication is quite a complex issue. It is easy to log-in and out and check whether a user is logged in.  However, the permissions each user is granted tells what each can see so it affects the whole user interface which would distract us from the current goal of this book.
 
 Express checks the paths of the URLs requested against the routes in the order in which they are set in the configuration via `app.use`, `app.get` or any of the other `app.`*method* methods.  That is why the routes that branch off the *natural* path go before the *catch-all* ones, the exceptions before the generic ones.
 
@@ -58,7 +60,7 @@ Though the application, as set up, works with the isomorphic middleware dropped,
 
 This server module does not start on its own,  instead it exports `start` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L31-L40) and `stop` [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L41-L44) functions.  The reason for this is that other code might want to control it so we don't want to just let it start on its own.  One such code is the test suite.  The tests cannot see the `Server running at ....` message.  It has to be able to start the server and know when it is ready to be tested.  That is also why both exported functions return Promises.
 
-### Starting
+## Starting
 
 The `start` function sets up the database server:
 
@@ -67,6 +69,8 @@ The `start` function sets up the database server:
 We are using SQL.js, which is not recommended for a production setting, so the code presented here should not be used in such environment.
 
 First we create an instance of an empty, memory based database.  We assign this database instance to `global.db` so that it is accessible as `db` anywhere else in the whole application.  To prevent ESLint complaining about our use of this `db` global variable, we have set its configuration file to accept it as a global, along the other WebPack generated constant literals [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/.eslintrc.json#L15-L22).
+
+We have an empty database right now so we read the  SQL statements [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/server/data.sql) that will create the tables and fill them with data and then execute the whole set of statements at once.
 
 Connecting to an actual production-grade database engine will usually be an asynchronous operation.  If the selected database driver does not already return a Promise, it will have some means to signal its readiness.  For example, when connecting with the [MySqL driver](https://www.npmjs.com/package/mysql#establishing-connections) we might use `denodeify` to turn it into a Promise:
 
@@ -87,13 +91,11 @@ connect().then( /* .... */ );
 disconnect().then( /* .... */ );
 ```
 
-Back to our SQL.js database, we have an empty database right now so we read the  SQL statements that will create the tables and fill them with data [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/server/data.sql) and then execute the whole set of statements at once.
-
-#### Data handlers
+### Data handlers
 
 An application server might have to handle different sets of data for various parts of the client application. We will call them data handlers.  We only have one such data handler, `projects`:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L10).
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L10)
 
 Don't bother looking for a `server/projects.js` file.  We have pretended our sample data handler to be more complex than it actually is so we broke it into several source files and placed them under the `server/projects` folder [(:octocat:)](https://github.com/Satyam/book-react-redux/tree/master/server/projects) and, within it, we have an `index.js` which is what actually gets imported.
 
@@ -105,7 +107,7 @@ In our simple example application, we only have one set of data for a projects/t
 
 Each data handler will resolve to an Express router instance. In the `then` part, we tell `dataRouter` to use that router instance when the path starts with `/projects`.  `dataRouter` itself is called on routes starting with `/data/v2` so our `projects` data handler will respond to `/data/v2/projects`. All requests received by `dataRouter` have already passed through the JSON `bodyParser`.
 
-#### Start listening
+### Start listening
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/server/server.js#L38)
 
@@ -113,7 +115,7 @@ To finish up our initialization, we finally set the server to `listen` for reque
 
 > Promises and fat arrows go well with one another.  If the body of a fat arrow function is a simple expression, not a code block, its value will be returned. Using fat arrow functions in the `then` parts of a Promise produces terse code. If the body of a fat arrow function is a Promise, it will return it, leaving the enclosing Promise in a *pending* state.  If it is a value, it will *fulfill* it with that value.
 
-### Stopping
+## Stopping
 
 Stopping the web server is trivial in our case since the database is an in-memory one, and we have no other resources to disconnect from. Should there be any, such as the MySQL example above, this is the place to do it.
 

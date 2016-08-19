@@ -4,3 +4,4 @@ folders.md
 installation.md
 conventions.md
 server.md
+serverProjectsHandler.md
