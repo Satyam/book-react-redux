@@ -19,7 +19,7 @@ describe('Web Server testing', () => {
 
     it('Get / should return home page', () =>
       http.get('/')
-        .then((response) => {
+        .then(response => {
           expect(response.status).to.equal(200);
           expect(response.headers['content-type']).to.contain('text/html');
           expect(response.data).to.contain('<title>Sample Web Page</title>');
@@ -29,7 +29,7 @@ describe('Web Server testing', () => {
     );
     it('Get /bootstrap should bring it', () =>
       http.get('/bootstrap/js/bootstrap.js')
-        .then((response) => {
+        .then(response => {
           expect(response.status).to.equal(200);
           expect(response.headers['content-type']).to.contain('application/javascript');
           expect(response.data).to.contain('Bootstrap');

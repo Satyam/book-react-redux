@@ -6,7 +6,7 @@ import fs from 'fs';
 import denodeify from 'denodeify';
 import sqlJS from 'sql.js';
 
-import projectsRoutes from '_server/projects/routes';
+import projects from '_server/projects';
 import serverIPC from './serverIPC';
 import htmlTpl from './htmlTemplate';
 
@@ -46,7 +46,7 @@ app.on('ready', () => {
   readFile(absPath('server/data.sql'), 'utf8')
   .then(data => db.exec(data))
   .then(() => Promise.all([
-    projectsRoutes(dataRouter, '/projects'),
+    projects().then(router => dataRouter.use('/projects', router)),
   ]))
   .then(() =>
     writeFile(

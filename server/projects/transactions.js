@@ -2,19 +2,19 @@ import { failRequest, dolarizeQueryParams } from '_server/utils';
 
 let prepared = null;
 
+const lastID = () => db.exec('select last_insert_rowid();')[0].values[0][0];
+
 const sqlAllProjects =
   `select projects.*, count(tid) as pending from projects left join
   (select pid, tid from tasks where completed = 0)
   using (pid) group by pid`;
-
-const lastID = () => db.exec('select last_insert_rowid();')[0].values[0][0];
 
 export function init() {
   prepared = {
     selectAllProjects: db.prepare(sqlAllProjects),
     selectProjectByPid: db.prepare('select * from projects where pid = $pid'),
     selectTasksByPid: db.prepare('select tid, descr, completed from tasks where pid = $pid'),
-    selectTaskByTid: db.prepare('select * from tasks where tid = $tid'),
+    selectTaskByTid: db.prepare('select * from tasks where tid = $tid and pid = $pid'),
     createProject: db.prepare('insert into projects (name, descr) values ($name, $descr)'),
     createTask: db.prepare(
       'insert into tasks (pid, descr, completed) values ($pid, $descr, $completed)'
@@ -53,6 +53,24 @@ export function getAllProjects(o) {
    );
 }
 
+export function getTasksByPid(o) {
+  let task;
+  const tasks = [];
+  const stmt = prepared.selectTasksByPid;
+  if (stmt.bind(dolarizeQueryParams(o.keys))) {
+    while (stmt.step()) {
+      task = stmt.getAsObject();
+      task.tid = String(task.tid);
+      task.completed = !!task.completed;
+      tasks.push(task);
+    }
+    stmt.reset();
+    return tasks;
+  }
+  stmt.reset();
+  return failRequest(500, 'Sql Statement binding failRequested');
+}
+
 export function getProjectById(o) {
   const prj = prepared.selectProjectByPid.getAsObject({ $pid: o.keys.pid });
   if (Object.keys(prj).length === 0) {
@@ -60,26 +78,16 @@ export function getProjectById(o) {
     return failRequest(404, 'Item(s) not found');
   }
   prepared.selectProjectByPid.reset();
-  prj.tasks = [];
-  let task;
-  const stmt = prepared.selectTasksByPid;
-  if (stmt.bind(dolarizeQueryParams(o.keys))) {
-    while (stmt.step()) {
-      task = stmt.getAsObject();
-      task.tid = String(task.tid);
-      task.completed = !!task.completed;
-      prj.tasks.push(task);
-    }
-    stmt.reset();
+  return Promise.resolve(getTasksByPid(o))
+  .then(tasks => {
+    prj.tasks = tasks;
     return prj;
-  }
-  stmt.reset();
-  return failRequest(500, 'Sql Statement binding failRequested');
+  });
 }
 
 export function getTaskByTid(o) {
   const task = prepared.selectTaskByTid.getAsObject(dolarizeQueryParams(o.keys));
-  if (!task || task.pid !== o.keys.pid) {
+  if (!task.tid) {
     prepared.selectTaskByTid.reset();
     return failRequest(404, 'Item(s) not found');
   }

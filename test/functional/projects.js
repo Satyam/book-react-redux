@@ -22,7 +22,7 @@ describe('Projects Data Server testing', () => {
     it('Get on /projects should return project list', () =>
       http.get('/')
         .then(
-          (response) => {
+          response => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
             const data = response.data;
@@ -49,7 +49,7 @@ describe('Projects Data Server testing', () => {
 
     it('Get on /projects with search term should return sought result', () =>
       http.get('/?search=name%3Domelette')
-        .then((response) => {
+        .then(response => {
           expect(response.status).to.equal(200);
           expect(response.headers['content-type']).to.contain('application/json');
           const data = response.data;
@@ -64,7 +64,7 @@ describe('Projects Data Server testing', () => {
 
     it('Get on /projects for some fields should return only those', () =>
       http.get('/?fields=name,pid')
-        .then((response) => {
+        .then(response => {
           expect(response.status).to.equal(200);
           expect(response.headers['content-type']).to.contain('application/json');
           const data = response.data;
@@ -90,7 +90,7 @@ describe('Projects Data Server testing', () => {
 
     it('Get on /projects with search and fields', () =>
       http.get('/?search=name%3Domelette&fields=pid')
-        .then((response) => {
+        .then(response => {
           expect(response.status).to.equal(200);
           expect(response.headers['content-type']).to.contain('application/json');
           const data = response.data;
@@ -109,15 +109,15 @@ describe('Projects Data Server testing', () => {
           () => {
             throw new Error('Should not have let it go');
           },
-          (response) => {
-            expect(response.status).to.equal(400);
+          error => {
+            expect(error.response.status).to.equal(400);
           }
         )
     );
 
     it('Get on /25 should return that project', () =>
       http.get('/25')
-        .then((response) => {
+        .then(response => {
           expect(response.status).to.equal(200);
           expect(response.headers['content-type']).to.contain('application/json');
           const data = response.data;
@@ -144,9 +144,22 @@ describe('Projects Data Server testing', () => {
         })
     );
 
+    it('Get on an invalid pid should return a validation error', () => {
+      http.get('/abc')
+        .then(
+          () => {
+            throw new Error('Should not have accepted it');
+          },
+          error => {
+            expect(error.response.status).to.equal(400);
+            expect(error.response.data).to.equal('Bad Request');
+          }
+        );
+    });
+
     it('Get on /projects/34/5 should return a task', () =>
       http.get('/34/5')
-        .then((response) => {
+        .then(response => {
           expect(response.status).to.equal(200);
           expect(response.headers['content-type']).to.contain('application/json');
           const data = response.data;
@@ -161,9 +174,9 @@ describe('Projects Data Server testing', () => {
           () => {
             throw new Error('Should not have found it');
           },
-          (response) => {
-            expect(response.status).to.equal(404);
-            expect(response.data).to.equal('Item(s) not found');
+          error => {
+            expect(error.response.status).to.equal(404);
+            expect(error.response.data).to.equal('Item(s) not found');
           }
         )
     );
@@ -174,9 +187,9 @@ describe('Projects Data Server testing', () => {
           () => {
             throw new Error('Should not have found it');
           },
-          (response) => {
-            expect(response.status).to.equal(404);
-            expect(response.data).to.equal('Item(s) not found');
+          error => {
+            expect(error.response.status).to.equal(404);
+            expect(error.response.data).to.equal('Item(s) not found');
           }
         )
     );
@@ -187,9 +200,9 @@ describe('Projects Data Server testing', () => {
           () => {
             throw new Error('Should not have found it');
           },
-          (response) => {
-            expect(response.status).to.equal(404);
-            expect(response.data).to.equal('Item(s) not found');
+          error => {
+            expect(error.response.status).to.equal(404);
+            expect(error.response.data).to.equal('Item(s) not found');
           }
         )
     );
@@ -200,9 +213,9 @@ describe('Projects Data Server testing', () => {
          () => {
            throw new Error('Should not have found it');
          },
-         (response) => {
-           expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Item(s) not found');
+         error => {
+           expect(error.response.status).to.equal(404);
+           expect(error.response.data).to.equal('Item(s) not found');
          }
        )
     );
@@ -213,9 +226,9 @@ describe('Projects Data Server testing', () => {
          () => {
            throw new Error('Should not have found it');
          },
-         (response) => {
-           expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Item(s) not found');
+         error => {
+           expect(error.response.status).to.equal(404);
+           expect(error.response.data).to.equal('Item(s) not found');
          }
        )
     );
@@ -226,9 +239,9 @@ describe('Projects Data Server testing', () => {
          () => {
            throw new Error('Should not have found it');
          },
-         (response) => {
-           expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Item(s) not found');
+         error => {
+           expect(error.response.status).to.equal(404);
+           expect(error.response.data).to.equal('Item(s) not found');
          }
        )
     );
@@ -239,9 +252,9 @@ describe('Projects Data Server testing', () => {
          () => {
            throw new Error('Should not have found it');
          },
-         (response) => {
-           expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Item(s) not found');
+         error => {
+           expect(error.response.status).to.equal(404);
+           expect(error.response.data).to.equal('Item(s) not found');
          }
        )
     );
@@ -252,9 +265,9 @@ describe('Projects Data Server testing', () => {
          () => {
            throw new Error('Should not have found it');
          },
-         (response) => {
-           expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Item(s) not found');
+         error => {
+           expect(error.response.status).to.equal(404);
+           expect(error.response.data).to.equal('Item(s) not found');
          }
        )
     );
@@ -265,9 +278,9 @@ describe('Projects Data Server testing', () => {
          () => {
            throw new Error('Should not have found it');
          },
-         (response) => {
-           expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Item(s) not found');
+         error => {
+           expect(error.response.status).to.equal(404);
+           expect(error.response.data).to.equal('Item(s) not found');
          }
        )
     );
@@ -278,9 +291,9 @@ describe('Projects Data Server testing', () => {
          () => {
            throw new Error('Should not have found it');
          },
-         (response) => {
-           expect(response.status).to.equal(404);
-           expect(response.data).to.equal('Item(s) not found');
+         error => {
+           expect(error.response.status).to.equal(404);
+           expect(error.response.data).to.equal('Item(s) not found');
          }
        )
     );
@@ -293,7 +306,7 @@ describe('Projects Data Server testing', () => {
           name: 'new project',
           descr: 'new project for testing',
         })
-          .then((response) => {
+          .then(response => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
             const data = response.data;
@@ -306,21 +319,21 @@ describe('Projects Data Server testing', () => {
       afterEach('Delete the project', () =>
         http.delete(`/${pid}`)
           .then(
-            (response) => {
+            response => {
               expect(response.status).to.equal(200);
               expect(response.headers['content-type']).to.contain('application/json');
               expect(response.data.pid).to.equal(pid);
             },
-            (response) => {
-              expect(response.status).to.equal(404);
-              expect(response.data).to.equal('Item(s) not found');
+            error => {
+              expect(error.response.status).to.equal(404);
+              expect(error.response.data).to.equal('Item(s) not found');
             }
           )
       );
 
       it('New project should exist', () =>
         http.get(`/${pid}`)
-          .then((response) => {
+          .then(response => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
             const data = response.data;
@@ -333,7 +346,7 @@ describe('Projects Data Server testing', () => {
 
       it('Deleted project should be gone', () =>
         http.delete(`/${pid}`)
-          .then((response) => {
+          .then(response => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
             expect(response.data.pid).to.equal(pid);
@@ -343,23 +356,23 @@ describe('Projects Data Server testing', () => {
             () => {
               throw new Error('Should not have found it');
             },
-            (response) => {
-              expect(response.status).to.equal(404);
-              expect(response.data).to.equal('Item(s) not found');
+            error => {
+              expect(error.response.status).to.equal(404);
+              expect(error.response.data).to.equal('Item(s) not found');
             }
           )
       );
 
       it('Change the project name', () =>
         http.put(`/${pid}`, { name: 'changed name' })
-          .then((response) => {
+          .then(response => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
             const data = response.data;
             expect(data.pid).to.equal(pid);
             return http.get(`/${pid}`);
           })
-          .then((response) => {
+          .then(response => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
             const data = response.data;
@@ -372,14 +385,14 @@ describe('Projects Data Server testing', () => {
 
       it('Change the project description', () =>
         http.put(`/${pid}`, { descr: 'changed description' })
-          .then((response) => {
+          .then(response => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
             const data = response.data;
             expect(data.pid).to.equal(pid);
             return http.get(`/${pid}`);
           })
-          .then((response) => {
+          .then(response => {
             expect(response.status).to.equal(200);
             expect(response.headers['content-type']).to.contain('application/json');
             const data = response.data;
@@ -397,7 +410,7 @@ describe('Projects Data Server testing', () => {
           http.post(`/${pid}`, {
             descr: 'some task',
           })
-            .then((response) => {
+            .then(response => {
               expect(response.status).to.equal(200);
               expect(response.headers['content-type']).to.contain('application/json');
               const data = response.data;
@@ -409,7 +422,7 @@ describe('Projects Data Server testing', () => {
 
         afterEach('Delete the task', () =>
           http.delete(`/${pid}/${tid}`)
-            .then((response) => {
+            .then(response => {
               expect(response.status).to.equal(200);
               expect(response.headers['content-type']).to.contain('application/json');
               const data = response.data;
@@ -420,7 +433,7 @@ describe('Projects Data Server testing', () => {
 
         it('New task should exist', () =>
           http.get(`/${pid}/${tid}`)
-            .then((response) => {
+            .then(response => {
               expect(response.status).to.equal(200);
               expect(response.headers['content-type']).to.contain('application/json');
               const data = response.data;
@@ -431,14 +444,14 @@ describe('Projects Data Server testing', () => {
 
         it('Mark the task completed', () =>
           http.put(`/${pid}/${tid}`, { completed: true })
-            .then((response) => {
+            .then(response => {
               expect(response.status).to.equal(200);
               expect(response.headers['content-type']).to.contain('application/json');
               const data = response.data;
               expect(data.pid).to.equal(pid);
               return http.get(`/${pid}/${tid}`);
             })
-            .then((response) => {
+            .then(response => {
               expect(response.status).to.equal(200);
               expect(response.headers['content-type']).to.contain('application/json');
               const data = response.data;
