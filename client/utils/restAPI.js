@@ -10,7 +10,7 @@ if (BUNDLE === 'electronClient') {
 }
 const clients = {};
 
-const adapter = (resolve, reject, config) => {
+const adapter = (config) => new Promise((resolve, reject) => {
   const channel = `req-${count++}`;
   ipc.once(channel, (event, response) => {
     if (response.status < 300) {
@@ -25,7 +25,7 @@ const adapter = (resolve, reject, config) => {
     method: config.method,
     data: config.data && JSON.parse(config.data),
   });
-};
+});
 
 export default base => {
   if (clients[base]) return clients[base];

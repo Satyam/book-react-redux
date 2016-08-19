@@ -4,12 +4,12 @@ import ACTION_TYPES from './actionTypes';
 
 const api = restAPI('projects');
 
-const fail = (dispatch, type) => response =>
+const fail = (dispatch, type) => error =>
   dispatch({
     type,
-    status: response.status,
-    msg: response.statusText,
-    url: response.config.url.replace(response.config.baseURL, ''),
+    status: error.response ? error.response.status : error.code,
+    msg: error.response ? error.response.data : error.message,
+    url: error.config.url.replace(error.config.baseURL, ''),
   });
 
 export function getAllProjects() {

@@ -6,7 +6,7 @@ let redirects = null;
 let originalAdapter = null;
 let api = null;
 
-const adapter = (resolve, reject, config) => {
+const adapter = config => new Promise((resolve, reject) => {
   /* eslint-disable no-cond-assign */
   if (!redirects.some(redirect => {
     /* eslint-enable no-cond-assign */
@@ -39,7 +39,7 @@ const adapter = (resolve, reject, config) => {
       config,
     });
   }
-};
+});
 
 export default (baseURL, config) => {
   if (baseURL) {
