@@ -4,7 +4,7 @@ import { Route } from 'react-router';
 import App from '_components/app';
 import NotFound from '_components/notFound';
 
-import projects from '_components/projects/routes';
+import projects from '_components/projects';
 
 export default (
   <Route path="/" component={App}>

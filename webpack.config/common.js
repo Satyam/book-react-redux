@@ -96,5 +96,6 @@ module.exports = version => [
         return callback();
       },
     ],
+    stats: { children: false },
   };
 });

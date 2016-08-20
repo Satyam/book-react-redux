@@ -1,0 +1,9 @@
+.loading {
+  position: absolute;
+  top: 10px;
+  left: 200px;
+  z-index: 2;
+  border: thin solid blue;
+  background-color: silver;
+  padding: 3px;
+}

@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { syncHistoryWithStore } from 'react-router-redux';
 
 import createStore from '_store/createStore';
-import clientRoutes from '_components/routes';
+import clientRoutes from '_components';
 
 import htmlTemplate from './htmlTemplate';
 
@@ -26,10 +26,14 @@ export default function isomorphic(req, res, next) {
           next();
         } else {
           Promise.all(renderProps.routes.map(route => {
-            const initialDispatch = route.component.WrappedComponent.initialDispatch;
-            return typeof initialDispatch === 'function'
-            ? initialDispatch(store.dispatch, renderProps, null, store.getState())
-            : undefined;
+            const wrappedComponent = route.component.WrappedComponent;
+            if (wrappedComponent) {
+              const initialDispatch = wrappedComponent.initialDispatch;
+              if (typeof initialDispatch === 'function') {
+                return initialDispatch(store.dispatch, renderProps, null, store.getState());
+              }
+            }
+            return undefined;
           }))
           .then(() => {
             const initialView = renderToString(

@@ -1,0 +1,8 @@
+.tabs {
+  composes: global(nav);
+  composes: global(nav-tabs);
+}
+
+.active {
+  composes: global(active);
+}

@@ -27,8 +27,6 @@ export function init() {
 }
 
 export function getAllProjects(o) {
-  const fields = o.options.fields;
-  const search = o.options.search;
   const fetch = stmt => {
     const projects = [];
     let prj;
@@ -41,6 +39,8 @@ export function getAllProjects(o) {
     return projects;
   };
 
+  const fields = o.options.fields;
+  const search = o.options.search;
   return fetch(
     (fields || search)
     ? db.prepare(`select ${fields || '*'} from (${sqlAllProjects})
@@ -93,6 +93,7 @@ export function getTaskByTid(o) {
   }
   task.completed = !!task.completed;
   task.tid = String(task.tid);
+  task.pid = String(task.pid);
   prepared.selectTaskByTid.reset();
   return task;
 }

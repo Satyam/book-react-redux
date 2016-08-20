@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node bundles/server.js",
     "debug": "node-debug -p 8888 bundles/server.js",
-    "lint": "eslint . || exit 0",
+    "lint": "eslint --ext .jsx,.js . || exit 0",
     "test": "node scripts/tests.js",
     "coverage": "node scripts/tests.js --coverage",
     "build": "webpack -d --config webpack.config/development.js",
