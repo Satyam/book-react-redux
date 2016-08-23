@@ -3,13 +3,11 @@ import { Link, withRouter } from 'react-router';
 import map from 'lodash/map';
 import styles from './menu.css';
 
-export const MenuComponent = ({ router }) => (
+export const MenuComponent = ({ router, menuItems }) => (
   <ul className={styles.tabs}>
     {
       map(
-        {
-          projects: 'Projects',
-        },
+        menuItems,
         (caption, path) => (
           router.isActive(path)
           ? (
@@ -26,6 +24,7 @@ export const MenuComponent = ({ router }) => (
 
 MenuComponent.propTypes = {
   router: PropTypes.object,
+  menuItems: PropTypes.object,
 };
 
 export default withRouter(MenuComponent);

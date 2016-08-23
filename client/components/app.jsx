@@ -8,7 +8,11 @@ const App = ({ children }) => (
   <div className="app">
     <Loading />
     <Errors />
-    <Menu />
+    <Menu
+      menuItems={{
+        projects: 'Projects',
+      }}
+    />
     {children}
   </div>
 );
