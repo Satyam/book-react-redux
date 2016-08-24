@@ -213,7 +213,7 @@ readFile('book.txt', 'utf8')
     };
   })
   .then((values) => writeFile(
-      'gh-pages/index.html',
+      '../manuscript/gh-pages/index.html',
       `<!DOCTYPE html>
 <html>
   <head>
@@ -243,7 +243,7 @@ readFile('book.txt', 'utf8')
       compress: true,
       plugins: [new CleanCss({advanced: true})]
     }))
-    .then((output) => writeFile('gh-pages/index.css', output.css)))
+    .then((output) => writeFile('../manuscript/gh-pages/index.css', output.css)))
   .then(() => console.log('It\'s saved!'))
   .catch(console.error);
 });

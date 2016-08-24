@@ -213,14 +213,14 @@ readFile('book.txt', 'utf8')
     };
   })
   .then((values) => writeFile(
-      'gh-pages/index.html',
+      'gh-pages/old.html',
       `<!DOCTYPE html>
 <html>
   <head>
     <title>Step by Step Guide to React and Redux</title>
     <link rel="stylesheet" href="ddscrollspydemo.css" />
     <link rel="stylesheet" href="github.min.css">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="old.css">
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript" src="ddscrollspy.js"></script>
     <script src="highlight.min.js"></script>
@@ -239,7 +239,7 @@ readFile('book.txt', 'utf8')
       compress: true,
       plugins: [new CleanCss({advanced: true})]
     }))
-    .then((output) => writeFile('gh-pages/index.css', output.css)))
+    .then((output) => writeFile('gh-pages/old.css', output.css)))
   .then(() => console.log('It\'s saved!'))
   .catch(console.error);
 });

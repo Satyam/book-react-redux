@@ -1,3 +1,4 @@
+<div class="notice">This is the new, still unfinished version of the book. The previous version, also unfinished but far more complete is also available <a href="old.html">here</a>.  See the <a href="https://github.com/Satyam/book-react-redux/blob/master/README.md">README</a> file in the GitHub repository for further information.</div>
 # Introduction
 
 The purpose of this book is to show how to create an isomorphic single-page-application (SPA) using React and Redux. It contains both client and server-side code to show how the client can interact with the server by using the [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer).
