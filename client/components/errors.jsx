@@ -5,18 +5,21 @@ import classNames from 'classnames';
 import { clearHttpErrors } from '_store/actions';
 import styles from './errors.css';
 
-export const ErrorsComponent = ({ errors, onCloseErrors }) => (
-  <div
-    className={classNames(
-      'errors',
-      styles.errorsList,
-      { hide: !errors.length }
-    )}
-  >
-    <button onClick={onCloseErrors} className={styles.closeButton} />
-    {errors.join('\n')}
-  </div>
-);
+export const ErrorsComponent = ({ errors, onCloseErrors }) => {
+  const closeErrorsHandler = ev => isPlainClick(ev) && onCloseErrors();
+  return (
+    <div
+      className={classNames(
+        'errors',
+        styles.errorsList,
+        { hide: !errors.length }
+      )}
+    >
+      <button onClick={closeErrorsHandler} className={styles.closeButton} />
+      {errors.join('\n')}
+    </div>
+  );
+};
 
 ErrorsComponent.propTypes = {
   errors: PropTypes.array,
@@ -28,7 +31,7 @@ export const mapStateToProps = state => ({
 });
 
 export const mapDispatchToProps = dispatch => ({
-  onCloseErrors: ev => isPlainClick(ev) && dispatch(clearHttpErrors()),
+  onCloseErrors: () => dispatch(clearHttpErrors()),
 });
 
 export default connect(

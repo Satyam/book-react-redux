@@ -65,6 +65,8 @@ The `Loading` component has a simple `div` containing a text message when anythi
 We are composing the `className` attribute via the [`classNames`](https://www.npmjs.com/package/classnames) utility, which allows us to easily concatenate various class names from different sources, some of them conditionally.  That is what we are doing with the `{ hide: !loading }
 ` part.  `classNames` will add the name of the property `hide` to the list of class names depending on the truthiness of its value which, in this case is the inverse of the boolean value of `props.loading`.
 
+The `loading` class name is just a common practice. When inspecting the HTML it is an easy way to identify which element is which, otherwise, all of the `<div>`s really look alike. With so much of the HTML produced dynamically through React Components, it is difficult to associate the resulting HTML with the code we have written. The [React Developer Tools](https://github.com/facebook/react-devtools) do this for us, but they only work in Chrome and Firefox and not at all with the static HTML produced in the server via isomorphism. It is a debugging aid not required in production and might be omitted.  
+
 The `hide` class name comes from [Bootstrap](http://getbootstrap.com/css/#helper-classes-show-hide).  
 
 The `styles.loading` class names comes from the following include:
@@ -117,18 +119,56 @@ The `withRouter` wrapper from React Router adds a `router` property to the `prop
 
 It creates an un-ordered list of list items which, thanks to [Bootstrap Tabs](http://getbootstrap.com/components/#nav-tabs). We are not using Bootstrap prescribed class names in our code.  We could use [pills](http://getbootstrap.com/components/#nav-pills) instead of [tabs](http://getbootstrap.com/components/#nav-tabs) since the actual style definitions are in the imported `menu.css` file [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/menu.css) which uses [CSS-modules](https://github.com/css-modules/css-modules) to compose them out of the Bootstrap styles.  If we change the composition of styles from `nav-tabs` to `nav-pills` or to whichever classes another library might use, we change the look of the menu.
 
-Since `menuItems` is not an array but an object, we resort to [Lodash](https://lodash.com/) which works in both arrays and objects. Lodash is a large library and loading the whole of it for just one or two functions would be too expensive.   Many such libraries have been modularized.  Instead of importing everything from the library and using parts of it, we can request only what we will use.  So, instead of doing `import _ from 'lodash';` and then using the `_.map()` function, we can import just the `map` function:
+Since `menuItems` is not an array but an object, we resort to [Lodash](https://lodash.com/) `map`function which works in both arrays and objects. Lodash is a large library and loading the whole of it for just one or two functions would be too expensive.   Many such libraries have been modularized.  Instead of importing everything from the library and using parts of it, we can request only what we will use.  So, instead of doing `import _ from 'lodash';` and then using the `_.map()` function, we can import just the `map` function:
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/menu.jsx#L3)
 
-When using the `map` function, instead of doing `menuItems.map( ... )` as we would do if it was an array, we do `map(menuItems, ... )`.  The callback receives the property values and property names, which we call `caption` and `path`.  Depending on whether the path is active, via `router.isActive(path)` we display either an inert link (it has no `href`) with the `styles.active` style.  The `<a>` element is just because Bootstrap expects one otherwise it won't look right.
+When using the `map` function, instead of doing `menuItems.map( ... )` as we would do if it was an array, we do `map(menuItems, ... )`.  The callback receives the property values and property names, which we call `caption` and `path`.  Depending on whether the path is active, via `router.isActive(path)` we display either an inert link (it has no `href`) with the `styles.active` style.  The `<a>` element is just because Bootstrap (or any other styling library) expects one otherwise it won't look right.
 
-For the rest of the links, we use a `<Link>` component which we also import from React Router. This component produces an actual `<a>` so Bootstrap (or any other style library) can be kept happy, but ensures that React Router will catch that request for navigation and process it itself.
+For the rest of the links, we use a `<Link>` component which we also import from React Router. This component produces an actual `<a>` so Bootstrap can be kept happy, but ensures that React Router will catch that request for navigation and process it itself.
 
-Note that we are returning an array of `<li>` elements.  The `map` function returns an array of whatever the callbacks return and the callback is a *fat arrow function* which implicitly returns the value of the expression in it.  That expression is ternary conditional expression.
+Note that we are returning an array of `<li>` elements.  The `map` function returns an array of whatever the callbacks return and the callback is a *fat arrow function* which implicitly returns the value of the expression in it.  That expression is a ternary conditional expression retuning either kind of link.
 
-Whenever we have an array of items such as the `<li>` elements in this component, it is important that we assign each of them a `key` pseudo-attribute containing a unique id within the array (they might and will probably repeat over and over in an application, they just have to be unique within each array).  React uses this attribute to identify each item even as its contents change, otherwise, React wouldn't be able to know if an item with a different content is meant to be a different element or the same element with its contents changed. It becomes particularly useful when elements are inserted or deleted because it allows it to actually insert or delete the element from the DOM instead of re-render them all from the mismatched element on. We must ensure the `key` is a permanent and lasting id for the element, not just a sequentially assigned integer which changes in each render, that would be as bad as not providing any `key` at all.  
+Whenever we have an array of items such as the `<li>` elements in this component, it is important that we assign each of them a `key` pseudo-attribute containing a unique id within the array (the ids might and will probably repeat over and over in an application, they just have to be unique within each array).  React uses this pseudo-attribute to identify each item even as its contents or attributes change, otherwise, React wouldn't be able to know if an item with a different content is meant to be a different element or the same element with its contents changed. It becomes particularly useful when elements are inserted or deleted because it allows it to actually insert or delete just that element from the DOM instead of re-render them all from the mismatched element on. We must ensure the `key` is a permanent and lasting id for the element, not just a sequentially assigned integer which changes in each render, that would be as bad as not providing any `key` at all.  
 
 As expected, the types of the `props` are declared both as objects:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/app.jsx#L12-L14)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/menu.jsx#L25-L28)
+
+## Dispatching Actions
+
+We have seen how we can reflect the state of the store in a connected component but, so far, we haven't seen how we can affect the store in response to an action by the user.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L8-L22)
+
+`ErrorsComponent` receives an array with a list of `errors` and it simply displays it after chaining them together via`{errors.join('\n')}` in an overlaid box only when the length of the list is not zero.
+
+The box contains a button to let the user acknowledge the error and clear the error list.  Upon clicking on that button, `closeErrorsHandler` is called which uses the `ev` event object to check whether the click was a plain left-button click with no modifier keys (shift, control and such)
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/utils/isPlainClick.js)
+
+`isPlainClick` checks the `ev` object for the corresponding properties and returns false if any is non-zero or true.  If the click is a *plain* one, it prevents the default action associated to the event and returns true.
+
+In that case, the component calls `onCloseErrors` which it received as a property (destructured from the `props` object). We used the `on` prefix to mark it as an event listener as with DOM event listeners.  Just like `errors` is produced via `mapStateToProps` from the Redux store, so `onCloseErrors` is produced by `mapDispatchToProps`:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L33-L35)
+
+`mapDispatchToProps` is a function that receives a reference to the `store.dispatch` method.  This is the method through which we notify the store that something has happened. When using Redux, we only maintain one store so when we `dispatch` something, it can only go to one place.
+
+`dispatch` dispatches *actions*, which usually are objects containing all of the information needed for the action to be performed. Those objects may be complex to assemble so, to make it easier, we use *action creators* which assemble them for us.  We will learn more about *actions* and *action creators* in a moment, for the time being it is enough for us to know that `clearHttpErrors` is one such *action creator*, thus, we are dispatching the *action* that the `clearHttpErrors` *action creator* has assembled for us.
+
+Just as `mapStateToProps`, `mapDispatchToProps` returns an object that will be merged along the rest of the `props` received from the parent.  Both are exported by name for testing purposes and the types of both sets of properties have to be declared:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L24-L27)
+
+Though it was not used in this case, `mapDispatchToProps` also receives a reference to the same `props` the component would receive, to help it assemble the *actions*.  `mapDispatchToProps` (not the functions it returns) will be called again whenever the `props` change so that the returned functions are bound to the most recent properties.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L37-L40)
+
+`mapDispatchToProps` is used as a second argument for the `connect` method that wraps our simple stateless component with the HoC.
+
+We have split the functionality of dispatching the action into two functions, `closeErrorsHandler` and `onCloseErrors` and it might seem redundant because it could have all be done in just one place, checking the event with `isPlainClick` and then dispatching the action all in `onCloseErrors` and completely drop `closeErrorsHandler`.  We prefer to have the UI-related functionality within the component itself.  Checking to see if the button was left-clicked assumes you expect a click, but some other interface design might use some other kind of user interaction.  Since the component determines the way the user can respond, it is the component that should be responsible to verify it.
+
+At a later point, the range of interactions with a particular screen element might grow, we might have it behave in one way when left-clicked and another when right-clicked.  Would it make sense to the left vs. right click verification in the `mapDispatchToProps`? Hardly.
+
+Note also that the `ev` event object never leaves the component itself. The component deals with the DOM and the DOM should never spill out of the component to the rest of the application.  All our custom pseudo-events should be application-oriented, not DOM-related.  If they were to have any arguments passed, they should be related to the application, not to the DOM.  Even just passing on the `ev` object to our custom event might cause an unexpected dependency in the future as someone might use some property in it for whatever purpose, thus prevent the user interaction from changing from clicking to *blinking while staring at it*, or whatever future user interfaces might offer.
