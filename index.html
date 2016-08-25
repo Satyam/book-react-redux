@@ -57,6 +57,7 @@
 <li><a href="#components-connected-stateless-component">Connected Stateless Component</a></li>
 <li><a href="#components-react-redux">React-Redux</a></li>
 <li><a href="#components-router-hoc">Router HoC</a></li>
+<li><a href="#components-dispatching-actions">Dispatching Actions</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded">
       <div class="close">&lt; close</div>
@@ -727,6 +728,7 @@ export default App;</code></pre></div>
 <p>As any stateless component, it is a simple function which receives some properties.  Since we are interested in <code>props.loading</code> we use ES6 <em>Object Destructuring</em> to get just <code>loading</code> extracted from <code>props</code>, plus <em>shorthand property names</em>.  This is not React or JSX, it is plain ES6.</p>
 <p>The <code>Loading</code> component has a simple <code>div</code> containing a text message when anything is loading from a remote source.  It has a <code>className</code> attribute.  React accepts almost all HTML attributes, but has a few exceptions.  The <code>class</code> attribute would mess up JSX parsing because <code>class</code> is a reserved word in JavaScript and so is <code>for</code>.  That is why in React, we <a href="https://facebook.github.io/react/docs/dom-differences.html">should use</a> <code>className</code> instead of <code>class</code> and <code>htmlFor</code> instead of <code>for</code>.</p>
 <p>We are composing the <code>className</code> attribute via the <a href="https://www.npmjs.com/package/classnames"><code>classNames</code></a> utility, which allows us to easily concatenate various class names from different sources, some of them conditionally.  That is what we are doing with the <code>{ hide: !loading }</code> part.  <code>classNames</code> will add the name of the property <code>hide</code> to the list of class names depending on the truthiness of its value which, in this case is the inverse of the boolean value of <code>props.loading</code>.</p>
+<p>The <code>loading</code> class name is just a common practice. When inspecting the HTML it is an easy way to identify which element is which, otherwise, all of the <code>&lt;div&gt;</code>s really look alike. With so much of the HTML produced dynamically through React Components, it is difficult to associate the resulting HTML with the code we have written. The <a href="https://github.com/facebook/react-devtools">React Developer Tools</a> do this for us, but they only work in Chrome and Firefox and not at all with the static HTML produced in the server via isomorphism. It is a debugging aid not required in production and might be omitted.</p>
 <p>The <code>hide</code> class name comes from <a href="http://getbootstrap.com/css/#helper-classes-show-hide">Bootstrap</a>.</p>
 <p>The <code>styles.loading</code> class names comes from the following include:</p>
 <div class="code-insert"><div class="header">
@@ -833,7 +835,7 @@ export default connect(
   projects: 'Projects',
 }}</code></pre></div>
 <p>It creates an un-ordered list of list items which, thanks to <a href="http://getbootstrap.com/components/#nav-tabs">Bootstrap Tabs</a>. We are not using Bootstrap prescribed class names in our code.  We could use <a href="http://getbootstrap.com/components/#nav-pills">pills</a> instead of <a href="http://getbootstrap.com/components/#nav-tabs">tabs</a> since the actual style definitions are in the imported <code>menu.css</code> file <a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/menu.css">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which uses <a href="https://github.com/css-modules/css-modules">CSS-modules</a> to compose them out of the Bootstrap styles.  If we change the composition of styles from <code>nav-tabs</code> to <code>nav-pills</code> or to whichever classes another library might use, we change the look of the menu.</p>
-<p>Since <code>menuItems</code> is not an array but an object, we resort to <a href="https://lodash.com/">Lodash</a> which works in both arrays and objects. Lodash is a large library and loading the whole of it for just one or two functions would be too expensive.   Many such libraries have been modularized.  Instead of importing everything from the library and using parts of it, we can request only what we will use.  So, instead of doing <code>import _ from 'lodash';</code> and then using the <code>_.map()</code> function, we can import just the <code>map</code> function:</p>
+<p>Since <code>menuItems</code> is not an array but an object, we resort to <a href="https://lodash.com/">Lodash</a> <code>map</code>function which works in both arrays and objects. Lodash is a large library and loading the whole of it for just one or two functions would be too expensive.   Many such libraries have been modularized.  Instead of importing everything from the library and using parts of it, we can request only what we will use.  So, instead of doing <code>import _ from 'lodash';</code> and then using the <code>_.map()</code> function, we can import just the <code>map</code> function:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/menu.jsx#L3"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: master</div>
@@ -842,21 +844,102 @@ export default connect(
     <div class="to">To: 3</div>
   </div>
   <pre><code class="language-jsx">import map from 'lodash/map';</code></pre></div>
-<p>When using the <code>map</code> function, instead of doing <code>menuItems.map( ... )</code> as we would do if it was an array, we do <code>map(menuItems, ... )</code>.  The callback receives the property values and property names, which we call <code>caption</code> and <code>path</code>.  Depending on whether the path is active, via <code>router.isActive(path)</code> we display either an inert link (it has no <code>href</code>) with the <code>styles.active</code> style.  The <code>&lt;a&gt;</code> element is just because Bootstrap expects one otherwise it won't look right.</p>
-<p>For the rest of the links, we use a <code>&lt;Link&gt;</code> component which we also import from React Router. This component produces an actual <code>&lt;a&gt;</code> so Bootstrap (or any other style library) can be kept happy, but ensures that React Router will catch that request for navigation and process it itself.</p>
-<p>Note that we are returning an array of <code>&lt;li&gt;</code> elements.  The <code>map</code> function returns an array of whatever the callbacks return and the callback is a <em>fat arrow function</em> which implicitly returns the value of the expression in it.  That expression is ternary conditional expression.</p>
-<p>Whenever we have an array of items such as the <code>&lt;li&gt;</code> elements in this component, it is important that we assign each of them a <code>key</code> pseudo-attribute containing a unique id within the array (they might and will probably repeat over and over in an application, they just have to be unique within each array).  React uses this attribute to identify each item even as its contents change, otherwise, React wouldn't be able to know if an item with a different content is meant to be a different element or the same element with its contents changed. It becomes particularly useful when elements are inserted or deleted because it allows it to actually insert or delete the element from the DOM instead of re-render them all from the mismatched element on. We must ensure the <code>key</code> is a permanent and lasting id for the element, not just a sequentially assigned integer which changes in each render, that would be as bad as not providing any <code>key</code> at all.</p>
+<p>When using the <code>map</code> function, instead of doing <code>menuItems.map( ... )</code> as we would do if it was an array, we do <code>map(menuItems, ... )</code>.  The callback receives the property values and property names, which we call <code>caption</code> and <code>path</code>.  Depending on whether the path is active, via <code>router.isActive(path)</code> we display either an inert link (it has no <code>href</code>) with the <code>styles.active</code> style.  The <code>&lt;a&gt;</code> element is just because Bootstrap (or any other styling library) expects one otherwise it won't look right.</p>
+<p>For the rest of the links, we use a <code>&lt;Link&gt;</code> component which we also import from React Router. This component produces an actual <code>&lt;a&gt;</code> so Bootstrap can be kept happy, but ensures that React Router will catch that request for navigation and process it itself.</p>
+<p>Note that we are returning an array of <code>&lt;li&gt;</code> elements.  The <code>map</code> function returns an array of whatever the callbacks return and the callback is a <em>fat arrow function</em> which implicitly returns the value of the expression in it.  That expression is a ternary conditional expression retuning either kind of link.</p>
+<p>Whenever we have an array of items such as the <code>&lt;li&gt;</code> elements in this component, it is important that we assign each of them a <code>key</code> pseudo-attribute containing a unique id within the array (the ids might and will probably repeat over and over in an application, they just have to be unique within each array).  React uses this pseudo-attribute to identify each item even as its contents or attributes change, otherwise, React wouldn't be able to know if an item with a different content is meant to be a different element or the same element with its contents changed. It becomes particularly useful when elements are inserted or deleted because it allows it to actually insert or delete just that element from the DOM instead of re-render them all from the mismatched element on. We must ensure the <code>key</code> is a permanent and lasting id for the element, not just a sequentially assigned integer which changes in each render, that would be as bad as not providing any <code>key</code> at all.</p>
 <p>As expected, the types of the <code>props</code> are declared both as objects:</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/app.jsx#L12-L14"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/menu.jsx#L25-L28"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: master</div>
-    <div class="filename">File: client/components/app.jsx</div>
-    <div class="from">From: 12</div>
-    <div class="to">To: 14</div>
+    <div class="filename">File: client/components/menu.jsx</div>
+    <div class="from">From: 25</div>
+    <div class="to">To: 28</div>
   </div>
-  <pre><code class="language-jsx">menuItems={{
-  projects: 'Projects',
-}}</code></pre></div>
+  <pre><code class="language-jsx">MenuComponent.propTypes = {
+  router: PropTypes.object,
+  menuItems: PropTypes.object,
+};</code></pre></div>
+<h2><a class="self-ref" id="components-dispatching-actions" href="#components-dispatching-actions"># </a>Dispatching Actions</h2>
+<p>We have seen how we can reflect the state of the store in a connected component but, so far, we haven't seen how we can affect the store in response to an action by the user.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L8-L22"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/errors.jsx</div>
+    <div class="from">From: 8</div>
+    <div class="to">To: 22</div>
+  </div>
+  <pre><code class="language-jsx">export const ErrorsComponent = ({ errors, onCloseErrors }) =&gt; {
+  const closeErrorsHandler = ev =&gt; isPlainClick(ev) &amp;&amp; onCloseErrors();
+  return (
+    &lt;div
+      className={classNames(
+        'errors',
+        styles.errorsList,
+        { hide: !errors.length }
+      )}
+    &gt;
+      &lt;button onClick={closeErrorsHandler} className={styles.closeButton} /&gt;
+      {errors.join('\n')}
+    &lt;/div&gt;
+  );
+};</code></pre></div>
+<p><code>ErrorsComponent</code> receives an array with a list of <code>errors</code> and it simply displays it after chaining them together via<code>{errors.join('\n')}</code> in an overlaid box only when the length of the list is not zero.</p>
+<p>The box contains a button to let the user acknowledge the error and clear the error list.  Upon clicking on that button, <code>closeErrorsHandler</code> is called which uses the <code>ev</code> event object to check whether the click was a plain left-button click with no modifier keys (shift, control and such)</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/utils/isPlainClick.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/utils/isPlainClick.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">export default (ev) =&gt; {
+  if (ev.button || ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey) return false;
+  ev.preventDefault();
+  return true;
+};</code></pre></div>
+<p><code>isPlainClick</code> checks the <code>ev</code> object for the corresponding properties and returns false if any is non-zero or true.  If the click is a <em>plain</em> one, it prevents the default action associated to the event and returns true.</p>
+<p>In that case, the component calls <code>onCloseErrors</code> which it received as a property (destructured from the <code>props</code> object). We used the <code>on</code> prefix to mark it as an event listener as with DOM event listeners.  Just like <code>errors</code> is produced via <code>mapStateToProps</code> from the Redux store, so <code>onCloseErrors</code> is produced by <code>mapDispatchToProps</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L33-L35"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/errors.jsx</div>
+    <div class="from">From: 33</div>
+    <div class="to">To: 35</div>
+  </div>
+  <pre><code class="language-jsx">export const mapDispatchToProps = dispatch =&gt; ({
+  onCloseErrors: () =&gt; dispatch(clearHttpErrors()),
+});</code></pre></div>
+<p><code>mapDispatchToProps</code> is a function that receives a reference to the <code>store.dispatch</code> method.  This is the method through which we notify the store that something has happened. When using Redux, we only maintain one store so when we <code>dispatch</code> something, it can only go to one place.</p>
+<p><code>dispatch</code> dispatches <em>actions</em>, which usually are objects containing all of the information needed for the action to be performed. Those objects may be complex to assemble so, to make it easier, we use <em>action creators</em> which assemble them for us.  We will learn more about <em>actions</em> and <em>action creators</em> in a moment, for the time being it is enough for us to know that <code>clearHttpErrors</code> is one such <em>action creator</em>, thus, we are dispatching the <em>action</em> that the <code>clearHttpErrors</code> <em>action creator</em> has assembled for us.</p>
+<p>Just as <code>mapStateToProps</code>, <code>mapDispatchToProps</code> returns an object that will be merged along the rest of the <code>props</code> received from the parent.  Both are exported by name for testing purposes and the types of both sets of properties have to be declared:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L24-L27"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/errors.jsx</div>
+    <div class="from">From: 24</div>
+    <div class="to">To: 27</div>
+  </div>
+  <pre><code class="language-jsx">ErrorsComponent.propTypes = {
+  errors: PropTypes.array,
+  onCloseErrors: PropTypes.func,
+};</code></pre></div>
+<p>Though it was not used in this case, <code>mapDispatchToProps</code> also receives a reference to the same <code>props</code> the component would receive, to help it assemble the <em>actions</em>.  <code>mapDispatchToProps</code> (not the functions it returns) will be called again whenever the <code>props</code> change so that the returned functions are bound to the most recent properties.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L37-L40"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/errors.jsx</div>
+    <div class="from">From: 37</div>
+    <div class="to">To: 40</div>
+  </div>
+  <pre><code class="language-jsx">export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ErrorsComponent);</code></pre></div>
+<p><code>mapDispatchToProps</code> is used as a second argument for the <code>connect</code> method that wraps our simple stateless component with the HoC.</p>
+<p>We have split the functionality of dispatching the action into two functions, <code>closeErrorsHandler</code> and <code>onCloseErrors</code> and it might seem redundant because it could have all be done in just one place, checking the event with <code>isPlainClick</code> and then dispatching the action all in <code>onCloseErrors</code> and completely drop <code>closeErrorsHandler</code>.  We prefer to have the UI-related functionality within the component itself.  Checking to see if the button was left-clicked assumes you expect a click, but some other interface design might use some other kind of user interaction.  Since the component determines the way the user can respond, it is the component that should be responsible to verify it.</p>
+<p>At a later point, the range of interactions with a particular screen element might grow, we might have it behave in one way when left-clicked and another when right-clicked.  Would it make sense to the left vs. right click verification in the <code>mapDispatchToProps</code>? Hardly.</p>
+<p>Note also that the <code>ev</code> event object never leaves the component itself. The component deals with the DOM and the DOM should never spill out of the component to the rest of the application.  All our custom pseudo-events should be application-oriented, not DOM-related.  If they were to have any arguments passed, they should be related to the application, not to the DOM.  Even just passing on the <code>ev</code> object to our custom event might cause an unexpected dependency in the future as someone might use some property in it for whatever purpose, thus prevent the user interaction from changing from clicking to <em>blinking while staring at it</em>, or whatever future user interfaces might offer.</p>
 </section>
     </div>
   </body>
