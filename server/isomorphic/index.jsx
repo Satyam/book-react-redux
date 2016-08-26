@@ -26,12 +26,9 @@ export default function isomorphic(req, res, next) {
           next();
         } else {
           Promise.all(renderProps.routes.map(route => {
-            const wrappedComponent = route.component.WrappedComponent;
-            if (wrappedComponent) {
-              const initialDispatch = wrappedComponent.initialDispatch;
-              if (typeof initialDispatch === 'function') {
-                return initialDispatch(store.dispatch, renderProps, null, store.getState());
-              }
+            const initialDispatch = route.component.initialDispatch;
+            if (typeof initialDispatch === 'function') {
+              return initialDispatch(store.dispatch, renderProps, null, store.getState());
             }
             return undefined;
           }))

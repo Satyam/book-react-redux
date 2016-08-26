@@ -69,8 +69,6 @@ EditProjectComponent.propTypes = {
   onCancelEdit: PropTypes.func,
 };
 
-EditProjectComponent.initialDispatch = initialDispatch;
-
 export const mapDispatchToProps = (dispatch, { params: { pid } }) => ({
   onSubmit: ({ name, descr }) => {
     if (pid) {

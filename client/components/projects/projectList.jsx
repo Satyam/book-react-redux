@@ -47,13 +47,12 @@ ProjectListComponent.propTypes = {
 };
 
 
-export const initialDispatch = ProjectListComponent.initialDispatch =
-  (dispatch, nextProps, currentProps, state) => {
-    if (isEmpty(state.projects)) {
-      return dispatch(getAllProjects());
-    }
-    return undefined;
-  };
+export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
+  if (isEmpty(state.projects)) {
+    return dispatch(getAllProjects());
+  }
+  return undefined;
+};
 
 export const mapStateToProps = (state, params) => ({
   projects: state.projects,
