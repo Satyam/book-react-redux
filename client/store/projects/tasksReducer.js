@@ -2,16 +2,18 @@ import update from 'react-addons-update';
 import omit from 'lodash/omit';
 
 import {
-  PROJECT_BY_ID_SUCCESS,
-  ADD_TASK_SUCCESS,
-  UPDATE_TASK_SUCCESS,
-  DELETE_TASK_SUCCESS,
-} from './actionTypes';
+  PROJECT_BY_ID,
+  ADD_TASK,
+  UPDATE_TASK,
+  DELETE_TASK,
+} from './actions';
 
 export default (state = {}, action) => {
+  if (action.error || (action.meta && action.meta.request)) return state;
+  const payload = action.payload;
   switch (action.type) {
-    case PROJECT_BY_ID_SUCCESS:
-      return update(state, { $merge: action.data.tasks.reduce(
+    case PROJECT_BY_ID:
+      return update(state, { $merge: payload.tasks.reduce(
         (tasks, task) => (
           task.tid in state
           ? tasks
@@ -19,14 +21,14 @@ export default (state = {}, action) => {
         ),
         {}
       ) });
-    case ADD_TASK_SUCCESS:
-      return update(state, { $merge: { [action.data.tid]: action.data } });
-    case UPDATE_TASK_SUCCESS:
+    case ADD_TASK:
+      return update(state, { $merge: { [payload.tid]: payload } });
+    case UPDATE_TASK:
       return update(state, {
-        [action.data.tid]: { $merge: action.data },
+        [payload.tid]: { $merge: payload },
       });
-    case DELETE_TASK_SUCCESS:
-      return update(state, { $apply: tasks => omit(tasks, action.data.tid) });
+    case DELETE_TASK:
+      return update(state, { $apply: tasks => omit(tasks, payload.tid) });
     default:
       return state;
   }

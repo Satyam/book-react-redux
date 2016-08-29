@@ -5,17 +5,19 @@ import without from 'lodash/without';
 
 import {
   TASK_COMPLETED_CHANGE,
-  ALL_PROJECTS_SUCCESS,
-  PROJECT_BY_ID_SUCCESS,
-  ADD_PROJECT_SUCCESS,
-  UPDATE_PROJECT_SUCCESS,
-  DELETE_PROJECT_SUCCESS,
-  ADD_TASK_SUCCESS,
-  DELETE_TASK_SUCCESS,
-} from './actionTypes';
+  ALL_PROJECTS,
+  PROJECT_BY_ID,
+  ADD_PROJECT,
+  UPDATE_PROJECT,
+  DELETE_PROJECT,
+  ADD_TASK,
+  DELETE_TASK,
+} from './actions';
 
 
 export default (state = {}, action) => {
+  if (action.error || (action.meta && action.meta.request)) return state;
+  const payload = action.payload;
   switch (action.type) {
     case TASK_COMPLETED_CHANGE: {
       return update(state,
@@ -28,8 +30,8 @@ export default (state = {}, action) => {
         }
       );
     }
-    case ALL_PROJECTS_SUCCESS:
-      return update(state, { $merge: action.data.reduce(
+    case ALL_PROJECTS:
+      return update(state, { $merge: payload.reduce(
         (projects, project) => (
           project.pid in state
           ? projects
@@ -37,8 +39,8 @@ export default (state = {}, action) => {
         ),
         {}
       ) });
-    case PROJECT_BY_ID_SUCCESS: {
-      const project = action.data;
+    case PROJECT_BY_ID: {
+      const project = payload;
       return update(state,
           state[project.pid]
             ? {
@@ -61,26 +63,26 @@ export default (state = {}, action) => {
             }
         );
     }
-    case ADD_PROJECT_SUCCESS:
+    case ADD_PROJECT:
       return update(state,
-        { $merge: { [action.data.pid]: Object.assign({ pending: 0 }, action.data) } }
+        { $merge: { [payload.pid]: Object.assign({ pending: 0 }, payload) } }
       );
-    case UPDATE_PROJECT_SUCCESS:
-      return update(state, { [action.data.pid]: { $merge: action.data } });
-    case DELETE_PROJECT_SUCCESS:
-      return omit(state, action.data.pid);
-    case ADD_TASK_SUCCESS:
+    case UPDATE_PROJECT:
+      return update(state, { [payload.pid]: { $merge: payload } });
+    case DELETE_PROJECT:
+      return omit(state, payload.pid);
+    case ADD_TASK:
       return update(state,
-        { [action.data.pid]: {
-          tids: { $push: [action.data.tid] },
+        { [payload.pid]: {
+          tids: { $push: [payload.tid] },
           pending: { $apply: pending => pending + 1 },
         } }
       );
-    case DELETE_TASK_SUCCESS:
+    case DELETE_TASK:
       return update(state,
-        { [action.data.pid]: {
-          tids: { $apply: tids => without(tids, action.data.tid) },
-          pending: { $apply: pending => pending - (action.data.completed ? 0 : 1) },
+        { [payload.pid]: {
+          tids: { $apply: tids => without(tids, payload.tid) },
+          pending: { $apply: pending => pending - (payload.completed ? 0 : 1) },
         } }
       );
     default:
