@@ -7,14 +7,14 @@ import data from '_test/utils/data';
 import reducer from '_store/projects/projectsReducer';
 import {
   TASK_COMPLETED_CHANGE,
-  ALL_PROJECTS_SUCCESS,
-  PROJECT_BY_ID_SUCCESS,
-  ADD_PROJECT_SUCCESS,
-  UPDATE_PROJECT_SUCCESS,
-  DELETE_PROJECT_SUCCESS,
-  ADD_TASK_SUCCESS,
-  DELETE_TASK_SUCCESS,
-} from '_store/projects/actionTypes';
+  ALL_PROJECTS,
+  PROJECT_BY_ID,
+  ADD_PROJECT,
+  UPDATE_PROJECT,
+  DELETE_PROJECT,
+  ADD_TASK,
+  DELETE_TASK,
+} from '_store/projects/actions';
 
 const projects = data.projects;
 
@@ -22,7 +22,7 @@ const diffAfter = (type, payload, initialState = projects) => diff(
   initialState,
   reducer(initialState, {
     type,
-    data: payload,
+    payload,
   })
 );
 
@@ -65,7 +65,7 @@ describe('Store: Projects, projectsReducer', () => {
   describe('Get all projects success', () => {
     it('initial fetch', () => {
       expect(diffAfter(
-        ALL_PROJECTS_SUCCESS,
+        ALL_PROJECTS,
         [{
           pid: '99',
           name: 'name for project 99',
@@ -86,7 +86,7 @@ describe('Store: Projects, projectsReducer', () => {
     });
     it('add extra project to existing set', () => {
       expect(diffAfter(
-        ALL_PROJECTS_SUCCESS,
+        ALL_PROJECTS,
         [{
           pid: '99',
           name: 'name for project 99',
@@ -102,7 +102,7 @@ describe('Store: Projects, projectsReducer', () => {
     });
     it('merge project to existing set', () => {
       const d = diffAfter(
-        ALL_PROJECTS_SUCCESS,
+        ALL_PROJECTS,
         [
           {
             pid: '99',
@@ -152,7 +152,7 @@ describe('Store: Projects, projectsReducer', () => {
     };
     it('Fetch new project', () => {
       const d = diffAfter(
-        PROJECT_BY_ID_SUCCESS,
+        PROJECT_BY_ID,
         fullProject45
       );
       expect(d).to.have.lengthOf(1);
@@ -167,12 +167,12 @@ describe('Store: Projects, projectsReducer', () => {
         pending: 0,
       };
       const state = reducer({}, {
-        type: ALL_PROJECTS_SUCCESS,
-        data: [initial],
+        type: ALL_PROJECTS,
+        payload: [initial],
       });
 
       const d = diffAfter(
-        PROJECT_BY_ID_SUCCESS,
+        PROJECT_BY_ID,
         fullProject45,
         state
       );
@@ -188,7 +188,7 @@ describe('Store: Projects, projectsReducer', () => {
   describe('add project', () => {
     it('New project added', () => {
       expect(diffAfter(
-        ADD_PROJECT_SUCCESS,
+        ADD_PROJECT,
         {
           pid: 35,
           name: 'Name for new project',
@@ -212,7 +212,7 @@ describe('Store: Projects, projectsReducer', () => {
   });
   it('Update project', () => {
     expect(diffAfter(
-      UPDATE_PROJECT_SUCCESS,
+      UPDATE_PROJECT,
       {
         pid: '34',
         name: 'new name',
@@ -225,7 +225,7 @@ describe('Store: Projects, projectsReducer', () => {
   });
   it('Delete project', () => {
     expect(diffAfter(
-      DELETE_PROJECT_SUCCESS,
+      DELETE_PROJECT,
       {
         pid: '34',
       }
@@ -237,7 +237,7 @@ describe('Store: Projects, projectsReducer', () => {
   });
   it('Add task', () => {
     const d = diffAfter(
-      ADD_TASK_SUCCESS,
+      ADD_TASK,
       {
         pid: '25',
         tid: '10',
@@ -266,7 +266,7 @@ describe('Store: Projects, projectsReducer', () => {
   });
   it('Delete task', () => {
     const d = diffAfter(
-      DELETE_TASK_SUCCESS,
+      DELETE_TASK,
       {
         pid: '25',
         tid: '3',

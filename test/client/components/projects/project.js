@@ -15,12 +15,26 @@ import {
   shallowRender,
   deepRender,
   mockStore,
-  fakeThunkStore,
 } from '_test/utils/renderers';
-import setIntercept from '_test/utils/axiosInterceptor';
-import data from '_test/utils/data';
 
-const PID = 25;
+
+import {
+  PROJECT_BY_ID,
+  DELETE_PROJECT,
+} from '_store/actions';
+
+import {
+  CALL_HISTORY_METHOD,
+} from 'react-router-redux';
+
+import data from '_test/utils/data';
+import nock from 'nock';
+
+const SERVER = `${HOST}:${PORT}`;
+const API = `${REST_API_PATH}/projects/`;
+
+const PID = '25';
+const BAD_PID = '99';
 
 describe('Component: Project', () => {
   describe('Shallow Render', () => {
@@ -38,13 +52,13 @@ describe('Component: Project', () => {
       expect(result.find('h1').parent().last()).to.contain.text(data.projects[PID].descr);
       expect(result.find('button')).to.have.lengthOf(2);
       expect(result.find('Connect(TaskListComponent)')).to.have.lengthOf(1);
-      expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', String(PID));
+      expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', PID);
     });
     it('ProjectComponent with no name should return not found message', () => {
       const onEditClick = sinon.spy();
       const onDeleteClick = sinon.spy();
       const result = shallowRender(ProjectComponent, {
-        pid: '99',
+        pid: BAD_PID,
         onEditClick,
         onDeleteClick,
       });
@@ -54,6 +68,9 @@ describe('Component: Project', () => {
   describe('DOM renderers', () => {
     before(loadJSDOM);
     after(dropJSDOM);
+    afterEach(() => {
+      nock.cleanAll();
+    });
 
     it('deepRender ProjectComponent', () => {
       const onEditClick = sinon.spy();
@@ -70,14 +87,14 @@ describe('Component: Project', () => {
       expect(heading.find('h1').parent().last()).to.contain.text(data.projects[PID].descr);
       expect(heading.find('button')).to.have.lengthOf(2);
       expect(result.find('Connect(TaskListComponent)')).to.have.lengthOf(1);
-      expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', String(PID));
+      expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', PID);
     });
 
     it('deepRender ConnectedProject with existing pid', () => {
       const store = mockStore(data);
       const result = deepRender(
         ConnectedProject,
-        { params: { pid: String(PID) } },
+        { params: { pid: PID } },
         store
       );
       const heading = result.find('.project').childAt(0);
@@ -85,58 +102,48 @@ describe('Component: Project', () => {
       expect(heading.find('h1').parent().last()).to.contain.text(data.projects[PID].descr);
       expect(heading.find('button')).to.have.lengthOf(2);
       expect(result.find('Connect(TaskListComponent)')).to.have.lengthOf(1);
-      expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', String(PID));
+      expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', PID);
     });
 
-    it('ConnectedProject with non-existing pid via fake dispatch', () => {
-      const store = fakeThunkStore(data);
+    it('ConnectedProject with non-existing pid', done => {
+      nock(SERVER)
+        .get(API + BAD_PID)
+        .reply(404);
 
-      const result = deepRender(
-        ConnectedProject,
-        { params: { pid: '99' } },
-        store
-      );
-      expect(result).to.contain.text('Project 99 not found');
-      const actions = store.getActions();
-      const action = actions[0];
-      const func = action.func;
-      expect(func).to.be.a('function');
-      expect(func.length).to.equal(1);
-      expect(func.toString()).to.contain('.PROJECT_BY_ID_REQUEST');
-    });
-
-    it('ConnectedProject with non-existing pid via HTTP intercept', done => {
-      setIntercept('projects', {
-        method: 'get',
-        url: '33',
-        response: 'whatever',
-      });
       const store = mockStore(data);
       store.subscribe(() => {
         const actions = store.getActions();
         if (actions.length === 2) {
-          expect(actions[0]).to.eql({ type: 'projects/PROJECT_BY_ID/REQUEST', pid: '33' });
-          expect(actions[1]).to.eql({ type: 'projects/PROJECT_BY_ID/SUCCESS', data: 'whatever' });
-          setIntercept();
+          expect(actions[0]).to.eql({
+            type: PROJECT_BY_ID,
+            payload: { pid: BAD_PID },
+            meta: { request: true },
+          });
+          expect(actions[1].type).to.equal(PROJECT_BY_ID);
+          expect(actions[1].error).to.be.true;
+          expect(actions[1].payload.status).to.equal(404);
           done();
         }
       });
       const result = deepRender(
         ConnectedProject,
-        { params: { pid: '33' } },
+        { params: { pid: BAD_PID } },
         store
       );
-      expect(result).to.contain.text('Project 33 not found');
+      expect(result).to.contain.text('Project 99 not found');
     });
   });
   it('mapStateToProps', () => {
-    const props = mapStateToProps(data, { params: { pid: String(PID) } });
+    const props = mapStateToProps(data, { params: { pid: PID } });
     expect(props).to.eql(data.projects[PID]);
   });
 
   describe('mapDispatchToProps', () => {
+    afterEach(() => {
+      nock.cleanAll();
+    });
     it('onEditClick', () => {
-      const store = fakeThunkStore(data);
+      const store = mockStore(data);
       const props = mapDispatchToProps(store.dispatch);
       expect(props.onEditClick).to.be.a('function');
       props.onEditClick({ pid: PID });
@@ -148,12 +155,24 @@ describe('Component: Project', () => {
     });
 
     it('onDeleteClick', done => {
-      const store = fakeThunkStore(data);
+      nock(SERVER)
+        .delete(API + PID)
+        .reply(200);
+      const store = mockStore(data);
       store.subscribe(() => {
         const actions = store.getActions();
-        if (actions.length === 2) {
-          expect(actions[0].func.toString()).to.contain('.DELETE_PROJECT_REQUEST');
-          const payload = actions[1].payload;
+        if (actions.length === 3) {
+          expect(actions[0]).to.eql({
+            type: DELETE_PROJECT,
+            payload: { pid: PID },
+            meta: { request: true },
+          });
+          expect(actions[1]).to.eql({
+            type: DELETE_PROJECT,
+            payload: { pid: PID },
+          });
+          expect(actions[2].type).to.equal(CALL_HISTORY_METHOD);
+          const payload = actions[2].payload;
           expect(payload.args).to.have.lengthOf(1);
           expect(payload.args[0]).to.equal('/projects');
           done();
@@ -167,24 +186,26 @@ describe('Component: Project', () => {
 
   describe('initialDispatch', () => {
     it('with no pid', () => {
-      const store = fakeThunkStore(data);
+      const store = mockStore(data);
       const ret = initialDispatch(store.dispatch, { params: {} }, {}, store.getState());
       expect(ret).to.be.undefined;
     });
 
     it('with existing pid', () => {
-      const store = fakeThunkStore(data);
-      initialDispatch(store.dispatch, { params: { pid: String(PID) } }, {}, store.getState());
+      const store = mockStore(data);
+      initialDispatch(store.dispatch, { params: { pid: PID } }, {}, store.getState());
       expect(store.getActions()).to.have.lengthOf(0);
     });
 
     it('with new pid', () => {
-      const store = fakeThunkStore(data);
-      initialDispatch(store.dispatch, { params: { pid: '99' } }, {}, store.getState());
+      const store = mockStore(data);
+      initialDispatch(store.dispatch, { params: { pid: BAD_PID } }, {}, store.getState());
       const actions = store.getActions();
-      expect(actions).to.have.lengthOf(1);
-      expect(actions[0].type).to.equal('thunkFunction');
-      expect(actions[0].func.toString()).to.contain('.PROJECT_BY_ID_REQUEST');
+      expect(actions[0]).to.eql({
+        type: PROJECT_BY_ID,
+        payload: { pid: BAD_PID },
+        meta: { request: true },
+      });
     });
   });
 });
