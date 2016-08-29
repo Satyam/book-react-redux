@@ -15,6 +15,7 @@ import {
   shallowRender,
   deepRender,
   mockStore,
+  actionExpects,
 } from '_test/utils/renderers';
 
 
@@ -62,7 +63,7 @@ describe('Component: Project', () => {
         onEditClick,
         onDeleteClick,
       });
-      expect(result).to.contain.text('Project 99 not found');
+      expect(result).to.contain.text(`Project ${BAD_PID} not found`);
     });
   });
   describe('DOM renderers', () => {
@@ -105,34 +106,34 @@ describe('Component: Project', () => {
       expect(result.find('Connect(TaskListComponent)')).to.have.prop('pid', PID);
     });
 
-    it('ConnectedProject with non-existing pid', done => {
+    it('ConnectedProject with non-existing pid', () => {
       nock(SERVER)
         .get(API + BAD_PID)
         .reply(404);
 
       const store = mockStore(data);
-      store.subscribe(() => {
-        const actions = store.getActions();
-        if (actions.length === 2) {
-          expect(actions[0]).to.eql({
-            type: PROJECT_BY_ID,
-            payload: { pid: BAD_PID },
-            meta: { request: true },
-          });
-          expect(actions[1].type).to.equal(PROJECT_BY_ID);
-          expect(actions[1].error).to.be.true;
-          expect(actions[1].payload.status).to.equal(404);
-          done();
-        }
-      });
       const result = deepRender(
         ConnectedProject,
         { params: { pid: BAD_PID } },
         store
       );
-      expect(result).to.contain.text('Project 99 not found');
+      expect(result).to.contain.text(`Project ${BAD_PID} not found`);
+
+      return actionExpects(store,
+        {
+          type: PROJECT_BY_ID,
+          payload: { pid: BAD_PID },
+          meta: { request: true },
+        },
+        action => {
+          expect(action.type).to.equal(PROJECT_BY_ID);
+          expect(action.error).to.be.true;
+          expect(action.payload.status).to.equal(404);
+        }
+      );
     });
   });
+
   it('mapStateToProps', () => {
     const props = mapStateToProps(data, { params: { pid: PID } });
     expect(props).to.eql(data.projects[PID]);
@@ -147,40 +148,38 @@ describe('Component: Project', () => {
       const props = mapDispatchToProps(store.dispatch);
       expect(props.onEditClick).to.be.a('function');
       props.onEditClick({ pid: PID });
-      const actions = store.getActions();
-      expect(actions.length).to.equal(1);
-      const payload = actions[0].payload;
-      expect(payload.args).to.have.lengthOf(1);
-      expect(payload.args[0]).to.equal(`/projects/editProject/${PID}`);
+      return actionExpects(store, action => {
+        const payload = action.payload;
+        expect(payload.args).to.have.lengthOf(1);
+        expect(payload.args[0]).to.equal(`/projects/editProject/${PID}`);
+      });
     });
 
-    it('onDeleteClick', done => {
+    it('onDeleteClick', () => {
       nock(SERVER)
         .delete(API + PID)
         .reply(200);
       const store = mockStore(data);
-      store.subscribe(() => {
-        const actions = store.getActions();
-        if (actions.length === 3) {
-          expect(actions[0]).to.eql({
-            type: DELETE_PROJECT,
-            payload: { pid: PID },
-            meta: { request: true },
-          });
-          expect(actions[1]).to.eql({
-            type: DELETE_PROJECT,
-            payload: { pid: PID },
-          });
-          expect(actions[2].type).to.equal(CALL_HISTORY_METHOD);
-          const payload = actions[2].payload;
-          expect(payload.args).to.have.lengthOf(1);
-          expect(payload.args[0]).to.equal('/projects');
-          done();
-        }
-      });
       const props = mapDispatchToProps(store.dispatch);
       expect(props.onDeleteClick).to.be.a('function');
       props.onDeleteClick({ pid: PID });
+      return actionExpects(store,
+        {
+          type: DELETE_PROJECT,
+          payload: { pid: PID },
+          meta: { request: true },
+        },
+        {
+          type: DELETE_PROJECT,
+          payload: { pid: PID },
+        },
+        action => {
+          expect(action.type).to.equal(CALL_HISTORY_METHOD);
+          const payload = action.payload;
+          expect(payload.args).to.have.lengthOf(1);
+          expect(payload.args[0]).to.equal('/projects');
+        }
+      );
     });
   });
 

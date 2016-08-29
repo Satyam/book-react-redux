@@ -1,7 +1,5 @@
-/* esli nt-disable no-unused-vars */
 import React from 'react';
 import thunk from 'redux-thunk';
-/* esli nt-enable no-unused-vars */
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import chai from 'chai';
@@ -42,6 +40,47 @@ export const dropJSDOM = () => {
 };
 
 export const mockStore = configureStore([thunk]);
+
+export const actionExpects = (store, ...expects) =>
+  new Promise((resolve, reject) => {
+    const checkActions = () => {
+      const actions = store.getActions();
+      if (actions.length > expects.length) {
+        reject(new chai.AssertionError(
+          `Too many actions, expected ${expects.length}, actual ${actions.length}`
+        ));
+        return true;
+      }
+      try {
+        actions.forEach((action, index) => {
+          const e = expects[index];
+          switch (typeof e) {
+            case 'function':
+              e(action);
+              break;
+            case 'object':
+              expect(action).to.eql(e);
+              break;
+            default:
+              expect(e).to.be.an('object');
+              break;
+          }
+        });
+        if (actions.length === expects.length) {
+          resolve();
+          return true;
+        }
+      } catch (e) {
+        reject(e);
+        return true;
+      }
+      return false;
+    };
+    if (!checkActions()) {
+      store.subscribe(checkActions);
+    }
+  });
+
 
 export const shallowRender = (Component, props) =>
   shallow(<Component {...props} />);
