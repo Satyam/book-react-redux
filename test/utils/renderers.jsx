@@ -22,6 +22,7 @@ export const loadJSDOM = done => {
     FetchExternalResources: false,
     ProcessExternalResources: false,
     virtualConsole: jsdom.createVirtualConsole().sendTo(console),
+    url: `${HOST}:${PORT}`,
   });
   global.window = document.defaultView;
   Object.keys(document.defaultView).forEach(property => {
@@ -40,17 +41,7 @@ export const dropJSDOM = () => {
   exposedProperties.forEach(prop => delete global[prop]);
 };
 
-const fakeThunk = () => next => action => {
-  if (typeof action !== 'function') return next(action);
-  next({
-    type: 'thunkFunction',
-    func: action,
-  });
-  return Promise.resolve();
-};
-
 export const mockStore = configureStore([thunk]);
-export const fakeThunkStore = configureStore([fakeThunk]);
 
 export const shallowRender = (Component, props) =>
   shallow(<Component {...props} />);
