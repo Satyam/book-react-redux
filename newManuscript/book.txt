@@ -6,3 +6,4 @@ conventions.md
 server.md
 serverProjectsHandler.md
 components.md
+actions.md
