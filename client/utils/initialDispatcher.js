@@ -1,7 +1,7 @@
 export default initialDispatch => Connector => {
   class Connected extends Connector {
     componentWillMount() {
-      if (super.componentDidMount) super.componentDidMount();
+      if (super.componentWillMount) super.componentWillMount();
       initialDispatch(this.store.dispatch, this.props, null, this.state.storeState);
     }
     componentWillReceiveProps(nextProps) {
