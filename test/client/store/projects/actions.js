@@ -1,6 +1,9 @@
 import { expect } from 'chai';
 
-import { mockStore } from '_test/utils/renderers';
+import {
+  mockStore,
+  actionExpects,
+} from '_test/utils/renderers';
 // uncomment following for data to be used when testing update or delete
 // import data from '_test/utils/data';
 import nock from 'nock';
@@ -10,7 +13,9 @@ import {
   addProject,
   ALL_PROJECTS,
   ADD_PROJECT,
-} from '_store/projects/actions.js';
+  REQUEST_SENT,
+  REPLY_RECEIVED,
+} from '_store/actions.js';
 
 const SERVER = `${HOST}:${PORT}`;
 const API = `${REST_API_PATH}/projects/`;
@@ -26,7 +31,7 @@ describe('projects actions', () => {
       nock.cleanAll();
     });
     describe('getAllProjects', () => {
-      it('standard reply', done => {
+      it('standard reply', () => {
         const body = [
           { pid: 25, name: 'Writing a Book on Web Dev Tools' },
           { pid: 34, name: 'Cook a Spanish omelette' },
@@ -36,95 +41,92 @@ describe('projects actions', () => {
           .query({ fields: 'pid,name,pending' })
           .reply(200, body);
 
-        store.dispatch(getAllProjects())
-          .then(() => {
-            expect(store.getActions()).to.eql(
-              [
-                {
-                  type: ALL_PROJECTS,
-                  meta: { request: true },
-                  payload: {},
-                },
-                {
-                  type: ALL_PROJECTS,
-                  payload: body,
-                },
-              ]);
-          })
-          .then(done)
-          .catch(done);
+        return store.dispatch(getAllProjects())
+          .then(() => actionExpects(store,
+            {
+              type: ALL_PROJECTS,
+              meta: { asyncAction: REQUEST_SENT },
+              payload: {},
+            },
+            {
+              type: ALL_PROJECTS,
+              payload: body,
+              meta: { asyncAction: REPLY_RECEIVED },
+            }
+          ));
       });
-      it('error reply', done => {
+      it('error reply', () => {
         nock(SERVER)
           .get(API)
           .query({ fields: 'pid,name,pending' })
           .reply(404, 'Not found');
 
-        store.dispatch(getAllProjects())
-          .then(() => {
-            const acts = store.getActions();
-            expect(acts[0]).to.eql({
+        return store.dispatch(getAllProjects())
+          .then(() => actionExpects(store,
+            {
               type: ALL_PROJECTS,
-              meta: { request: true },
+              meta: { asyncAction: REQUEST_SENT },
               payload: {},
-            });
-            expect(acts[1].type).to.equal(ALL_PROJECTS);
-            expect(acts[1].error).to.be.true;
-            expect(acts[1].payload.status).to.equal(404);
-            expect(acts[1].payload).to.have.all.keys('status', 'action', 'url');
+            },
+            action => {
+              expect(action.type).to.equal(ALL_PROJECTS);
+              expect(action.error).to.be.true;
+              expect(action.payload.status).to.equal(404);
+              expect(action.payload).to.have.all.keys('message', 'status', 'actionType', 'url');
             // url: contents might change in future releases
             // msg: nock will always return null, see: https://github.com/node-nock/nock/issues/469
-          })
-          .then(done)
-          .catch(done);
+            }
+          ));
       });
     });
 
     describe('addProject', () => {
-      it('standard request', done => {
+      it('standard request', () => {
         nock(SERVER)
           .post(API)
           .reply(200, { pid: '45' });
 
-        store.dispatch(addProject('name', 'descr'))
-          .then(() => {
-            expect(store.getActions()).to.eql(
-              [
-                {
-                  type: ADD_PROJECT,
-                  payload: {
-                    name: 'name',
-                    descr: 'descr',
-                  },
-                  meta: { request: true },
-                },
-                {
-                  type: ADD_PROJECT,
-                  payload: { pid: '45', name: 'name', descr: 'descr' },
-                },
-              ]);
-          })
-          .then(done)
-          .catch(done);
+        return store.dispatch(addProject('name', 'descr'))
+          .then(() => actionExpects(store,
+            {
+              type: ADD_PROJECT,
+              payload: {
+                name: 'name',
+                descr: 'descr',
+              },
+              meta: { asyncAction: REQUEST_SENT },
+            },
+            {
+              type: ADD_PROJECT,
+              payload: { pid: '45', name: 'name', descr: 'descr' },
+              meta: { asyncAction: REPLY_RECEIVED },
+            }
+          ));
       });
-      it('error reply', done => {
+      it('error reply', () => {
         nock(SERVER)
           .post(API)
           .reply(404, 'Not found');
 
-        store.dispatch(addProject('name', 'descr'))
-          .then(() => {
-            const acts = store.getActions();
-            expect(acts[0].type).to.equal(ADD_PROJECT);
-            expect(acts[1].type).to.equal(ADD_PROJECT);
-            expect(acts[1].error).to.be.true;
-            expect(acts[1].payload.status).to.equal(404);
-            expect(acts[1].payload).to.have.all.keys('status', 'action', 'url');
+        return store.dispatch(addProject('name', 'descr'))
+          .then(() => actionExpects(store,
+            {
+              type: ADD_PROJECT,
+              payload: {
+                name: 'name',
+                descr: 'descr',
+              },
+              meta: { asyncAction: REQUEST_SENT },
+            },
+            action => {
+              expect(action.type).to.equal(ADD_PROJECT);
+              expect(action.error).to.be.true;
+              expect(action.payload.status).to.equal(404);
+              expect(action.payload).to.have.all.keys('message', 'status', 'actionType', 'url');
+            }
             // url: contents might change in future releases
             // msg: nock will always return null, see: https://github.com/node-nock/nock/issues/469
-          })
-          .then(done)
-          .catch(done);
+          ));
       });
     });
     //
