@@ -5,7 +5,6 @@ import reduxThunk from 'redux-thunk';
 import { projects, tasks } from './projects';
 import requests from './requests';
 import misc from './misc';
-import remoteRequests from './requests/middleware';
 
 const reducers = combineReducers({
   projects,
@@ -16,7 +15,7 @@ const reducers = combineReducers({
 });
 
 export default (history, initialState) => {
-  const mw = applyMiddleware(reduxThunk, remoteRequests, routerMiddleware(history));
+  const mw = applyMiddleware(reduxThunk, routerMiddleware(history));
   return createStore(
     reducers,
     initialState,
