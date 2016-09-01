@@ -11,7 +11,9 @@ const args = require('commander');
 
 args
   .version('0.0.1')
-  .description('Runs a batery of tests after webpacking them. If not specified, runs all .js files found in ./test')
+  .description(
+'Runs a batery of tests after webpacking them. If not specified, runs all .js files found in ./test'
+  )
   .usage('[options] [files to test]')
   .option('-c, --coverage', 'Run Istanbul for code coverage')
   .parse(process.argv);
