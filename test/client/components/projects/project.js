@@ -22,6 +22,8 @@ import {
 import {
   PROJECT_BY_ID,
   DELETE_PROJECT,
+  REQUEST_SENT,
+  REPLY_RECEIVED,
 } from '_store/actions';
 
 import {
@@ -123,7 +125,7 @@ describe('Component: Project', () => {
         {
           type: PROJECT_BY_ID,
           payload: { pid: BAD_PID },
-          meta: { request: true },
+          meta: { asyncAction: REQUEST_SENT },
         },
         action => {
           expect(action.type).to.equal(PROJECT_BY_ID);
@@ -167,11 +169,12 @@ describe('Component: Project', () => {
         {
           type: DELETE_PROJECT,
           payload: { pid: PID },
-          meta: { request: true },
+          meta: { asyncAction: REQUEST_SENT },
         },
         {
           type: DELETE_PROJECT,
           payload: { pid: PID },
+          meta: { asyncAction: REPLY_RECEIVED },
         },
         action => {
           expect(action.type).to.equal(CALL_HISTORY_METHOD);
@@ -203,7 +206,7 @@ describe('Component: Project', () => {
       expect(actions[0]).to.eql({
         type: PROJECT_BY_ID,
         payload: { pid: BAD_PID },
-        meta: { request: true },
+        meta: { asyncAction: REQUEST_SENT },
       });
     });
   });

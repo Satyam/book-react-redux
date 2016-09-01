@@ -12,11 +12,12 @@ import {
   DELETE_PROJECT,
   ADD_TASK,
   DELETE_TASK,
+  REPLY_RECEIVED,
 } from './actions';
 
 
 export default (state = {}, action) => {
-  if (action.error || (action.meta && action.meta.request)) return state;
+  if (action.error || (action.meta && action.meta.asyncAction !== REPLY_RECEIVED)) return state;
   const payload = action.payload;
   switch (action.type) {
     case TASK_COMPLETED_CHANGE: {

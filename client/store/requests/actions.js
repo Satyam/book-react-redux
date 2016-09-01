@@ -8,20 +8,3 @@ export const FAILURE_RECEIVED = `${NAME} HTTP failure received`;
 export function clearHttpErrors() {
   return { type: CLEAR_HTTP_ERRORS };
 }
-
-export function requestSent() {
-  return { type: REQUEST_SENT };
-}
-
-export function replyReceived() {
-  return { type: REPLY_RECEIVED };
-}
-
-export function failureReceived({ status, msg, url }) {
-  return {
-    type: FAILURE_RECEIVED,
-    status,
-    msg,
-    url,
-  };
-}

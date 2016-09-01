@@ -1,21 +1,15 @@
-export class HttpError extends Error {
-  constructor(baseActionType, error) {
-    super(error.response ? error.response.data : error.message);
-    this.status = error.response ? error.response.status : error.code;
-    this.url = error.config.url;
-    this.action = baseActionType;
-  }
-  toString() {
-    return `${this.action}: ${this.url}: (${this.status}) - ${this.msg}`;
-  }
-}
+import {
+  REQUEST_SENT,
+  REPLY_RECEIVED,
+  FAILURE_RECEIVED,
+} from '_store/requests/actions';
 
 export default (type, asyncRequest, payload = {}) =>
   dispatch => {
     dispatch({
       type,
       payload,
-      meta: { request: true },
+      meta: { asyncAction: REQUEST_SENT },
     });
     return asyncRequest.then(
       response => dispatch({
@@ -23,11 +17,22 @@ export default (type, asyncRequest, payload = {}) =>
         payload: Array.isArray(response.data)
           ? response.data
           : Object.assign({}, payload, response.data),
+        meta: { asyncAction: REPLY_RECEIVED },
       }),
-      error => dispatch({
-        type,
-        payload: new HttpError(type, error),
-        error: true,
-      })
+      error => {
+        const response = error.response;
+        const err = {
+          message: response ? (response.statusText || response.data) : error.message,
+          status: response ? response.status : error.code,
+          url: error.config.url,
+          actionType: type,
+        };
+        return dispatch({
+          type,
+          payload: err,
+          error: true,
+          meta: { asyncAction: FAILURE_RECEIVED },
+        });
+      }
     );
   };

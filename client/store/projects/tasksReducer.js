@@ -6,10 +6,11 @@ import {
   ADD_TASK,
   UPDATE_TASK,
   DELETE_TASK,
+  REPLY_RECEIVED,
 } from './actions';
 
 export default (state = {}, action) => {
-  if (action.error || (action.meta && action.meta.request)) return state;
+  if (action.error || (action.meta && action.meta.asyncAction !== REPLY_RECEIVED)) return state;
   const payload = action.payload;
   switch (action.type) {
     case PROJECT_BY_ID:

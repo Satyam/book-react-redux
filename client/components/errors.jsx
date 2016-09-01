@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import isPlainClick from '_utils/isPlainClick';
 import classNames from 'classnames';
 import { clearHttpErrors } from '_store/actions';
+import map from 'lodash/map';
 import styles from './errors.css';
 
 export const ErrorsComponent = ({ errors, onCloseErrors }) => {
@@ -16,7 +17,13 @@ export const ErrorsComponent = ({ errors, onCloseErrors }) => {
       )}
     >
       <button onClick={closeErrorsHandler} className={styles.closeButton} />
-      {errors.join('\n')}
+      {
+        errors.map(
+          process.env.NODE_ENV === 'production'
+          ? e => e.message
+          : e => map(e, (value, key) => `${key}: ${value}`).join('\n')
+        ).join('\n')
+      }
     </div>
   );
 };
