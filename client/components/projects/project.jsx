@@ -68,7 +68,7 @@ export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
   const pid = nextProps.params.pid;
   if (pid) {
     const prj = state.projects[pid];
-    if (!prj || !prj.tids) {
+    if (!prj || (prj && !(prj.error || prj.tids))) {
       return dispatch(getProjectById(pid));
     }
   }

@@ -12,18 +12,21 @@ import ProjectItem from './projectItem';
 
 export const ProjectListComponent = ({ children, projects, isNewProject, onNewProject }) => {
   const addProjectHandler = ev => isPlainClick(ev) && onNewProject();
+  console.log(projects);
   return (
     <div className={classNames('project-list', styles.projectList)}>
       <h1>Projects:</h1>
       <div className="row">
         <div className="col-md-9">
           <ul>{
-            Object.keys(projects).map(pid =>
-              (<ProjectItem
+            Object.keys(projects).map(pid => (
+              projects[pid].error
+              ? null
+              : (<ProjectItem
                 key={pid}
                 pid={pid}
               />)
-            )
+            ))
           }</ul>
         </div>
         <div className="col-md-3">

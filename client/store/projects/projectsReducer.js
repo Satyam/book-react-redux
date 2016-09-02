@@ -4,6 +4,10 @@ import omit from 'lodash/omit';
 import without from 'lodash/without';
 
 import {
+  REPLY_RECEIVED,
+} from '_store/requests/actions';
+
+import {
   TASK_COMPLETED_CHANGE,
   ALL_PROJECTS,
   PROJECT_BY_ID,
@@ -12,12 +16,21 @@ import {
   DELETE_PROJECT,
   ADD_TASK,
   DELETE_TASK,
-  REPLY_RECEIVED,
 } from './actions';
 
-
 export default (state = {}, action) => {
-  if (action.error || (action.meta && action.meta.asyncAction !== REPLY_RECEIVED)) return state;
+  if (action.error) {
+    if (action.type === PROJECT_BY_ID) {
+      const pid = action.meta.originalPayload.pid;
+      return update(state, { $merge: {
+        [pid]: {
+          pid,
+          error: 404,
+        },
+      } });
+    }
+    return state;
+  } else if (action.meta && action.meta.asyncAction !== REPLY_RECEIVED) return state;
   const payload = action.payload;
   switch (action.type) {
     case TASK_COMPLETED_CHANGE: {

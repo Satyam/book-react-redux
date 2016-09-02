@@ -2,11 +2,14 @@ import update from 'react-addons-update';
 import omit from 'lodash/omit';
 
 import {
+  REPLY_RECEIVED,
+} from '_store/requests/actions';
+
+import {
   PROJECT_BY_ID,
   ADD_TASK,
   UPDATE_TASK,
   DELETE_TASK,
-  REPLY_RECEIVED,
 } from './actions';
 
 export default (state = {}, action) => {
