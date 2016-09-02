@@ -31,7 +31,10 @@ export default (type, asyncRequest, payload = {}) =>
           type,
           payload: err,
           error: true,
-          meta: { asyncAction: FAILURE_RECEIVED },
+          meta: {
+            asyncAction: FAILURE_RECEIVED,
+            originalPayload: payload,
+          },
         });
       }
     );
