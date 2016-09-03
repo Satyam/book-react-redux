@@ -49,7 +49,7 @@ ProjectListComponent.propTypes = {
 };
 
 
-export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
+export const initialDispatch = (dispatch, state) => {
   if (isEmpty(state.projects)) {
     return dispatch(getAllProjects());
   }

@@ -64,7 +64,7 @@ export const mapDispatchToProps = dispatch => ({
       .then(() => dispatch(push('/projects'))),
 });
 
-export const initialDispatch = (dispatch, nextProps, currentProps, state) => {
+export const initialDispatch = (dispatch, state, nextProps) => {
   const pid = nextProps.params.pid;
   if (pid) {
     const prj = state.projects[pid];

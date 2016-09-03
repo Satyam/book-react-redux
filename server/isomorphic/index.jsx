@@ -28,7 +28,7 @@ export default function isomorphic(req, res, next) {
           Promise.all(renderProps.routes.map(route => {
             const initialDispatch = route.component.initialDispatch;
             if (typeof initialDispatch === 'function') {
-              return initialDispatch(store.dispatch, renderProps, null, store.getState());
+              return initialDispatch(store.dispatch, store.getState(), renderProps);
             }
             return undefined;
           }))

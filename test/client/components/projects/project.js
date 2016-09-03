@@ -189,19 +189,19 @@ describe('Component: Project', () => {
   describe('initialDispatch', () => {
     it('with no pid', () => {
       const store = mockStore(data);
-      const ret = initialDispatch(store.dispatch, { params: {} }, {}, store.getState());
+      const ret = initialDispatch(store.dispatch, store.getState(), { params: {} });
       expect(ret).to.be.undefined;
     });
 
     it('with existing pid', () => {
       const store = mockStore(data);
-      initialDispatch(store.dispatch, { params: { pid: PID } }, {}, store.getState());
+      initialDispatch(store.dispatch, store.getState(), { params: { pid: PID } });
       expect(store.getActions()).to.have.lengthOf(0);
     });
 
     it('with new pid', () => {
       const store = mockStore(data);
-      initialDispatch(store.dispatch, { params: { pid: BAD_PID } }, {}, store.getState());
+      initialDispatch(store.dispatch, store.getState(), { params: { pid: BAD_PID } });
       const actions = store.getActions();
       expect(actions[0]).to.eql({
         type: PROJECT_BY_ID,
