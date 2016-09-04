@@ -20,6 +20,8 @@ JSX allows inserting HTML/XML-like code into a JavaScript source code file thoug
 
 JavaScript expressions, not statements, are allowed within JSX, they have to be enclosed in between curly brackets `{}`.
 
+> If I may take a moment to brag about it, back towards the end of 2008 I made a proposal to embed HTML into PHP. I called it [PHT](http://www.satyam.com.ar/pht/) which resulted from merging the letters in PHp and HTml.  It was an extension to the [PHP Compiler](http://phpcompiler.org/) which could generate native code but could also serve as a transpiler.  I used is as a transpiler to create regular PHP out of PHT code.  Mechanisms to publish and make open source contributions back then were not widely available, no GitHub or any such popular sharing mechanisms, so the idea faded away.
+
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/notFound.jsx#L3-L8)
 
 Our `NotFound` component receives `props` as an argument and, since it uses a *fat-arrow function* it implicitly returns what follows. It returns a `<div>` enclosing a heading and a paragraph showing the path that was not found.  To insert the path within the JSX code, we enclose it in curly braces.
@@ -34,13 +36,13 @@ It doesn't really matter whether the `props` were supplied by a component such a
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/app.jsx)
 
-React component may include in their JSX code other React Components besides plain HTML. React expects all components to have their names starting with uppercase while plain HTML tags should always be lowercase. React Components can have attributes just like HTML elements can. The `Menu` component receives a `menuItems` attribute:
+React component may include in their JSX code other React Components besides plain HTML. React expects the tags representing other components to have their names starting with uppercase while plain HTML tags should always be lowercase. React Components can have attributes just like HTML elements can. The `Menu` component receives a `menuItems` attribute:
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/app.jsx#L11-L15)
 
 Though we use an HTML-like style to define attributes, in JSX, the values are not restricted to plain strings. In this case, `menuItems` receives a JavaScript object. There is no need to serialize it into a JSON string as it might happen with a `data-xxx` attribute in HTML.  That is also the reason for the double curly brackets `{{ }}`, the outer set of brackets is to switch from JSX mode into plain JavaScript and the inner set are those of the object literal.
 
-Here we are importing the `Loading`, `Errors` and `Menu` components from the `_components` [virtual location](#conventions-virtual-import-paths) and using them just as we would use any other HTML element.
+In the `App` component we are importing the `Loading`, `Errors` and `Menu` components from the `_components` [virtual location](#conventions-virtual-import-paths) and using them just as we would use any other HTML element.
 
 We are using the `children` property which is also provided by React Router.  `children` is validated as of type `React.PropTypes.node` which represents any kind of React component.
 
@@ -139,9 +141,9 @@ As expected, the types of the `props` are declared both as objects:
 
 We have seen how we can reflect the state of the store in a connected component but, so far, we haven't seen how we can affect the store in response to an action by the user.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L8-L22)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L9-L29)
 
-`ErrorsComponent` receives an array with a list of `errors` and it simply displays it after chaining them together via`{errors.join('\n')}` in an overlaid box only when the length of the list is not zero.
+`ErrorsComponent` receives an array with a list of `errors` and it simply displays it after chaining them together via`{errors.join('\n')}` in an overlaid box only when the length of the list is not zero.  The list of errors is more or less verbose depending on the value of `process.env.NODE_ENV`, if it equals `production` it simply shows the plain `message`, otherwise it assumes it is a development version and shows more details.  React itself checks  `process.env.NODE_ENV` to conditionally enable plenty of diagnostics such as checking the `PropTypes`, we are simply using the same mechanism.
 
 The box contains a button to let the user acknowledge the error and clear the error list.  Upon clicking on that button, `closeErrorsHandler` is called which uses the `ev` event object to check whether the click was a plain left-button click with no modifier keys (shift, control and such)
 
@@ -151,7 +153,7 @@ The box contains a button to let the user acknowledge the error and clear the er
 
 In that case, the component calls `onCloseErrors` which it received as a property (destructured from the `props` object). We used the `on` prefix to mark it as an event listener as with DOM event listeners.  Just like `errors` is produced via `mapStateToProps` from the Redux store, so `onCloseErrors` is produced by `mapDispatchToProps`:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L33-L35)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L40-L42)
 
 `mapDispatchToProps` is a function that receives a reference to the `store.dispatch` method.  This is the method through which we notify the store that something has happened. When using Redux, we only maintain one store so when we `dispatch` something, it can only go to one place.
 
@@ -159,11 +161,11 @@ In that case, the component calls `onCloseErrors` which it received as a propert
 
 Just as `mapStateToProps`, `mapDispatchToProps` returns an object that will be merged along the rest of the `props` received from the parent.  Both are exported by name for testing purposes and the types of both sets of properties have to be declared:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L24-L27)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L31-L34)
 
 Though it was not used in this case, `mapDispatchToProps` also receives a reference to the same `props` the component would receive, to help it assemble the *actions*.  `mapDispatchToProps` (not the functions it returns) will be called again whenever the `props` change so that the returned functions are bound to the most recent properties.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L37-L40)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L44-L47)
 
 `mapDispatchToProps` is used as a second argument for the `connect` method that wraps our simple stateless component with the HoC.
 

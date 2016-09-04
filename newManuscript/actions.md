@@ -35,7 +35,7 @@ Symbol('hello world').toString() === Symbol('hello world').toString()
 
 The `toString()` value is what the debugger would show thus, we would still need to create unique descriptions. Symbols don't actually require descriptions, but that would still be worse because then they would all be anonymous.
 
-Most importantly though is that Symbols cannot be serialized.  JSON will ignore them just as it does with functions.  In any application connecting several clients, such as games or chat, actions must be transmitted and Symbols simply don't get through.
+Most importantly though is that Symbols cannot be serialized.  JSON will ignore them just as it does with functions.  In any application connecting several clients, such as games or chat, actions must be transmitted to remote systems and Symbols simply don't get through.
 
 ```js
 JSON.stringify({type: Symbol('hello world')})
@@ -54,3 +54,66 @@ The lifecyle of a typical async action creator has a few basic stages:
 2. start the async requests
 3. on a successful reply, dispatch a plain action with the information just received
 4. if the request fails, dispatch a plain action with the error information
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/utils/asyncActionCreator.js#L7-L14)
+
+We have created a utility function `asyncActionCreator` that helps us with this.  It receives an action type, the actual async request, which can be anything that returns a Promise and a `payload` which is an object containing the information related to the request.
+
+`asyncActionCreator` returns a function, which allows Redux-Thunk to identify it as an asynchronous action.  It then calls it passing a reference to `dispatch` as an argument.  `asyncActionCreator` first calls `dispatch` to indicate that the async action has been initiated.  For all its actions, it uses the Flux Standard Action ([FSA](https://github.com/acdlite/flux-standard-action)) format, which provides a predictable and flexible format to pass information. Redux itself does not require any particular format, it only cares about the `type` property, but anything that makes matters more predictable is good.  
+
+FSA expects an action to have only four properties with `type` being the only mandatory:
+
+* `type`: mandatory, as per Redux rules.
+* `payload`: an object with all the information related to the action.
+* `error`: a Boolean, usually only present if it is true, it indicates a failed request.  If so, `payload` should contain an error object.
+* `meta`: A place for whatever extra information might be required.
+
+In our initial action, we are using the `type` and `payload` received as arguments and we are adding in the `meta` an object with the `asyncAction` property set to `REQUEST_SENT`, a sort of sub-action type that signals that this is the initiation of the action signaled by the actual `type`.  Thus, for an action `type` of `ADD_PROJECT` we will have an `ADD_PROJECT`/`REQUEST_SENT` and then an `ADD_PROJECT`/`REPLY_RECEIVED` or, if anything fails an `ADD_PROJECT`/`FAILURE_RECEIVED`.
+
+Since the `asyncRequest` argument is a Promise, we attach to the `then` part and return that, which is still a Promise.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/utils/asyncActionCreator.js#L15-L19)
+
+For the *resolve* part of the `then` we respond by dispatching an action with the same action type but with a `REPLY_RECEIVED` sub-action type.  For the payload, we merge the data received in the response with whatever came in the `payload` argument.  Even if the reply is an array, as it frequently is, `Object.assign` will work and return an Array with the extra properties from `payload` added.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/utils/asyncActionCreator.js#L20-L35)
+
+For the `reject` part of the `then` we assemble an `err` object which is a plain object literal, not an instance of the Error class.  This is because it is not a good idea to store class instances in the store.  The reason is similar to why we prefer not to use `Symbol`s for action types, neither is serializable.  In isomorphic applications, it is not enough to send the rendered HTML from the server to the client, it is also important to send the data that produced it and to do that, we have to serialize the store.  Dates already pose a problem on serialization, we can do without further class instances.
+
+As per [FSA](https://github.com/acdlite/flux-standard-action), we set the `error` property and send the error object as the payload. We include both the `actionType` and the `originalPayload` as part of the error object, just in case any component might need it.  
+
+We have opted to use the same action type for all three possible messages for each action. We then discriminate amongst them via the `asyncAction` property in `meta`.  This is just a matter of choice and neither Redux nor FSA forces us one way or another.
+
+The use of a consistent sub-action for async actions allows us to easily count outstanding async requests and thus show the `Loading` component.  On each `REQUEST_SENT` sub-action the `pending` count goes up, regardless of the action type. On each `REPLY_RECEIVED` or `FAILURE_RECEIVED`, the `pending` count goes down.  Additionally, on each `FAILURE_RECEIVED`, the `payload`, which contains the error object, is saved for later use.  Wewill see how this is done in a later chapter.
+
+## Using asyncActionCreator
+
+As with all actions, we first define the action types:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L4-L14)
+
+To perform HTTP REST requests, we use [Axios](https://www.npmjs.com/package/axios) which already supports Promises and also allows for pre-configured requests. We use a small utility to provide us with those pre-configured instances:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/utils/restAPI.js#L30-L47)
+
+For the time being, we shall ignore the part about the Electron client. For normal connections, we first check whether we have one in the cache, otherwise, we create one by setting the `baseURL` to the data we already know about our server, the HOST, PORT and the REST_API_PATH are `http://localhost`, `8080` and `/data/v2` respectively. We add the `base` to that.  For Projects it is `projects` thus resulting in `http://localhost:8080/data/v2/projects` which is what we had our server configured to listen to. Additionally we declare that we intend the response to come as JSON data.  We then save this connection into the cache.
+
+We also create some handy aliases for the regular HTTP verbs.  It is easy to confuse `PUT` and `POST` so we create aliases for the 4 CRUD operations.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L16)
+
+With this utility it is easy to create an instance by just providing the specific entry point for this set of operations.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L18-L23)
+
+The `getAllProjects` action creator needs no extra arguments.  It calls `asyncActionCreator` with the `ALL_PROJECTS` action type and the result of doing a `read` (or `get`) operation on the pre-configured connection.
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L65-L71)
+
+Other action creators are a little bit more complex because they need to provide more information in the URL, in this case the `pid` and `tid` and also extra information that goes in the body of the HTTP request, `name` and `descr`. We use `descr` instead of the customary `desc` for *description* because `DESC` is a reserved word in SQL and many other query languages so using `desc` as a column name causes lots of trouble.  While for the REST API we need to discriminate in between *id* values that go in the URL and plain data that goes in the body, for the `payload` argument, we simply pass on all the received arguments in an object. When assembling the payload, we are using the [*shorthand property names*](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Property_definitions) feature of ES6.
+
+Note that in all cases we return the Promise returned by `asyncActionCreator` which is none other than that the one created initially by the `api.read` or `api.update` or whatever `asyncAction` we initially passed to `asyncActionCreator`.  The `dispatch` method of Redux always returns the action it receives and if we have React-Thunk to process asynchronous actions, it will return whatever Promise it returns.  This allows further chaining, for example:
+
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/project.jsx#L60-L65)
+
+The `onDeleteClick` property that `mapDispatchToProps` provides to the `ProjectComponent` first dispatches the request to delete the project by `pid`, `then`, it dispatches an action to the router `push('/projects')` to navigate away from the page showing that project, since it has already been deleted.
