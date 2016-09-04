@@ -72,7 +72,8 @@ describe('projects actions', () => {
               expect(action.type).to.equal(ALL_PROJECTS);
               expect(action.error).to.be.true;
               expect(action.payload.status).to.equal(404);
-              expect(action.payload).to.have.all.keys('message', 'status', 'actionType', 'url');
+              expect(action.payload)
+                .to.have.all.keys('message', 'status', 'actionType', 'url', 'originalPayload');
             // url: contents might change in future releases
             // msg: nock will always return null, see: https://github.com/node-nock/nock/issues/469
             }
@@ -122,7 +123,8 @@ describe('projects actions', () => {
               expect(action.type).to.equal(ADD_PROJECT);
               expect(action.error).to.be.true;
               expect(action.payload.status).to.equal(404);
-              expect(action.payload).to.have.all.keys('message', 'status', 'actionType', 'url');
+              expect(action.payload)
+                .to.have.all.keys('message', 'status', 'actionType', 'url', 'originalPayload');
             }
             // url: contents might change in future releases
             // msg: nock will always return null, see: https://github.com/node-nock/nock/issues/469

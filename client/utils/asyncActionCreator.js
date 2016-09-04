@@ -14,9 +14,7 @@ export default (type, asyncRequest, payload = {}) =>
     return asyncRequest.then(
       response => dispatch({
         type,
-        payload: Array.isArray(response.data)
-          ? response.data
-          : Object.assign({}, payload, response.data),
+        payload: Object.assign(response.data, payload),
         meta: { asyncAction: REPLY_RECEIVED },
       }),
       error => {
@@ -26,15 +24,13 @@ export default (type, asyncRequest, payload = {}) =>
           status: response ? response.status : error.code,
           url: error.config.url,
           actionType: type,
+          originalPayload: payload,
         };
         return dispatch({
           type,
           payload: err,
           error: true,
-          meta: {
-            asyncAction: FAILURE_RECEIVED,
-            originalPayload: payload,
-          },
+          meta: { asyncAction: FAILURE_RECEIVED },
         });
       }
     );

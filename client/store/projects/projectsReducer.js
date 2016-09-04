@@ -21,7 +21,7 @@ import {
 export default (state = {}, action) => {
   if (action.error) {
     if (action.type === PROJECT_BY_ID) {
-      const pid = action.meta.originalPayload.pid;
+      const pid = action.error.originalPayload.pid;
       return update(state, { $merge: {
         [pid]: {
           pid,
