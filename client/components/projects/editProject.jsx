@@ -76,7 +76,7 @@ export const mapDispatchToProps = (dispatch, { params: { pid } }) => ({
         .then(() => dispatch(push(`/projects/${pid}`)));
     }
     return dispatch(addProject(name, descr))
-      .then(response => dispatch(push(`/projects/${response.data.pid}`)));
+      .then(response => dispatch(push(`/projects/${response.payload.pid}`)));
   },
   onCancelEdit: () => {
     dispatch(replace(
