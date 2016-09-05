@@ -6,4 +6,5 @@ conventions.md
 server.md
 serverProjectsHandler.md
 components.md
+stateful.md
 actions.md
