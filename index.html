@@ -58,6 +58,20 @@
 <li><a href="#components-react-redux">React-Redux</a></li>
 <li><a href="#components-router-hoc">Router HoC</a></li>
 <li><a href="#components-dispatching-actions">Dispatching Actions</a></li>
+</ul>
+<li><a href="#stateful-stateful-components">Stateful Components</a></li>
+<ul class="level-h1"><li><a href="#stateful-state">State</a></li>
+<li><a href="#stateful-event-handlers">Event handlers</a></li>
+<li><a href="#stateful-the-render-method">The render method</a></li>
+<li><a href="#stateful-the-exposed-event-handlers">The exposed event handlers</a></li>
+<li><a href="#stateful-uncontrolled-components">(Un)controlled components</a></li>
+</ul>
+<li><a href="#routing-routing">Routing</a></li>
+<ul class="level-h1"><li><a href="#routing-routing-file-structure">Routing file structure</a></li>
+</ul>
+<li><a href="#actions-actions">Actions</a></li>
+<ul class="level-h1"><li><a href="#actions-asynchronous-actions">Asynchronous actions</a></li>
+<li><a href="#actions-using-asyncactioncreator">Using asyncActionCreator</a></li>
 </ul></li></ul></div>
     <div class="contents unfolded">
       <div class="close">&lt; close</div>
@@ -627,6 +641,9 @@ export default NotFound;</code></pre></div>
 <p>Though files containing JSX usually have a <code>.jsx</code> extension, this is not mandatory at all and, actually, many of our tools have to be told to read <code>.jsx</code> files as plain JavaScript with some extra.</p>
 <p>JSX allows inserting HTML/XML-like code into a JavaScript source code file though, of course, the resulting mix cannot be interpreted directly as JavaScript but has to go through a compiler to produce actual JavaScript code.  The compiler looks for an expression starting with a <code>&lt;</code> symbol. In JavaSript, the <em>less than</em> symbol is a binary operator, that is, it sits in between two expressions, so no expression could possibly start with it because it would be missing the left-hand-side part. If there could be any doubt about whether a <code>&lt;</code> is binary or unary, enclosing the JSX in between parenthesis disambiguates it since after an open parenthesis, there can only be an expression.</p>
 <p>JavaScript expressions, not statements, are allowed within JSX, they have to be enclosed in between curly brackets <code>{}</code>.</p>
+<blockquote>
+<p>If I may take a moment to brag about it, back towards the end of 2008 I made a proposal to embed HTML into PHP. I called it <a href="http://www.satyam.com.ar/pht/">PHT</a> which resulted from merging the letters in PHp and HTml.  It was an extension to the <a href="http://phpcompiler.org/">PHP Compiler</a> which could generate native code but could also serve as a transpiler.  I used is as a transpiler to create regular PHP out of PHT code.  Mechanisms to publish and make open source contributions back then were not widely available, no GitHub or any such popular sharing mechanisms, so the idea faded away.</p>
+</blockquote>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/notFound.jsx#L3-L8"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: master</div>
@@ -687,7 +704,7 @@ App.propTypes = {
 };
 
 export default App;</code></pre></div>
-<p>React component may include in their JSX code other React Components besides plain HTML. React expects all components to have their names starting with uppercase while plain HTML tags should always be lowercase. React Components can have attributes just like HTML elements can. The <code>Menu</code> component receives a <code>menuItems</code> attribute:</p>
+<p>React component may include in their JSX code other React Components besides plain HTML. React expects the tags representing other components to have their names starting with uppercase while plain HTML tags should always be lowercase. React Components can have attributes just like HTML elements can. The <code>Menu</code> component receives a <code>menuItems</code> attribute:</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/app.jsx#L11-L15"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: master</div>
@@ -701,7 +718,7 @@ export default App;</code></pre></div>
   }}
 /&gt;</code></pre></div>
 <p>Though we use an HTML-like style to define attributes, in JSX, the values are not restricted to plain strings. In this case, <code>menuItems</code> receives a JavaScript object. There is no need to serialize it into a JSON string as it might happen with a <code>data-xxx</code> attribute in HTML.  That is also the reason for the double curly brackets <code>{{ }}</code>, the outer set of brackets is to switch from JSX mode into plain JavaScript and the inner set are those of the object literal.</p>
-<p>Here we are importing the <code>Loading</code>, <code>Errors</code> and <code>Menu</code> components from the <code>_components</code> <a href="#conventions-virtual-import-paths">virtual location</a> and using them just as we would use any other HTML element.</p>
+<p>In the <code>App</code> component we are importing the <code>Loading</code>, <code>Errors</code> and <code>Menu</code> components from the <code>_components</code> <a href="#conventions-virtual-import-paths">virtual location</a> and using them just as we would use any other HTML element.</p>
 <p>We are using the <code>children</code> property which is also provided by React Router.  <code>children</code> is validated as of type <code>React.PropTypes.node</code> which represents any kind of React component.</p>
 <p>Routes in the browser behave differently than routes in the server. In the server, the first route that matches the requested path gets called and it sends via <code>res.send</code> the information back to the client.  There is no nesting, the first match does it all. We are not talking about middleware here, which can do some processing and pass on the request for others to deal with. On the server side, the first <code>res.send</code> or its equivalents, ends the operation. This is because the response to an HTTP request is a simple stream.</p>
 <p>Routes in the client are meant to affect a two-dimensional screen where each part of the route might influence a particular section of it.  For example, most web pages will have a standard look, starting with an enclosing frame with the basic color scheme, perhaps the company logo, a copyright sign and so on.  Within that frame there might be other standard sections such as a header or footer, perhaps a menu or tabbed interface and finally, there will be one or more sections that are totally dependent on the route.  For example, a mail-client program will have a main section that contains the list of folders for the <code>/</code>, a list of messages in the inbox for <code>/inbox</code> or a particular message for <code>/inbox/de305d54-75b4-431b-adb2-eb6b9e546014</code>.   Each responds to a fragment of the full URL and they all combine to build the full screen.</p>
@@ -863,11 +880,11 @@ export default connect(
 <h2><a class="self-ref" id="components-dispatching-actions" href="#components-dispatching-actions"># </a>Dispatching Actions</h2>
 <p>We have seen how we can reflect the state of the store in a connected component but, so far, we haven't seen how we can affect the store in response to an action by the user.</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L8-L22"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L9-L29"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: master</div>
     <div class="filename">File: client/components/errors.jsx</div>
-    <div class="from">From: 8</div>
-    <div class="to">To: 22</div>
+    <div class="from">From: 9</div>
+    <div class="to">To: 29</div>
   </div>
   <pre><code class="language-jsx">export const ErrorsComponent = ({ errors, onCloseErrors }) =&gt; {
   const closeErrorsHandler = ev =&gt; isPlainClick(ev) &amp;&amp; onCloseErrors();
@@ -880,11 +897,17 @@ export default connect(
       )}
     &gt;
       &lt;button onClick={closeErrorsHandler} className={styles.closeButton} /&gt;
-      {errors.join('\n')}
+      {
+        errors.map(
+          process.env.NODE_ENV === 'production'
+          ? e =&gt; e.message
+          : e =&gt; map(e, (value, key) =&gt; `${key}: ${value}`).join('\n')
+        ).join('\n')
+      }
     &lt;/div&gt;
   );
 };</code></pre></div>
-<p><code>ErrorsComponent</code> receives an array with a list of <code>errors</code> and it simply displays it after chaining them together via<code>{errors.join('\n')}</code> in an overlaid box only when the length of the list is not zero.</p>
+<p><code>ErrorsComponent</code> receives an array with a list of <code>errors</code> and it simply displays it after chaining them together via<code>{errors.join('\n')}</code> in an overlaid box only when the length of the list is not zero.  The list of errors is more or less verbose depending on the value of <code>process.env.NODE_ENV</code>, if it equals <code>production</code> it simply shows the plain <code>message</code>, otherwise it assumes it is a development version and shows more details.  React itself checks  <code>process.env.NODE_ENV</code> to conditionally enable plenty of diagnostics such as checking the <code>PropTypes</code>, we are simply using the same mechanism.</p>
 <p>The box contains a button to let the user acknowledge the error and clear the error list.  Upon clicking on that button, <code>closeErrorsHandler</code> is called which uses the <code>ev</code> event object to check whether the click was a plain left-button click with no modifier keys (shift, control and such)</p>
 <div class="code-insert"><div class="header">
     <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/utils/isPlainClick.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
@@ -901,11 +924,11 @@ export default connect(
 <p><code>isPlainClick</code> checks the <code>ev</code> object for the corresponding properties and returns false if any is non-zero or true.  If the click is a <em>plain</em> one, it prevents the default action associated to the event and returns true.</p>
 <p>In that case, the component calls <code>onCloseErrors</code> which it received as a property (destructured from the <code>props</code> object). We used the <code>on</code> prefix to mark it as an event listener as with DOM event listeners.  Just like <code>errors</code> is produced via <code>mapStateToProps</code> from the Redux store, so <code>onCloseErrors</code> is produced by <code>mapDispatchToProps</code>:</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L33-L35"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L40-L42"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: master</div>
     <div class="filename">File: client/components/errors.jsx</div>
-    <div class="from">From: 33</div>
-    <div class="to">To: 35</div>
+    <div class="from">From: 40</div>
+    <div class="to">To: 42</div>
   </div>
   <pre><code class="language-jsx">export const mapDispatchToProps = dispatch =&gt; ({
   onCloseErrors: () =&gt; dispatch(clearHttpErrors()),
@@ -914,11 +937,11 @@ export default connect(
 <p><code>dispatch</code> dispatches <em>actions</em>, which usually are objects containing all of the information needed for the action to be performed. Those objects may be complex to assemble so, to make it easier, we use <em>action creators</em> which assemble them for us.  We will learn more about <em>actions</em> and <em>action creators</em> in a moment, for the time being it is enough for us to know that <code>clearHttpErrors</code> is one such <em>action creator</em>, thus, we are dispatching the <em>action</em> that the <code>clearHttpErrors</code> <em>action creator</em> has assembled for us.</p>
 <p>Just as <code>mapStateToProps</code>, <code>mapDispatchToProps</code> returns an object that will be merged along the rest of the <code>props</code> received from the parent.  Both are exported by name for testing purposes and the types of both sets of properties have to be declared:</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L24-L27"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L31-L34"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: master</div>
     <div class="filename">File: client/components/errors.jsx</div>
-    <div class="from">From: 24</div>
-    <div class="to">To: 27</div>
+    <div class="from">From: 31</div>
+    <div class="to">To: 34</div>
   </div>
   <pre><code class="language-jsx">ErrorsComponent.propTypes = {
   errors: PropTypes.array,
@@ -926,11 +949,11 @@ export default connect(
 };</code></pre></div>
 <p>Though it was not used in this case, <code>mapDispatchToProps</code> also receives a reference to the same <code>props</code> the component would receive, to help it assemble the <em>actions</em>.  <code>mapDispatchToProps</code> (not the functions it returns) will be called again whenever the <code>props</code> change so that the returned functions are bound to the most recent properties.</p>
 <div class="code-insert"><div class="header">
-    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L37-L40"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L44-L47"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
     <div class="branch">Branch: master</div>
     <div class="filename">File: client/components/errors.jsx</div>
-    <div class="from">From: 37</div>
-    <div class="to">To: 40</div>
+    <div class="from">From: 44</div>
+    <div class="to">To: 47</div>
   </div>
   <pre><code class="language-jsx">export default connect(
   mapStateToProps,
@@ -940,6 +963,501 @@ export default connect(
 <p>We have split the functionality of dispatching the action into two functions, <code>closeErrorsHandler</code> and <code>onCloseErrors</code> and it might seem redundant because it could have all be done in just one place, checking the event with <code>isPlainClick</code> and then dispatching the action all in <code>onCloseErrors</code> and completely drop <code>closeErrorsHandler</code>.  We prefer to have the UI-related functionality within the component itself.  Checking to see if the button was left-clicked assumes you expect a click, but some other interface design might use some other kind of user interaction.  Since the component determines the way the user can respond, it is the component that should be responsible to verify it.</p>
 <p>At a later point, the range of interactions with a particular screen element might grow, we might have it behave in one way when left-clicked and another when right-clicked.  Would it make sense to the left vs. right click verification in the <code>mapDispatchToProps</code>? Hardly.</p>
 <p>Note also that the <code>ev</code> event object never leaves the component itself. The component deals with the DOM and the DOM should never spill out of the component to the rest of the application.  All our custom pseudo-events should be application-oriented, not DOM-related.  If they were to have any arguments passed, they should be related to the application, not to the DOM.  Even just passing on the <code>ev</code> object to our custom event might cause an unexpected dependency in the future as someone might use some property in it for whatever purpose, thus prevent the user interaction from changing from clicking to <em>blinking while staring at it</em>, or whatever future user interfaces might offer.</p>
+</section><section id="stateful"><h1><a class="self-ref" id="stateful-stateful-components" href="#stateful-stateful-components"># </a>Stateful Components</h1>
+<p>So far we have seen stateless components which are simple functions that returns a visual representation of a section of a page, based on a series of properties it receives as its arguments. If the properties change, the representation changes, if they don't, it doesn't. Stateless components are very predictable.  They hold no internal state that might make them respond in different ways to the same set of properties.</p>
+<p>In contrast to that, stateful components do hold state.  To do so, first of all, they are declared as JavaScript classes so that their instances can have a <code>this</code> context.  They have two main properties, both objects containing several keyed values:</p>
+<ul>
+<li><code>this.props</code> are the very same properties stateless components have. They come from components higher up in the hierarchy.  A component should never change the properties it receives.</li>
+<li><code>this.state</code> holds the internal state of the component. It is created within the component and managed by it.</li>
+</ul>
+<p>The classic example of a stateful component is a form.  When initially called the component will receive, amongst other possible properties, the values of the fields to be edited in the form.  These properties do not change over the lifecycle of this particular instance of the form component.</p>
+<p>As the fields in the form are filled, the visual representation of it will change.  Input fields will be filled in or edited.  As fields are validated, error messages might show. Calendars might pop up to help in filling in dates. Action buttons might become enabled as the data changes.  During all of this process, <code>this.props</code> never changes while <code>this.state</code> does so continuously.</p>
+<p>Stateful components are created by extending the <code>React.Component</code> class. They can still be created by calling <code>React.createClass</code>, as most documentation about React shows and both mechanisms are very much alike, however, since we are using ES6, we will stick with the <em>class</em> instead of the <em>factory</em> way.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L13-L18"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/projects/editProject.jsx</div>
+    <div class="from">From: 13</div>
+    <div class="to">To: 18</div>
+  </div>
+  <pre><code class="language-jsx">export class EditProjectComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.state = pick(props, 'name', 'descr');
+    bindHandlers(this);
+  }</code></pre></div>
+<p>We declare the <code>EditProjectComponent</code> as a class that extends <code>React.Component</code> (we extracted the <code>Component</code> export from the <code>React</code> library on importing it <a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L1">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>).   Its <code>constructor</code> receives the <code>props</code> just as the stateless components did. After calling the constructor of the super-class it sets the initial <code>state</code>.  Then it goes to bind its own action handlers, something we will see later after dealing with the <code>state</code>.</p>
+<h2><a class="self-ref" id="stateful-state" href="#stateful-state"># </a>State</h2>
+<p>The <code>state</code> should only hold information that is meant to be changed during the lifetime of this component. The <code>props</code> might contain lots of other information, such as <code>onXxxx</code> custom event handlers, strings for headings and even routing information.  We should avoid cluttering <code>state</code> with all this extra information, we should just pick from <code>props</code> that which will change and we do so by using Lodash <a href="http://devdocs.io/lodash~4/index#pick">pick</a> function, extracting just the <code>name</code> and <code>descr</code> properties, which we intend to edit. We might also initialize other <code>state</code> properties by merging them with the ones picked from the <code>props</code>.</p>
+<p>We should never set <code>state</code> directly, <strong>except</strong> in the constructor, this is the only time we will see <code>this.state</code> on the left hand side of the assignment operator. We can read directly from <code>this.state</code> but never write into it, except in the constructor. Later changes to <code>state</code> should be done via the <code>setState</code> method, as we will see later.  <code>setState</code> not only changes <code>state</code> but also signals React that something has changed and so the component might need a re-render. <code>setState</code> queues a re-render, which will not happen immediately and, in certain circumstances, it might not happen at all or it might be subsumed within a wider redraw. React takes care of optimizing this and we might help by declaring the <a href="https://facebook.github.io/react/docs/component-specs.html#updating-shouldcomponentupdate"><code>shouldComponentUpdate</code></a> method.  As always, it is never a good idea to start by over-optimizing so, we will leave <code>shouldComponentUpdate</code> alone.  Should a performance test show a particularly slow component, then we can use <code>shouldComponentUpdate</code>.</p>
+<p><code>state</code> will contain an object with multiple properties.  <code>setState</code> expects an object with new values for just the properties that need changing. It will <strong>merge</strong> (never replace) the object it receives with the object it has already stored.</p>
+<p><code>state</code> will usually contain a relatively <em>flat</em> object, just a set of key-value pairs.  A deeply nested hierarchy of objects is usually a sign that the component is dealing with too many things and might need breaking up into several, smaller, simple components. Besides, it is the Redux Store the place to deal with the bulk of data.</p>
+<h2><a class="self-ref" id="stateful-event-handlers" href="#stateful-event-handlers"># </a>Event handlers</h2>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L19-L28"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/projects/editProject.jsx</div>
+    <div class="from">From: 19</div>
+    <div class="to">To: 28</div>
+  </div>
+  <pre><code class="language-jsx">onChangeHandler(ev) {
+  const target = ev.target;
+  this.setState({ [target.name]: target.value });
+}
+onSubmitHandler(ev) {
+  if (isPlainClick(ev)) this.props.onSubmit(this.state);
+}
+onCancelHandler(ev) {
+  if (isPlainClick(ev)) this.props.onCancelEdit();
+}</code></pre></div>
+<p>We identify our internal event handlers with the <code>onXxxxxHandler</code> pattern.  Some of them, <code>onSubmitHandler</code> and <code>onCancelHandler</code>, after checking that the click was a plain one, that is, left button and no shift, alt or ctrl keys, it calls the external event handler received along the rest of the <code>props</code>. Neither passes on the <code>ev</code> event object out of the component, as we have already discussed at the end of the previous chapter. If we pass any arguments out of the component, they should be application-related, like in <code>onSubmitHandler</code> which passes <code>this.state</code> that should contain an object with only <code>name</code> and <code>descr</code> properties, which is all the outside world should care about from this component.  Should the <code>state</code> contain anything else, as it often happens, then we should <code>pick</code> whatever is relevant.</p>
+<p>To make sure <code>onSubmitHandler</code> can pass the true state of the form at any time, we should keep <code>state</code> updated at all times.  That is what <code>onChangeHandler</code> does.  We attach <code>onChangeHandler</code> to every input field in the form.  We name the input fields by the name of the property they affect so, a single handler can deal with all of them.  We get a reference to the input field from <code>ev.target</code> and then we use the <code>name</code> and <code>value</code> of that input field to set its state.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L21"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/projects/editProject.jsx</div>
+    <div class="from">From: 21</div>
+    <div class="to">To: 21</div>
+  </div>
+  <pre><code class="language-jsx">this.setState({ [target.name]: target.value });</code></pre></div>
+<p>Two important differences in between React's virtual DOM and the real DOM:</p>
+<ul>
+<li>The <code>onChange</code> event is fired whenever a field is changed, not just when the focus leaves the field.  Each and every keystroke or paste into a field changes it thus listening to the <code>onChange</code> event provides a continuously updated image of the field.</li>
+<li>All input elements have a <code>value</code> property, even <code>&lt;textarea&gt;</code> and <code>&lt;select&gt;</code> and they provide what you would really expect.  This standardizes the way to access their value regardless of their type.</li>
+</ul>
+<p>We could have attached a separate handler for changes in each of the two fields but thanks to the above item, we can manage with only one.</p>
+<p>We have to be careful with field validation. When using real DOM, we might run a full-field validation when the user moves the focus out of a field by listening to <code>onChange</code>.  This is not the case with React when <code>onChange</code> fires while the field is still being edited.</p>
+<p>We will attach all the handlers above to the events in the buttons and input fields in the form. The problem with doing so is that event handlers are called in the context of the element that fires it, that is, the <code>this</code> for the handler is the DOM element, which has no <code>this.setState</code> method.  That is why the handlers must be bound to the <code>this</code> of the instance of <code>EditProjectComponent</code>.</p>
+<p>There are two ways to do it.  When creating the element we might do:</p>
+<pre><code class="language-js">onChange={this.onChangeHandler.bind(this)}
+</code></pre>
+<p>This is not a good idea because the component might be re-rendered many times, as a matter of fact, it will be re-rendered on each and every keystroke.  Each call to <code>bind</code> leaves behind a bit of memory and, even though they are deleted as anew bound copy is created, we would be leaving behind a lot of trash for the garbage collector to dispose of.  Instead, we bind them all just once when the instance of <code>EditProjectComponent</code> is created with the <code>bindHandlers</code> function:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/utils/bindHandlers.js"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/utils/bindHandlers.js</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-js">const rxHandler = /^on[A-Z]\w*Handler$/;
+
+export default (obj, regXp = rxHandler) =&gt; {
+  Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).forEach(prop =&gt; {
+    if (typeof obj[prop] === 'function' &amp;&amp; regXp.test(prop)) {
+      Object.defineProperty(obj, prop, {
+        value: obj[prop].bind(obj),
+        configurable: true,
+        writable: true,
+      });
+    }
+  });
+};</code></pre></div>
+<p>We have already called it in the <code>constructor</code> <a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L17">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a>.  <code>bindHandlers</code> looks within an object for properties that are functions and follow the naming pattern <code>onXxxxxHandler</code> and binds them to that object.  The naming pattern can easily be changed by passing a second argument containing a regular expression.  It doesn't work on inherited methods which, presumably, should have been bound in their own constructors.</p>
+<h2><a class="self-ref" id="stateful-the-render-method" href="#stateful-the-render-method"># </a>The render method</h2>
+<p>Finally we reach the <code>render</code> method <a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L29-L61">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> which is very much alike our earlier stateless components, the difference being that <code>render</code> receives no arguments, this, it has to read the values from either <code>this.props</code> or <code>this.state</code>.  For example, the <code>name</code> field:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L32-L40"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/projects/editProject.jsx</div>
+    <div class="from">From: 32</div>
+    <div class="to">To: 40</div>
+  </div>
+  <pre><code class="language-jsx">&lt;div className={styles.formGroup}&gt;
+  &lt;label htmlFor="name"&gt;Name&lt;/label&gt;
+  &lt;input
+    className={styles.formControl}
+    name="name"
+    onChange={this.onChangeHandler}
+    value={this.state.name}
+  /&gt;
+&lt;/div&gt;</code></pre></div>
+<p>Its <code>value</code> is set from <code>this.state.name</code> and its <code>onChange</code> event listener is set to the already bound method <code>this.onChangeHandler</code>.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L50-L54"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/projects/editProject.jsx</div>
+    <div class="from">From: 50</div>
+    <div class="to">To: 54</div>
+  </div>
+  <pre><code class="language-jsx">&lt;button
+  className={styles.okButton}
+  disabled={this.state.name.length === 0}
+  onClick={this.onSubmitHandler}
+&gt;Ok&lt;/button&gt;</code></pre></div>
+<p>We can easily enable/disable the <code>Ok</code> button by checking the length of <code>this.submit.name</code>, which is the only mandatory field.  Since the <code>state</code> is constantly updated on each and every keystroke by the <code>onChange</code> listener, the enabled state is updated continuously.  That is not completely true, React's internal representation of the DOM will be updated but, if there is no change, the actual DOM attribute will not be changed.</p>
+<p>Note that we are not using the <code>&lt;form&gt;</code> <code>onSubmit</code> handler, though the handler is called <code>onSubmitHandler</code>, we are listening to the click on a simple button. As a matter of fact, there is no actual <code>&lt;form&gt;</code> element in the <em>form</em>, just a collection of fields, labels and buttons nicely formatted with the class names in the <code>styles</code> object.</p>
+<h2><a class="self-ref" id="stateful-the-exposed-event-handlers" href="#stateful-the-exposed-event-handlers"># </a>The exposed event handlers</h2>
+<p>As with stateless components, we generate the external event handlers with <code>mapDispatchToProps</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L72-L88"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/projects/editProject.jsx</div>
+    <div class="from">From: 72</div>
+    <div class="to">To: 88</div>
+  </div>
+  <pre><code class="language-jsx">export const mapDispatchToProps = (dispatch, { params: { pid } }) =&gt; ({
+  onSubmit: ({ name, descr }) =&gt; {
+    if (pid) {
+      return dispatch(updateProject(pid, name, descr))
+        .then(() =&gt; dispatch(push(`/projects/${pid}`)));
+    }
+    return dispatch(addProject(name, descr))
+      .then(response =&gt; dispatch(push(`/projects/${response.payload.pid}`)));
+  },
+  onCancelEdit: () =&gt; {
+    dispatch(replace(
+      pid
+      ? `/projects/${pid}`
+      : '/projects'
+    ));
+  },
+});</code></pre></div>
+<p>The same component serves both to edit a project as well as for adding a new one, the difference is that when editing an existing project, the project already has a <code>pid</code> while new ones don't.  In both <code>onSubmit</code> and <code>onCancelEdit</code> we first branch off to different dispatches, an <code>updateProject</code> if there is <code>pid</code> or <code>addProject</code> for a new project.  Note also how we chain further actions after the update or addition of the project.  By adding a <code>.then()</code> to the first dispatch, we are navigating away from the editor.  If it is an existing project, we already have the <code>pid</code> but, if it is a new project, we find out the <code>pid</code> it got assigned from the reply to the <code>addProject</code> action.</p>
+<p>We have not defined a <code>mapStateToProps</code> function for this component because we are using the very same one from <code>project.jsx</code> by importing it.  That is one more reason to always export those functions, besides doing unit-testing on them, we can reuse them in related components.</p>
+<p>For the time being, we will ignore <code>initialDispatch</code> and <code>initialDispatcher</code> which help ensure that the component has its initial data set to display. We will look at them in depth when we deal with isomorphism.</p>
+<h2><a class="self-ref" id="stateful-uncontrolled-components" href="#stateful-uncontrolled-components"># </a>(Un)controlled components</h2>
+<p>There is a discussion in the React documentation about controlled and uncontrolled components.  The one we've seen is a controlled component, so called because React is always in control, by listening to its changes and redrawing it all the time. Uncontrolled ones are simply left to run free, no <code>onChange</code> listener, no setting of its value from <code>this.state</code>.  An uncontrolled component might well be rendered by a stateless component, as all its state actually resides in the DOM itself.  However, by having no control over the form, we would be unable to do sophisticated things with it via React.  In an uncontrolled form, setting the enabled state of the <code>Ok</code> button or doing on-the-fly validation would require some extra scripting or using JQuery or similar tools, which would be a pity.</p>
+<p>Another issue with uncontrolled components is that the state is stored in the DOM and thus be lost if React re-renders the component.  This should not happen as React always tries to reduce the changes to the DOM and there is no reason why a change anywhere else in the page should force a refresh in an unrelated component. If an uncontrolled component gets its fields wiped out, it usually means there is a problem elsewhere.</p>
+<p>If none of the above is an issue, there is something we do need to take care in uncontrolled components. In general, we should not set the <code>value</code> of an uncontrolled component.  React provides us with an extra pseudo-attribute called <code>defaultValue</code>.  This is the value that the field will be set to when it is not already set, that is, when it is initialized.  This is one more way in which React can preserve what the users has typed in an input field if the component gets refreshed.  The <code>defaultValue</code> would be used only when the field is rendered the first time.</p>
+</section><section id="routing"><h1><a class="self-ref" id="routing-routing" href="#routing-routing"># </a>Routing</h1>
+<p>We are using <a href="https://www.npmjs.com/package/react-router">React-Router</a> for our client-side routing, coupled with <a href="https://www.npmjs.com/package/react-router-redux">react-router-redux</a> to navigate by dispatching regular Redux actions and keep the store in sync with the location information.</p>
+<p>Instead of having a single file holding routing information for the whole application, we have spread the responsibility to each of its parts, in this example, the only one we have, <em>Projects</em>.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/index.jsx"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/projects/index.jsx</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-jsx">import React from 'react';
+import { Route } from 'react-router';
+
+import ProjectList from './projectList';
+import EditProject from './editProject';
+import Project from './project';
+
+export default path =&gt; (
+  &lt;Route path={path} component={ProjectList}&gt;
+    &lt;Route path="newProject" component={EditProject} /&gt;
+    &lt;Route path="editProject/:pid" component={EditProject} /&gt;
+    &lt;Route path=":pid" component={Project} /&gt;
+  &lt;/Route&gt;
+);</code></pre></div>
+<p>React routes can also be written using JSX because each <code>Route</code> is a React Component.  For each route the router matches the <code>path</code> of the URL with the <code>component</code> that then gets called.  Just like in server-side Express routes, the colon precedes variable parts that will be turned into named parameters, in this case <code>:pid</code>.  The component will receive this parameter as one more property as <code>props.params.pid</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/project.jsx#L51-L52"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/projects/project.jsx</div>
+    <div class="from">From: 51</div>
+    <div class="to">To: 52</div>
+  </div>
+  <pre><code class="language-jsx">export const mapStateToProps = (state, props) =&gt; {
+  const pid = props.params.pid;</code></pre></div>
+<p>Routes can be nested. The outermost route receives its path from the parent, so as to consolidate the assignment of paths in one place, thus avoiding possible clashes. Assuming the parent passes <code>projects</code> for <code>path</code>, all this section of our app would be contained under the <code>/projects</code> path, for example <code>/projects</code>, <code>/projects/newProject</code>, <code>/projects/editProject/25</code> or <code>/projects/25</code>.  Note that, unlike Express routes, all components that match part of a route are called, not just the first match.  Thus, for <code>/projects/25</code> both the <code>ProjectList</code> and the <code>Project</code> components will be called with <code>Project</code> being embedded wherever the <code>{children}</code> placeholder <a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/projectList.jsx#L39">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> within <code>ProjectList</code> says.</p>
+<p>The same <code>EditProject</code> serves both to add a new project as well as for editing an existing one, the difference being that when editing, the <code>pid</code> parameter will not be null.</p>
+<h2><a class="self-ref" id="routing-routing-file-structure" href="#routing-routing-file-structure"># </a>Routing file structure</h2>
+<p>React-Router doesn't force any particular file structure as to where and how its routes are declared.  Many applications have just one big master routing file.  We prefer to delegate routing to each of the parts of the application.</p>
+<p>The set of routes above serves only the <em>Projects</em> part of what could be a more complex application. Note that the import paths to all the components point to files in the very same folder. It is all self-contained.  The set of routes is the default export in <code>index.jsx</code>, which is the default file name/extension for file imports.  Thus, when higher up in the hierarchy we write:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/index.jsx#L7"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/index.jsx</div>
+    <div class="from">From: 7</div>
+    <div class="to">To: 7</div>
+  </div>
+  <pre><code class="language-jsx">import projects from './projects';</code></pre></div>
+<p>we are actually importing the routing information to branch off to each of our components depending on the URL.  As a matter of fact, the whole of the parent routing file has a very similar structure:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/index.jsx"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/index.jsx</div>
+    <div class="from">From: start</div>
+    <div class="to">To: end</div>
+  </div>
+  <pre><code class="language-jsx">import React from 'react';
+import { Route } from 'react-router';
+
+import App from './app';
+import NotFound from './notFound';
+
+import projects from './projects';
+
+export default path =&gt; (
+  &lt;Route path={path} component={App}&gt;
+    {projects('projects')}
+    &lt;Route path="*" component={NotFound} /&gt;
+  &lt;/Route&gt;
+);</code></pre></div>
+<p>All file import paths point to files (<code>./app</code>, <code>./notFound</code>) or folders (<code>./projects</code>) in the very same folder it resides.  The routes are the default export and the file is the default filename with the default extension.</p>
+<p>The path for the root component in this file is received as an argument from the parent. In our case, that root path is <code>/</code> but the whole application could easily be moved elsewhere.  It calls the <code>App</code> component, which is the overall frame that encloses the whole application.  The <code>*</code> path, which is a wild-card, catches any path that doesn't match any route, thus it shows the <code>NotFound</code> component.</p>
+<p>Nested under the route for <code>/</code>, we have <code>{projects('projects')}</code> which brings the routes for the <em>Projects</em> part of the application and tells it which path it should respond to.  Should there be other parts, as a normal application would certainly have, they would be added here as well, each receiving its own unique root path.</p>
+<p>Going further up we get to the entry point for the client-side application. We will come back to this file later on, as there are a few other things we need to look at before dealing with the rest of it.  As for the routing part, this is what we care about:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/index.jsx#L31-L39"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/index.jsx</div>
+    <div class="from">From: 31</div>
+    <div class="to">To: 39</div>
+  </div>
+  <pre><code class="language-jsx">const dest = document.getElementById('contents');
+
+export default render((
+  &lt;Provider store={store}&gt;
+    &lt;Router history={history}&gt;
+      {components('/')}
+    &lt;/Router&gt;
+  &lt;/Provider&gt;
+), dest);</code></pre></div>
+<p>To get our React app going, we call the <code>render</code> function imported from <code>react-dom</code> <a href="https://github.com/Satyam/book-react-redux/blob/master/client/index.jsx#L2">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> and tell it which React component to render and the DOM element render it in.  Here we are using two React Components that are not visible:</p>
+<ul>
+<li><code>Provider</code> comes from React-Redux and it is the means it uses to make the <code>store</code> available to all the components in the application.  The <code>connect</code> HoC we have used <a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/projectItem.jsx#L29-L33">(<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />)</a> to make our components aware of the store takes it from <code>Provider</code>.</li>
+<li><code>Router</code> (note the spelling, <code>Router</code>, not <code>Route</code>) is the one actually managing the routes configured below.  It also provides the <code>withRouter</code> HoC. It receives a reference to the <code>history</code> to use.</li>
+</ul>
+<p>Finally, the <code>{components('/')}</code> embeds the routes from our application right at the root URL path.</p>
+<p>Client-side navigation can be done via <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/history"><code>window.history</code></a>, however, different implementations on various browsers makes it impractical to handle it directly.  The <a href="https://www.npmjs.com/package/history"><code>history</code></a> package provides a uniform mechanism across all browsers.   React-Router adds a further layer on it an offers <a href="https://github.com/reactjs/react-router/blob/latest/docs/guides/Histories.md#histories">three varieties</a>. We will use the recommended one, <code>browserHistory</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/index.jsx#L3-L4"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/index.jsx</div>
+    <div class="from">From: 3</div>
+    <div class="to">To: 4</div>
+  </div>
+  <pre><code class="language-jsx">import { Router, browserHistory } from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux';</code></pre></div>
+<p>We add a further layer upon it through <code>syncHistoryWithStore</code> which enables the state of the browser history to be reflected in the store:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/index.jsx#L25"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/index.jsx</div>
+    <div class="from">From: 25</div>
+    <div class="to">To: 25</div>
+  </div>
+  <pre><code class="language-jsx">const history = syncHistoryWithStore(browserHistory, store);</code></pre></div>
+<p>It is that store-synched <code>browserHistory</code> which we tell <code>&lt;Router&gt;</code> to use.</p>
+</section><section id="actions"><h1><a class="self-ref" id="actions-actions" href="#actions-actions"># </a>Actions</h1>
+<p>In Redux parlance, <em>actions</em> are signals sent to the store to let it know that something has happened so the store can have its state adjusted.</p>
+<p>It might be a good time for some basic definitions.</p>
+<ul>
+<li><em>Store</em> is where all the data handled by Redux is kept and by extension everything related to its operation.</li>
+<li><em>State</em> is a snapshot of the data in the store.</li>
+<li><em>Action</em> is an object that contains enough information for the store to act on it and possibly change its state</li>
+<li><em>Action Type</em> is the value of the <code>type</code> property of the <em>action</em> which serves to identify each kind of action.</li>
+<li><em>Action Creator</em> is a helper function that assembles an action.</li>
+<li><em>Dispatch</em> is when an action gets queued with the store so it gets processed.</li>
+<li><em>Reducer</em> is a function that actually changes the state of the store based on the information received in the action.</li>
+</ul>
+<p>Except for the <em>reducer</em> we have already mentioned the others.  We will see reducers in the next chapter.</p>
+<p>The only action creator we have seen so far has been <code>clearHttpErrors</code>:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/store/requests/actions.js#L8-L10"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/store/requests/actions.js</div>
+    <div class="from">From: 8</div>
+    <div class="to">To: 10</div>
+  </div>
+  <pre><code class="language-js">export function clearHttpErrors() {
+  return { type: CLEAR_HTTP_ERRORS };
+}</code></pre></div>
+<p>Since it has no arguments, it always returns the very same object, which is the actual <em>action</em> that would eventually be dispatched.  An <em>action</em> is  an object with, at the very least, a <code>type</code> property, which is usually a descriptive string:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/store/requests/actions.js#L8-L10"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/store/requests/actions.js</div>
+    <div class="from">From: 8</div>
+    <div class="to">To: 10</div>
+  </div>
+  <pre><code class="language-js">export function clearHttpErrors() {
+  return { type: CLEAR_HTTP_ERRORS };
+}</code></pre></div>
+<p>To ensure the uniqueness of the strings, we make them out of several parts separated by slashes, the first part being the part of the store they deal with which, in this case, is reflected in the folder containing its source code.</p>
+<p>Though the new <code>Symbol</code> object could be used to create unique action types, it is not a good idea because they are hard to visualize in the debugger, after all, the only thing the developer could visualize in the debugger is the description. Thus, though two symbols would always be different, their descriptions might not and that would confuse anyone tracing a bug. For example:</p>
+<pre><code class="language-js">Symbol('hello world') === Symbol('hello world')
+// returns false
+Symbol('hello world').toString() === Symbol('hello world').toString()
+// returns true.
+</code></pre>
+<p>The <code>toString()</code> value is what the debugger would show thus, we would still need to create unique descriptions. Symbols don't actually require descriptions, but that would still be worse because then they would all be anonymous.</p>
+<p>Most importantly though is that Symbols cannot be serialized.  JSON will ignore them just as it does with functions.  In any application connecting several clients, such as games or chat, actions must be transmitted to remote systems and Symbols simply don't get through.</p>
+<pre><code class="language-js">JSON.stringify({type: Symbol('hello world')})
+// returns {}
+</code></pre>
+<h2><a class="self-ref" id="actions-asynchronous-actions" href="#actions-asynchronous-actions"># </a>Asynchronous actions</h2>
+<p>Regular actions are good for situations when you have all the information already available.  In the action we create via our <code>clearHttpErrors</code> action creator, there is no extra information just the action type. Sometimes, to fulfill an action, we might need more information, for example, a response from a data server.  This is complicated to handle via plain, basic Redux but we may add some middleware to help us.</p>
+<p><a href="https://www.npmjs.com/package/redux-thunk">Redux-Thunk</a> can be added to a Redux store so it processes the actions before they get acted upon.  When Redux-Thunk receives an action, if it is a function, it will call it, otherwise it lets it pass through. Redux-Thunk provides two arguments, the <code>dispatch</code> and <code>getState</code> methods of the store.  Usually, only <code>dispatch</code> is used as any other information required can be provided by the code calling the action creator.</p>
+<p>The lifecyle of a typical async action creator has a few basic stages:</p>
+<ol>
+<li>dispatch a plain action to signal that the action has been initiated</li>
+<li>start the async requests</li>
+<li>on a successful reply, dispatch a plain action with the information just received</li>
+<li>if the request fails, dispatch a plain action with the error information</li>
+</ol>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/utils/asyncActionCreator.js#L7-L14"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/utils/asyncActionCreator.js</div>
+    <div class="from">From: 7</div>
+    <div class="to">To: 14</div>
+  </div>
+  <pre><code class="language-js">export default (type, asyncRequest, payload = {}) =&gt;
+  dispatch =&gt; {
+    dispatch({
+      type,
+      payload,
+      meta: { asyncAction: REQUEST_SENT },
+    });
+    return asyncRequest.then(</code></pre></div>
+<p>We have created a utility function <code>asyncActionCreator</code> that helps us with this.  It receives an action type, the actual async request, which can be anything that returns a Promise and a <code>payload</code> which is an object containing the information related to the request.</p>
+<p><code>asyncActionCreator</code> returns a function, which allows Redux-Thunk to identify it as an asynchronous action.  It then calls it passing a reference to <code>dispatch</code> as an argument.  <code>asyncActionCreator</code> first calls <code>dispatch</code> to indicate that the async action has been initiated.  For all its actions, it uses the Flux Standard Action (<a href="https://github.com/acdlite/flux-standard-action">FSA</a>) format, which provides a predictable and flexible format to pass information. Redux itself does not require any particular format, it only cares about the <code>type</code> property, but anything that makes matters more predictable is good.</p>
+<p>FSA expects an action to have only four properties with <code>type</code> being the only mandatory:</p>
+<ul>
+<li><code>type</code>: mandatory, as per Redux rules.</li>
+<li><code>payload</code>: an object with all the information related to the action.</li>
+<li><code>error</code>: a Boolean, usually only present if it is true, it indicates a failed request.  If so, <code>payload</code> should contain an error object.</li>
+<li><code>meta</code>: A place for whatever extra information might be required.</li>
+</ul>
+<p>In our initial action, we are using the <code>type</code> and <code>payload</code> received as arguments and we are adding in the <code>meta</code> an object with the <code>asyncAction</code> property set to <code>REQUEST_SENT</code>, a sort of sub-action type that signals that this is the initiation of the action signaled by the actual <code>type</code>.  Thus, for an action <code>type</code> of <code>ADD_PROJECT</code> we will have an <code>ADD_PROJECT</code>/<code>REQUEST_SENT</code> and then an <code>ADD_PROJECT</code>/<code>REPLY_RECEIVED</code> or, if anything fails an <code>ADD_PROJECT</code>/<code>FAILURE_RECEIVED</code>.</p>
+<p>Since the <code>asyncRequest</code> argument is a Promise, we attach to the <code>then</code> part and return that, which is still a Promise.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/utils/asyncActionCreator.js#L15-L19"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/utils/asyncActionCreator.js</div>
+    <div class="from">From: 15</div>
+    <div class="to">To: 19</div>
+  </div>
+  <pre><code class="language-js">response =&gt; dispatch({
+  type,
+  payload: Object.assign(response.data, payload),
+  meta: { asyncAction: REPLY_RECEIVED },
+}),</code></pre></div>
+<p>For the <em>resolve</em> part of the <code>then</code> we respond by dispatching an action with the same action type but with a <code>REPLY_RECEIVED</code> sub-action type.  For the payload, we merge the data received in the response with whatever came in the <code>payload</code> argument.  Even if the reply is an array, as it frequently is, <code>Object.assign</code> will work and return an Array with the extra properties from <code>payload</code> added.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/utils/asyncActionCreator.js#L20-L35"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/utils/asyncActionCreator.js</div>
+    <div class="from">From: 20</div>
+    <div class="to">To: 35</div>
+  </div>
+  <pre><code class="language-js">error =&gt; {
+  const response = error.response;
+  const err = {
+    message: response ? (response.statusText || response.data) : error.message,
+    status: response ? response.status : error.code,
+    url: error.config.url,
+    actionType: type,
+    originalPayload: payload,
+  };
+  return dispatch({
+    type,
+    payload: err,
+    error: true,
+    meta: { asyncAction: FAILURE_RECEIVED },
+  });
+}</code></pre></div>
+<p>For the <code>reject</code> part of the <code>then</code> we assemble an <code>err</code> object which is a plain object literal, not an instance of the Error class.  This is because it is not a good idea to store class instances in the store.  The reason is similar to why we prefer not to use <code>Symbol</code>s for action types, neither is serializable.  In isomorphic applications, it is not enough to send the rendered HTML from the server to the client, it is also important to send the data that produced it and to do that, we have to serialize the store.  Dates already pose a problem on serialization, we can do without further class instances.</p>
+<p>As per <a href="https://github.com/acdlite/flux-standard-action">FSA</a>, we set the <code>error</code> property and send the error object as the payload. We include both the <code>actionType</code> and the <code>originalPayload</code> as part of the error object, just in case any component might need it.</p>
+<p>We have opted to use the same action type for all three possible messages for each action. We then discriminate amongst them via the <code>asyncAction</code> property in <code>meta</code>.  This is just a matter of choice and neither Redux nor FSA forces us one way or another.</p>
+<p>The use of a consistent sub-action for async actions allows us to easily count outstanding async requests and thus show the <code>Loading</code> component.  On each <code>REQUEST_SENT</code> sub-action the <code>pending</code> count goes up, regardless of the action type. On each <code>REPLY_RECEIVED</code> or <code>FAILURE_RECEIVED</code>, the <code>pending</code> count goes down.  Additionally, on each <code>FAILURE_RECEIVED</code>, the <code>payload</code>, which contains the error object, is saved for later use.  Wewill see how this is done in a later chapter.</p>
+<h2><a class="self-ref" id="actions-using-asyncactioncreator" href="#actions-using-asyncactioncreator"># </a>Using asyncActionCreator</h2>
+<p>As with all actions, we first define the action types:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L4-L14"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 4</div>
+    <div class="to">To: 14</div>
+  </div>
+  <pre><code class="language-js">const NAME = 'projects/';
+
+export const TASK_COMPLETED_CHANGE = `${NAME} Task completed changed`;
+export const ALL_PROJECTS = `${NAME} Get all projects`;
+export const PROJECT_BY_ID = `${NAME} Get Project by id`;
+export const ADD_PROJECT = `${NAME} Add Project`;
+export const UPDATE_PROJECT = `${NAME} Update Project`;
+export const DELETE_PROJECT = `${NAME} Delete Project`;
+export const ADD_TASK = `${NAME} Add Task to Project`;
+export const UPDATE_TASK = `${NAME} Update Task`;
+export const DELETE_TASK = `${NAME} Delete Task`;</code></pre></div>
+<p>To perform HTTP REST requests, we use <a href="https://www.npmjs.com/package/axios">Axios</a> which already supports Promises and also allows for pre-configured requests. We use a small utility to provide us with those pre-configured instances:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/utils/restAPI.js#L30-L47"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/utils/restAPI.js</div>
+    <div class="from">From: 30</div>
+    <div class="to">To: 47</div>
+  </div>
+  <pre><code class="language-js">export default base =&gt; {
+  if (clients[base]) return clients[base];
+  const restClient = axios.create({
+    baseURL: `${HOST}:${PORT}${join(REST_API_PATH, base)}`,
+    responseType: 'json',
+  });
+  clients[base] = restClient;
+
+  if (BUNDLE === 'electronClient') {
+    restClient.defaults.adapter = adapter;
+  }
+
+  return Object.assign(restClient, {
+    read: restClient.get,
+    create: restClient.post,
+    update: restClient.put,
+  });
+};</code></pre></div>
+<p>For the time being, we shall ignore the part about the Electron client. For normal connections, we first check whether we have one in the cache, otherwise, we create one by setting the <code>baseURL</code> to the data we already know about our server, the HOST, PORT and the REST_API_PATH are <code>http://localhost</code>, <code>8080</code> and <code>/data/v2</code> respectively. We add the <code>base</code> to that.  For Projects it is <code>projects</code> thus resulting in <code>http://localhost:8080/data/v2/projects</code> which is what we had our server configured to listen to. Additionally we declare that we intend the response to come as JSON data.  We then save this connection into the cache.</p>
+<p>We also create some handy aliases for the regular HTTP verbs.  It is easy to confuse <code>PUT</code> and <code>POST</code> so we create aliases for the 4 CRUD operations.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L16"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 16</div>
+    <div class="to">To: 16</div>
+  </div>
+  <pre><code class="language-js">const api = restAPI('projects');</code></pre></div>
+<p>With this utility it is easy to create an instance by just providing the specific entry point for this set of operations.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L18-L23"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 18</div>
+    <div class="to">To: 23</div>
+  </div>
+  <pre><code class="language-js">export function getAllProjects() {
+  return asyncActionCreator(
+    ALL_PROJECTS,
+    api.read('?fields=pid,name,pending')
+  );
+}</code></pre></div>
+<p>The <code>getAllProjects</code> action creator needs no extra arguments.  It calls <code>asyncActionCreator</code> with the <code>ALL_PROJECTS</code> action type and the result of doing a <code>read</code> (or <code>get</code>) operation on the pre-configured connection.</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L65-L71"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/store/projects/actions.js</div>
+    <div class="from">From: 65</div>
+    <div class="to">To: 71</div>
+  </div>
+  <pre><code class="language-js">export function updateTask(pid, tid, descr, completed) {
+  return asyncActionCreator(
+    UPDATE_TASK,
+    api.update(`/${pid}/${tid}`, { descr, completed }),
+    { pid, tid, descr, completed }
+  );
+}</code></pre></div>
+<p>Other action creators are a little bit more complex because they need to provide more information in the URL, in this case the <code>pid</code> and <code>tid</code> and also extra information that goes in the body of the HTTP request, <code>name</code> and <code>descr</code>. We use <code>descr</code> instead of the customary <code>desc</code> for <em>description</em> because <code>DESC</code> is a reserved word in SQL and many other query languages so using <code>desc</code> as a column name causes lots of trouble.  While for the REST API we need to discriminate in between <em>id</em> values that go in the URL and plain data that goes in the body, for the <code>payload</code> argument, we simply pass on all the received arguments in an object. When assembling the payload, we are using the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Property_definitions"><em>shorthand property names</em></a> feature of ES6.</p>
+<p>Note that in all cases we return the Promise returned by <code>asyncActionCreator</code> which is none other than that the one created initially by the <code>api.read</code> or <code>api.update</code> or whatever <code>asyncAction</code> we initially passed to <code>asyncActionCreator</code>.  The <code>dispatch</code> method of Redux always returns the action it receives and if we have React-Thunk to process asynchronous actions, it will return whatever Promise it returns.  This allows further chaining, for example:</p>
+<div class="code-insert"><div class="header">
+    <div class="link"><a href="https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/project.jsx#L60-L65"><img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" /></a></div>
+    <div class="branch">Branch: master</div>
+    <div class="filename">File: client/components/projects/project.jsx</div>
+    <div class="from">From: 60</div>
+    <div class="to">To: 65</div>
+  </div>
+  <pre><code class="language-jsx">export const mapDispatchToProps = dispatch =&gt; ({
+  onEditClick: ({ pid }) =&gt; dispatch(push(`/projects/editProject/${pid}`)),
+  onDeleteClick: ({ pid }) =&gt;
+    dispatch(deleteProject(pid))
+      .then(() =&gt; dispatch(push('/projects'))),
+});</code></pre></div>
+<p>The <code>onDeleteClick</code> property that <code>mapDispatchToProps</code> provides to the <code>ProjectComponent</code> first dispatches the request to delete the project by <code>pid</code>, <code>then</code>, it dispatches an action to the router <code>push('/projects')</code> to navigate away from the page showing that project, since it has already been deleted.</p>
 </section>
     </div>
   </body>
