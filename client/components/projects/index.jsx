@@ -5,8 +5,8 @@ import ProjectList from './projectList';
 import EditProject from './editProject';
 import Project from './project';
 
-export default (
-  <Route path="projects" component={ProjectList}>
+export default path => (
+  <Route path={path} component={ProjectList}>
     <Route path="newProject" component={EditProject} />
     <Route path="editProject/:pid" component={EditProject} />
     <Route path=":pid" component={Project} />

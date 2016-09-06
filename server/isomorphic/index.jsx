@@ -14,7 +14,7 @@ export default function isomorphic(req, res, next) {
   const store = createStore(memoryHistory);
   const history = syncHistoryWithStore(memoryHistory, store);
   match(
-    { history, routes: clientRoutes, location: req.url },
+    { history, routes: clientRoutes('/'), location: req.url },
     (err, redirectLocation, renderProps) => {
       if (err) {
         console.error(err);

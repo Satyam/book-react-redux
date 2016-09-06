@@ -1,14 +1,14 @@
 import React from 'react';
 import { Route } from 'react-router';
 
-import App from '_components/app';
-import NotFound from '_components/notFound';
+import App from './app';
+import NotFound from './notFound';
 
-import projects from '_components/projects';
+import projects from './projects';
 
-export default (
-  <Route path="/" component={App}>
-    {projects}
+export default path => (
+  <Route path={path} component={App}>
+    {projects('projects')}
     <Route path="*" component={NotFound} />
   </Route>
 );

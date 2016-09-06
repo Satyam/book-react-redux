@@ -33,7 +33,7 @@ const dest = document.getElementById('contents');
 export default render((
   <Provider store={store}>
     <Router history={history}>
-      {components}
+      {components('/')}
     </Router>
   </Provider>
 ), dest);
