@@ -7,4 +7,5 @@ server.md
 serverProjectsHandler.md
 components.md
 stateful.md
+routing.md
 actions.md

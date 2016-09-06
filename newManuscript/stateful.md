@@ -64,7 +64,7 @@ We have already called it in the `constructor` [(:octocat:)](https://github.com/
 
 Finally we reach the `render` method [(:octocat:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L29-L61) which is very much alike our earlier stateless components, the difference being that `render` receives no arguments, this, it has to read the values from either `this.props` or `this.state`.  For example, the `name` field:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L29-L61)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/editProject.jsx#L32-L40)
 
 Its `value` is set from `this.state.name` and its `onChange` event listener is set to the already bound method `this.onChangeHandler`.
 
