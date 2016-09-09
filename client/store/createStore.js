@@ -2,7 +2,8 @@ import { combineReducers, createStore, applyMiddleware, compose } from 'redux';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import reduxThunk from 'redux-thunk';
 
-import { projects, tasks } from './projects';
+import projects from './projects';
+import tasks from './tasks';
 import requests from './requests';
 import misc from './misc';
 

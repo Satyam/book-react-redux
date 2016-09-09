@@ -9,13 +9,16 @@ import {
 
 import {
   TASK_COMPLETED_CHANGE,
+  ADD_TASK,
+  DELETE_TASK,
+} from '_store/tasks/actions';
+
+import {
   ALL_PROJECTS,
   PROJECT_BY_ID,
   ADD_PROJECT,
   UPDATE_PROJECT,
   DELETE_PROJECT,
-  ADD_TASK,
-  DELETE_TASK,
 } from './actions';
 
 export default (state = {}, action) => {
@@ -46,10 +49,10 @@ export default (state = {}, action) => {
     }
     case ALL_PROJECTS:
       return update(state, { $merge: payload.reduce(
-        (projects, project) => (
+        (newProjects, project) => (
           project.pid in state
-          ? projects
-          : Object.assign(projects, { [project.pid]: project })
+          ? newProjects
+          : Object.assign(newProjects, { [project.pid]: project })
         ),
         {}
       ) });

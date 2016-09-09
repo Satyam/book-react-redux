@@ -7,6 +7,9 @@ import {
 
 import {
   PROJECT_BY_ID,
+} from '_store/projects/actions';
+
+import {
   ADD_TASK,
   UPDATE_TASK,
   DELETE_TASK,
@@ -18,10 +21,10 @@ export default (state = {}, action) => {
   switch (action.type) {
     case PROJECT_BY_ID:
       return update(state, { $merge: payload.tasks.reduce(
-        (tasks, task) => (
+        (newTasks, task) => (
           task.tid in state
-          ? tasks
-          : Object.assign(tasks, { [task.tid]: task })
+          ? newTasks
+          : Object.assign(newTasks, { [task.tid]: task })
         ),
         {}
       ) });

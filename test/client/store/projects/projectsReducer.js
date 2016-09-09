@@ -4,17 +4,20 @@ import { diff as deepDiff } from 'deep-diff';
 import diff from '_test/utils/diff.js';
 import data from '_test/utils/data';
 
-import reducer from '_store/projects/projectsReducer';
+import reducer from '_store/projects/reducer';
 import {
-  TASK_COMPLETED_CHANGE,
   ALL_PROJECTS,
   PROJECT_BY_ID,
   ADD_PROJECT,
   UPDATE_PROJECT,
   DELETE_PROJECT,
+} from '_store/projects/actions';
+
+import {
+  TASK_COMPLETED_CHANGE,
   ADD_TASK,
   DELETE_TASK,
-} from '_store/projects/actions';
+} from '_store/tasks/actions';
 
 const projects = data.projects;
 
@@ -85,6 +88,14 @@ describe('Store: Projects, projectsReducer', () => {
       );
     });
     it('add extra project to existing set', () => {
+      console.log(diffAfter(
+        ALL_PROJECTS,
+        [{
+          pid: '99',
+          name: 'name for project 99',
+          pending: 0,
+        }]
+      ));
       expect(diffAfter(
         ALL_PROJECTS,
         [{
