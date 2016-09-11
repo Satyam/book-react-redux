@@ -9,3 +9,5 @@ components.md
 stateful.md
 routing.md
 actions.md
+reducers.md
+clientSide.md

@@ -116,4 +116,4 @@ Note that in all cases we return the Promise returned by `asyncActionCreator` wh
 
 [(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/projects/project.jsx#L60-L65)
 
-The `onDeleteClick` property that `mapDispatchToProps` provides to the `ProjectComponent` first dispatches the request to delete the project by `pid`, `then`, it dispatches an action to the router `push('/projects')` to navigate away from the page showing that project, since it has already been deleted.
+The `onDeleteClick` property that `mapDispatchToProps` provides to the `ProjectComponent` first dispatches the request to delete the project by `pid`, `then`, it dispatches an action to the router `push('/projects')` to navigate away from the page showing that project, since it has already been deleted. The `push` action creator comes from React-Router and it is named so because the browser history is handled like a stack so new locations are pushed into it so that they can be popped when going back.
