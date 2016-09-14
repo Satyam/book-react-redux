@@ -141,7 +141,7 @@ As expected, the types of the `props` are declared both as objects:
 
 We have seen how we can reflect the state of the store in a connected component but, so far, we haven't seen how we can affect the store in response to an action by the user.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L9-L29)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L8-L28)
 
 `ErrorsComponent` receives an array with a list of `errors` and it simply displays it after chaining them together via`{errors.join('\n')}` in an overlaid box only when the length of the list is not zero.  The list of errors is more or less verbose depending on the value of `process.env.NODE_ENV`, if it equals `production` it simply shows the plain `message`, otherwise it assumes it is a development version and shows more details.  React itself checks  `process.env.NODE_ENV` to conditionally enable plenty of diagnostics such as checking the `PropTypes`, we are simply using the same mechanism.
 
@@ -153,7 +153,7 @@ The box contains a button to let the user acknowledge the error and clear the er
 
 In that case, the component calls `onCloseErrors` which it received as a property (destructured from the `props` object). We used the `on` prefix to mark it as an event listener as with DOM event listeners.  Just like `errors` is produced via `mapStateToProps` from the Redux store, so `onCloseErrors` is produced by `mapDispatchToProps`:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L40-L42)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L39-L41)
 
 `mapDispatchToProps` is a function that receives a reference to the `store.dispatch` method.  This is the method through which we notify the store that something has happened. When using Redux, we only maintain one store so when we `dispatch` something, it can only go to one place.
 
@@ -161,11 +161,11 @@ In that case, the component calls `onCloseErrors` which it received as a propert
 
 Just as `mapStateToProps`, `mapDispatchToProps` returns an object that will be merged along the rest of the `props` received from the parent.  Both are exported by name for testing purposes and the types of both sets of properties have to be declared:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L31-L34)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L30-L33)
 
 Though it was not used in this case, `mapDispatchToProps` also receives a reference to the same `props` the component would receive, to help it assemble the *actions*.  `mapDispatchToProps` (not the functions it returns) will be called again whenever the `props` change so that the returned functions are bound to the most recent properties.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L44-L47)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/components/errors.jsx#L43-L46)
 
 `mapDispatchToProps` is used as a second argument for the `connect` method that wraps our simple stateless component with the HoC.
 

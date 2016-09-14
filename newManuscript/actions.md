@@ -84,31 +84,37 @@ As per [FSA](https://github.com/acdlite/flux-standard-action), we set the `error
 
 We have opted to use the same action type for all three possible messages for each action. We then discriminate amongst them via the `asyncAction` property in `meta`.  This is just a matter of choice and neither Redux nor FSA forces us one way or another.
 
-The use of a consistent sub-action for async actions allows us to easily count outstanding async requests and thus show the `Loading` component.  On each `REQUEST_SENT` sub-action the `pending` count goes up, regardless of the action type. On each `REPLY_RECEIVED` or `FAILURE_RECEIVED`, the `pending` count goes down.  Additionally, on each `FAILURE_RECEIVED`, the `payload`, which contains the error object, is saved for later use.  Wewill see how this is done in a later chapter.
+The use of a consistent sub-action for async actions allows us to easily count outstanding async requests and thus show the `Loading` component.  On each `REQUEST_SENT` sub-action the `pending` count goes up, regardless of the action type. On each `REPLY_RECEIVED` or `FAILURE_RECEIVED`, the `pending` count goes down.  Additionally, on each `FAILURE_RECEIVED`, the `payload`, which contains the error object, is saved for later use.  We will see how this is done in a later chapter.
 
 ## Using asyncActionCreator
 
 As with all actions, we first define the action types:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L4-L14)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L4-L10)
 
-To perform HTTP REST requests, we use [Axios](https://www.npmjs.com/package/axios) which already supports Promises and also allows for pre-configured requests. We use a small utility to provide us with those pre-configured instances:
+To perform HTTP REST requests, we use the new [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch) global method.  Since not all browsers or NodeJS versions support it, we use suitable polyfills, which we will look at later on. For the time being, we may assume `window.fetch` or `global.fetch` are present, somehow. We use a small utility to provide us with pre-configured instances:
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/utils/restAPI.js#L30-L47)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/utils/restAPI.js#L35-L63)
 
-For the time being, we shall ignore the part about the Electron client. For normal connections, we first check whether we have one in the cache, otherwise, we create one by setting the `baseURL` to the data we already know about our server, the HOST, PORT and the REST_API_PATH are `http://localhost`, `8080` and `/data/v2` respectively. We add the `base` to that.  For Projects it is `projects` thus resulting in `http://localhost:8080/data/v2/projects` which is what we had our server configured to listen to. Additionally we declare that we intend the response to come as JSON data.  We then save this connection into the cache.
+As the last few lines show, this utility returns an object with the basic four CRUD methods, created from `restClient`.  Each of those methods will take a URL and optionally a body and it will return a `Promise` which, on success (the `.then` part) will return the data requested or on failure (the `.catch` part) an error object which might be an actual instance of `Error` or just an object literal with error information.  Since our errors go into the Redux Store and it is not recommended to store non-serializable objects such as an `Error` instance, for our own custom errors, we don't bother creating ephemeral `Error` subclasses which we would then have to convert back to plain objects to have them stored.
+
+`restClient` calls `fetch` with a full URL made up from our predefined `HOST`, `PORT` and `REST_API_PATH` constants, then the `base` entry point for this family of APIs, such as `projects` and then the relative `path` for this request.  In the configuration we set the `method` from the argument, set the headers to tell we are going to use JSON in both directions, set the `credentials` so that cookies can be sent and, if there is a `body` we encode it with JSON.  Then, if the `response` is `ok`, that is, in the 2xx series, we return the same `response` to allow the processing to keep going, otherwise, we use `Promise.reject` to force an failed response.
+
+The same source file contains a part that is meant for use with Electron.  We will look at it later.
+
+We use the `client` object to cache the pre-configured client connection to each of the `base` entry points.
 
 We also create some handy aliases for the regular HTTP verbs.  It is easy to confuse `PUT` and `POST` so we create aliases for the 4 CRUD operations.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L16)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L12)
 
 With this utility it is easy to create an instance by just providing the specific entry point for this set of operations.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L18-L23)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L14-L19)
 
 The `getAllProjects` action creator needs no extra arguments.  It calls `asyncActionCreator` with the `ALL_PROJECTS` action type and the result of doing a `read` (or `get`) operation on the pre-configured connection.
 
-[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L65-L71)
+[(:memo:)](https://github.com/Satyam/book-react-redux/blob/master/client/store/projects/actions.js#L37-L43)
 
 Other action creators are a little bit more complex because they need to provide more information in the URL, in this case the `pid` and `tid` and also extra information that goes in the body of the HTTP request, `name` and `descr`. We use `descr` instead of the customary `desc` for *description* because `DESC` is a reserved word in SQL and many other query languages so using `desc` as a column name causes lots of trouble.  While for the REST API we need to discriminate in between *id* values that go in the URL and plain data that goes in the body, for the `payload` argument, we simply pass on all the received arguments in an object. When assembling the payload, we are using the [*shorthand property names*](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Property_definitions) feature of ES6.
 

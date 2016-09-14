@@ -21,9 +21,11 @@ We save the performance tools into a `Perf` global variable so that we can use i
 * `Perf.start()` and `Perf.stop()` to start and stop the capture of performance data. This can be called from the console or placed around any section of code we want to analyze.
 * `Perf.printWasted()` shows in the console a nicely formatted table of all the components that were called but didn't actually change the DOM.
 
-The `shouldComponentUpdate` method which our components inherit from `React.Component` is the main tool for us to prevent unnecessary re-renders. Most of our components are stateless so we don't have access to `shouldComponentUpdate`.  If any of our stateful components show in the list of wasted time, we should implement `shouldComponentUpdate`.
+The `shouldComponentUpdate` method which our components inherit from `React.Component` is the main tool for us to prevent unnecessary re-renders. Most of our components are stateless so we don't have access to `shouldComponentUpdate`.  On announcing *stateless components* the React team wrote:
 
-When *High-order Components* HoC are used, they show up quite frequently in this list. Since they don't produce any DOM at all, no matter what they do, they never change it so calling them often seems to be a waste. `connect` already implements `shouldComponentUpdate` which is the main tool we have to prevent a component from even entering the rendering process.  Deep-cloning the state of the store on every change is a sure way to make shallow-compares fail, thus producing pointless re-renders.
+> In the future, we’ll also be able to make performance optimizations specific to these components by avoiding unnecessary checks and memory allocations.
+
+That future is not there yet and stateless components, lacking `shouldComponentUpdate` to decide whether to render or not, always do render. That is why `printWasted` lists them quite often. If performance is an issue and until that future arrives, it might be a good idea to turn them into stateful components so they can benefit from `shouldComponentUpdate`.
 
 For an isomorphic client, we also check whether the markup sent from the server has been preserved.
 

@@ -2,7 +2,7 @@
 
 Our sample application will use JavaScript extensively both for the client and the server.  We used JavaScript even for auxiliary scripts, no Bash shell or Python, all plain JavaScript.
 
-On the client side, our application will use React along several related packages such as React-Router and Redux for data manipulation.  We will use [Axios](https://www.npmjs.com/package/axios) for HTTP communication, but its usage is concentrated on just a couple of files so it should be easy to swap it out for some other communication package.
+On the client side, our application will use React along several related packages such as React-Router and Redux for data manipulation.  We will use the new standard global [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch) method which is already available in several browsers and can be emulated via suitable polyfills if not natively available. Its usage is concentrated on just a couple of files so it should be easy to swap it out for some other communication package.
 
 We are using Twitter's [Bootstrap](http://getbootstrap.com/) for its CSS styles, fonts and icons, though we are not using any of its active components.  We haven't used any active components from any library because that simply requires following the recipe for whichever library and doesn't need much explaining.  We have made all of our components so as to learn how to do them.
 
