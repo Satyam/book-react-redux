@@ -7,6 +7,7 @@ import {
 
 import {
   PROJECT_BY_ID,
+  DELETE_PROJECT,
 } from '_store/projects/actions';
 
 import {
@@ -28,6 +29,16 @@ export default (state = {}, action) => {
         ),
         {}
       ) });
+    case DELETE_PROJECT:
+      return Object.keys(state).reduce(
+        (newState, tid) => Object.assign(
+          newState,
+          state[tid].pid === payload.pid
+          ? null
+          : { [tid]: state[tid] }
+        ),
+        {}
+      );
     case ADD_TASK:
       return update(state, { $merge: { [payload.tid]: payload } });
     case UPDATE_TASK:
