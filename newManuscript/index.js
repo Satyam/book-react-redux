@@ -3,7 +3,7 @@ const markdown = require('markdown-it');
 const hljs = require('highlight.js');
 const fs = require('fs');
 const uslug = require('uslug');
-const axios = require('axios');
+require('isomorphic-fetch');
 const unique = require('lodash/uniq');
 const denodeify = require('denodeify');
 const path = require('path');
@@ -31,10 +31,6 @@ const download =
 />&dArr;</a>`
 const octocat = '<img class="emoji" title="See in GitHub" alt="octocat" src="octocat.png" />';
 // https://github.com/Satyam/book-react-redux/archive/chapter-02-03.zip
-const rawGitHub = axios.create({
-  baseURL: 'https://raw.githubusercontent.com/Satyam/book-react-redux/',
-  transformResponse: (data) => data
-});
 
 const md = markdown({
   html: true
@@ -160,8 +156,9 @@ readFile('book.txt', 'utf8')
       links = unique(links);
       var rawFiles = {};
       return Promise.all(links.map((link) =>
-        rawGitHub.get(link)
-        .then((response) => response.data.split('\n'))
+        fetch('https://raw.githubusercontent.com/Satyam/book-react-redux/' + link)
+        .then(response => response.text())
+        .then(text => text.split('\n'))
       ))
       .then((raw) => {
         links.forEach((link, index) => {
