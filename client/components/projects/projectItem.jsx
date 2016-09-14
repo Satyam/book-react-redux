@@ -19,14 +19,15 @@ export const ProjectItemComponent = ({ pid, name, pending, router }) => (
   </li>
 );
 
+
 ProjectItemComponent.propTypes = {
   pid: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  pending: PropTypes.number.isRequired,
+  name: PropTypes.string,
+  pending: PropTypes.number,
   router: routerShape,
 };
 
-export const mapStateToProps = (state, props) => state.projects[props.pid];
+export const mapStateToProps = (state, props) => state.projects[props.pid] || {};
 
 export default withRouter(connect(
   mapStateToProps

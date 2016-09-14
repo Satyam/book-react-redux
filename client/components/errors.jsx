@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import isPlainClick from '_utils/isPlainClick';
 import classNames from 'classnames';
 import { clearHttpErrors } from '_store/actions';
-import map from 'lodash/map';
 import styles from './errors.css';
 
 export const ErrorsComponent = ({ errors, onCloseErrors }) => {
@@ -21,7 +20,7 @@ export const ErrorsComponent = ({ errors, onCloseErrors }) => {
         errors.map(
           process.env.NODE_ENV === 'production'
           ? e => e.message
-          : e => map(e, (value, key) => `${key}: ${value}`).join('\n')
+          : e => JSON.stringify(e, null, 2)
         ).join('\n')
       }
     </div>

@@ -22,9 +22,10 @@ import {
 } from './actions';
 
 export default (state = {}, action) => {
+  const payload = action.payload;
   if (action.error) {
     if (action.type === PROJECT_BY_ID) {
-      const pid = action.error.originalPayload.pid;
+      const pid = payload.originalPayload.pid;
       return update(state, { $merge: {
         [pid]: {
           pid,
@@ -34,7 +35,6 @@ export default (state = {}, action) => {
     }
     return state;
   } else if (action.meta && action.meta.asyncAction !== REPLY_RECEIVED) return state;
-  const payload = action.payload;
   switch (action.type) {
     case TASK_COMPLETED_CHANGE: {
       return update(state,

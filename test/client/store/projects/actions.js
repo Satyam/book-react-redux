@@ -6,7 +6,7 @@ import {
 } from '_test/utils/renderers';
 // uncomment following for data to be used when testing update or delete
 // import data from '_test/utils/data';
-import nock from 'nock';
+import fetchMock from 'fetch-mock';
 
 import {
   getAllProjects,
@@ -17,8 +17,7 @@ import {
   REPLY_RECEIVED,
 } from '_store/actions.js';
 
-const SERVER = `${HOST}:${PORT}`;
-const API = `${REST_API_PATH}/projects/`;
+const API = `${HOST}:${PORT}${REST_API_PATH}/projects`;
 
 
 describe('projects actions', () => {
@@ -27,19 +26,15 @@ describe('projects actions', () => {
     beforeEach(() => {
       store = mockStore({ projects: {} });
     });
-    afterEach(() => {
-      nock.cleanAll();
-    });
+    afterEach(fetchMock.restore);
+
     describe('getAllProjects', () => {
       it('standard reply', () => {
         const body = [
           { pid: 25, name: 'Writing a Book on Web Dev Tools' },
           { pid: 34, name: 'Cook a Spanish omelette' },
         ];
-        nock(SERVER)
-          .get(API)
-          .query({ fields: 'pid,name,pending' })
-          .reply(200, body);
+        fetchMock.get(`${API}/?fields=pid,name,pending`, body);
 
         return store.dispatch(getAllProjects())
           .then(() => actionExpects(store,
@@ -56,10 +51,7 @@ describe('projects actions', () => {
           ));
       });
       it('error reply', () => {
-        nock(SERVER)
-          .get(API)
-          .query({ fields: 'pid,name,pending' })
-          .reply(404, 'Not found');
+        fetchMock.get(`${API}/?fields=pid,name,pending`, 404);
 
         return store.dispatch(getAllProjects())
           .then(() => actionExpects(store,
@@ -72,10 +64,9 @@ describe('projects actions', () => {
               expect(action.type).to.equal(ALL_PROJECTS);
               expect(action.error).to.be.true;
               expect(action.payload.status).to.equal(404);
-              expect(action.payload)
-                .to.have.all.keys('message', 'status', 'actionType', 'url', 'originalPayload');
-            // url: contents might change in future releases
-            // msg: nock will always return null, see: https://github.com/node-nock/nock/issues/469
+              expect(action.payload).to.have.all.keys(
+                'message', 'status', 'statusText', 'actionType', 'originalPayload'
+              );
             }
           ));
       });
@@ -83,9 +74,7 @@ describe('projects actions', () => {
 
     describe('addProject', () => {
       it('standard request', () => {
-        nock(SERVER)
-          .post(API)
-          .reply(200, { pid: '45' });
+        fetchMock.post(API, { pid: '45' });
 
         return store.dispatch(addProject('name', 'descr'))
           .then(() => actionExpects(store,
@@ -105,9 +94,7 @@ describe('projects actions', () => {
           ));
       });
       it('error reply', () => {
-        nock(SERVER)
-          .post(API)
-          .reply(404, 'Not found');
+        fetchMock.post(API, 404);
 
         return store.dispatch(addProject('name', 'descr'))
           .then(() => actionExpects(store,
@@ -123,11 +110,10 @@ describe('projects actions', () => {
               expect(action.type).to.equal(ADD_PROJECT);
               expect(action.error).to.be.true;
               expect(action.payload.status).to.equal(404);
-              expect(action.payload)
-                .to.have.all.keys('message', 'status', 'actionType', 'url', 'originalPayload');
+              expect(action.payload).to.have.all.keys(
+                'message', 'status', 'statusText', 'actionType', 'originalPayload'
+              );
             }
-            // url: contents might change in future releases
-            // msg: nock will always return null, see: https://github.com/node-nock/nock/issues/469
           ));
       });
     });

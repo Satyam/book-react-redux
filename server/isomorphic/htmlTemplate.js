@@ -6,7 +6,7 @@ export default (html, initialState) => `<!DOCTYPE html>
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/bootstrap/css/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="/bundles/client.css" />
-    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise" defer async></script>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise,fetch" defer async></script>
     <script id="initialState" type="application/json">${initialState}</script>
   </head>
   <body>

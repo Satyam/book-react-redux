@@ -31,10 +31,9 @@ import {
 } from 'react-router-redux';
 
 import data from '_test/utils/data';
-import nock from 'nock';
+import fetchMock from 'fetch-mock';
 
-const SERVER = `${HOST}:${PORT}`;
-const API = `${REST_API_PATH}/projects/`;
+const API = `${HOST}:${PORT}${REST_API_PATH}/projects/`;
 
 const PID = '25';
 const BAD_PID = '99';
@@ -71,9 +70,7 @@ describe('Component: Project', () => {
   describe('DOM renderers', () => {
     before(loadJSDOM);
     after(dropJSDOM);
-    afterEach(() => {
-      nock.cleanAll();
-    });
+    afterEach(fetchMock.restore);
 
     it('deepRender ProjectComponent', () => {
       const onEditClick = sinon.spy();
@@ -109,9 +106,7 @@ describe('Component: Project', () => {
     });
 
     it('ConnectedProject with non-existing pid', () => {
-      nock(SERVER)
-        .get(API + BAD_PID)
-        .reply(404);
+      fetchMock.get(API + BAD_PID, 404);
 
       const store = mockStore(data);
       const result = deepRender(
@@ -142,9 +137,8 @@ describe('Component: Project', () => {
   });
 
   describe('mapDispatchToProps', () => {
-    afterEach(() => {
-      nock.cleanAll();
-    });
+    afterEach(fetchMock.restore);
+
     it('onEditClick', () => {
       const store = mockStore(data);
       const props = mapDispatchToProps(store.dispatch);
@@ -158,9 +152,7 @@ describe('Component: Project', () => {
     });
 
     it('onDeleteClick', () => {
-      nock(SERVER)
-        .delete(API + PID)
-        .reply(200);
+      fetchMock.delete(API + PID, { pid: PID });
       const store = mockStore(data);
       const props = mapDispatchToProps(store.dispatch);
       expect(props.onDeleteClick).to.be.a('function');

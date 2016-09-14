@@ -9,6 +9,8 @@ import clientRoutes from '_components';
 
 import htmlTemplate from './htmlTemplate';
 
+require('isomorphic-fetch');
+
 export default function isomorphic(req, res, next) {
   const memoryHistory = createMemoryHistory(req.url);
   const store = createStore(memoryHistory);

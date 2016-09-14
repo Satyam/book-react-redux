@@ -88,14 +88,6 @@ describe('Store: Projects, projectsReducer', () => {
       );
     });
     it('add extra project to existing set', () => {
-      console.log(diffAfter(
-        ALL_PROJECTS,
-        [{
-          pid: '99',
-          name: 'name for project 99',
-          pending: 0,
-        }]
-      ));
       expect(diffAfter(
         ALL_PROJECTS,
         [{

@@ -14,15 +14,14 @@ export default (type, asyncRequest, payload = {}) =>
     return asyncRequest.then(
       response => dispatch({
         type,
-        payload: Object.assign(response.data, payload),
+        payload: Object.assign(response, payload),
         meta: { asyncAction: REPLY_RECEIVED },
       }),
       error => {
-        const response = error.response;
         const err = {
-          message: response ? (response.statusText || response.data) : error.message,
-          status: response ? response.status : error.code,
-          url: error.config.url,
+          status: error.status,
+          statusText: error.statusText,
+          message: error.toString(),
           actionType: type,
           originalPayload: payload,
         };

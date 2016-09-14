@@ -24,7 +24,7 @@ TaskListComponent.propTypes = {
 };
 
 export const mapStateToProps = (state, props) => ({
-  tids: state.projects[props.pid].tids,
+  tids: state.projects[props.pid] && state.projects[props.pid].tids,
   editTid: state.misc.editTid,
 });
 
